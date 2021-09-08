@@ -1,0 +1,10 @@
+package com.fairycompany.reviewer.model.dao;
+
+import com.fairycompany.reviewer.exception.DaoException;
+import com.fairycompany.reviewer.model.entity.User;
+
+public interface UserDao extends BaseDao<User> {
+    boolean add(User user, String password) throws DaoException;
+
+    boolean updatePassword(User user, String password) throws DaoException;
+}
