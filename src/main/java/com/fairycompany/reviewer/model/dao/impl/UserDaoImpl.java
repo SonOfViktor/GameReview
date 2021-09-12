@@ -135,6 +135,7 @@ public class UserDaoImpl implements UserDao {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
             statement.setLong(1, id);
+            statement.executeUpdate();
         } catch (SQLException e) {
             logger.log(Level.ERROR, "Error when deleting user with Id {}. {}", id, e.getMessage());
             throw new DaoException("Error when deleting user with Id " + id, e);

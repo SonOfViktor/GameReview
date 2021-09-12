@@ -49,14 +49,8 @@ public final class ColumnName {
     public static final String TOTAL_RATING = "total_rating";
     public static final String IMAGE = "image";
     public static final String TRAILER_URL = "trailer_url";
-
-    // platforms
-    public static final String PLATFORM_ID = "platform_id";
+    public static final String PRICE = "price";
     public static final String PLATFORM = "platform";
-
-    // games_platforms
-    public static final String GAMES_PLATFORMS_GAME_ID = "game_id";
-    public static final String GAMES_PLATFORMS_PLATFORM_ID = "platform_id";
 
     // screenshots
     public static final String SCREENSHOT_ID = "screenshot_id";
@@ -90,7 +84,7 @@ public final class ColumnName {
     public static final String ORDER_ID = "order_id";
     public static final String ORDER_GAME_ID = "game_id";
     public static final String ORDER_PAYMENT_ID = "payment_id";
-    public static final String PRICE = "price";
+    public static final String ORDER_PLATFORM = "platform";
 
     // payments
     public static final String PAYMENT_ID = "payment_id";

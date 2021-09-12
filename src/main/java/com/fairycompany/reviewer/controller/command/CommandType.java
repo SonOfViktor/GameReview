@@ -1,19 +1,24 @@
 package com.fairycompany.reviewer.controller.command;
 
 import com.fairycompany.reviewer.controller.command.impl.LoginCommand;
+import com.fairycompany.reviewer.model.entity.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
-public enum CommandType {
-    LOGIN(new LoginCommand());
+import static com.fairycompany.reviewer.model.entity.User.Role.*;
 
-//    private List<String> roles;
+public enum CommandType {
+    LOGIN(new LoginCommand(), GUEST);
+
+    private Set<User.Role> roles;
     private Command command;
 
-    CommandType(Command command) {
+    CommandType(Command command, User.Role ... roles) {
         this.command = command;
+        this.roles = Set.of(roles);
     }
 
     public Command getCommand() {
@@ -30,7 +35,7 @@ public enum CommandType {
 //                .findFirst();
 //    }
 
-//    public boolean isValidRole(String role) {
-//        return roles.stream().anyMatch(r -> r.equalsIgnoreCase(role));
-//    }
+    public boolean isValidRole(User.Role role) {
+        return roles.stream().anyMatch(r -> r == role);
+    }
 }

@@ -9,11 +9,12 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class _MainDao {
     public static void main(String[] args) throws DaoException, SQLException {
-//        UserDaoImpl dao = UserDaoImpl.getInstance();
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
 //
 //        User user = dao.findByLoginAndPassword("punksim@mail.ru", "zxc123asd").get();
 //        System.out.println(user);
@@ -42,16 +43,43 @@ public class _MainDao {
 //        String string = strings.get(0);
 //        System.out.println(string);
 
+//        userDao.delete(7);
 
-        GameDaoImpl gameDao = new GameDaoImpl();
+        // #game dao
+        GameDaoImpl gameDao = GameDaoImpl.getInstance();
 //        Set<Platform> platforms = gameDao.getPlatform(2);
 //        System.out.println(platforms);
 
 //        Set<Game.Genre> genres = gameDao.getGenre(2);
 //        System.out.println(genres);
 
-        List<Game> games = gameDao.findAll();
-        System.out.println(games);
+        // find all
+//        List<Game> games = gameDao.findAll();
+//        for (Game game : games) {
+//            System.out.println(game);
+//        }
 
+//        Optional<Game> game = gameDao.findGameByName("dooM");
+//        System.out.println(game);
+
+//         delete
+//        System.out.println(gameDao.delete(3));
+
+        // add
+        Set<Platform> platforms = Set.of(Platform.XBOX_ONE, Platform.PC, Platform.PLAYSTATION_4);
+        Set<Game.Genre> genres = Set.of(Game.Genre.HORROR, Game.Genre.ACTION, Game.Genre.SHOOTER);
+        System.out.println(gameDao.stringFromSet(platforms));
+        Game DeadSpace = new Game.GameBuilder()
+                .setName("Dead Space")
+                .setPublisher("Electronic Arts")
+                .setDeveloper("Valotion Games")
+                .setReleaseDate(LocalDate.of(2008, 05, 28))
+                .setPlatforms(platforms)
+                .setGenres(genres)
+                .setDescription("Очень страшный хорор")
+                .setTrailerUrl("https://www.youtube.com/watch?v=RYaJCmJgb9A")
+                .setPrice(new BigDecimal(10))
+                .createGame();
+        System.out.println(gameDao.add(DeadSpace));
     }
 }
