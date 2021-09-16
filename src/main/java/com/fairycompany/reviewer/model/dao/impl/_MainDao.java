@@ -29,10 +29,9 @@ public class _MainDao {
 //                .setUserStatus(User.Status.GRAND_MASTER)
 //                .createUser();
 //        System.out.println(newUser);
-
-//        User newUser = new User("Ide", "Cool", "Man", LocalDate.now(), 123098456,
-//                new BigDecimal(0.00), null, User.UserRole.GUEST, User.UserStatus.BANNED);
-//        dao.add(newUser, "zxc123asd");
+//
+//
+//        userDao.add(newUser, "zxc123asd");
 //        dao.updatePassword(newUser, "zxc123asd");
 
 //        List<User> users = dao.findAll();
@@ -68,7 +67,7 @@ public class _MainDao {
         // add
         Set<Platform> platforms = Set.of(Platform.XBOX_ONE, Platform.PC, Platform.PLAYSTATION_4);
         Set<Game.Genre> genres = Set.of(Game.Genre.HORROR, Game.Genre.ACTION, Game.Genre.SHOOTER);
-        System.out.println(gameDao.stringFromSet(platforms));
+//        System.out.println(gameDao.stringFromSet(platforms));
         Game DeadSpace = new Game.GameBuilder()
                 .setName("Dead Space")
                 .setPublisher("Electronic Arts")

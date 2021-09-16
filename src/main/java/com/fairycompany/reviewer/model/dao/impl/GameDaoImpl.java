@@ -156,35 +156,23 @@ public class GameDaoImpl implements GameDao {
              PreparedStatement genreStatement = connection.prepareStatement(ADD_GENRE_TO_GAME_SQL)) {
 
             connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             statement.setString(1, game.getName());
             statement.setString(2, game.getPublisher());
             statement.setString(3, game.getDeveloper());
-            statement.setDate(4, Date.valueOf(game.getReleaseDate()));
+            statement.setDate(4, Date.valueOf(game.getReleaseDate()
+            ));
             statement.setString(5, stringFromSet(game.getPlatform()));
             statement.setString(6, game.getDescription());
             statement.setBlob(7, game.getImage());
             statement.setString(8, game.getTrailerUrl());
             statement.setBigDecimal(9, game.getPrice());
             statement.executeUpdate();
-            // todo return id for game
 
-            idStatement.setString(1, game.getName());       // todo make private method
-            ResultSet resultSet = idStatement.executeQuery();
-            long gameId = 0;
-            if(resultSet.next()) {
-                gameId = resultSet.getLong("game_id");          // this work
-            }
+            long gameId = getGameIdFromDB(game, idStatement);
+            game.setGameId(gameId);
 
-            for (Game.Genre genre : game.getGenres()) {                 // todo make private method
-                genreStatement.setLong(1, gameId);
-                genreStatement.setInt(2, genre.ordinal());
-                genreStatement.addBatch();
-            }
-            genreStatement.executeBatch();
-            // this not work
-            // Cannot add or update a child row: a foreign key constraint fails (`game_rating`.`games_genres`,
-            // CONSTRAINT `fk_games_has_genres_genres1` FOREIGN KEY (`genre_id`) REFERENCES `genres`
-            // (`genre_id`) ON DELETE CASCADE ON UPDATE CASCADE)
+            setGenresToDB(game, genreStatement);
 
             connection.commit();
         } catch (SQLException e) {
@@ -194,7 +182,6 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(connection);
         }
-        // todo don't work
         return true;
     }
 
@@ -259,8 +246,26 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    //todo private
-    public String stringFromSet(Set<Platform> platforms) {
+    private long getGameIdFromDB(Game game, PreparedStatement statement) throws SQLException {
+        statement.setString(1, game.getName());
+        ResultSet resultSet = statement.executeQuery();
+        long gameId = 0;
+        if(resultSet.next()) {
+            gameId = resultSet.getLong("game_id");
+        }
+        return gameId;
+    }
+
+    private void setGenresToDB(Game game, PreparedStatement statement) throws SQLException {
+        for (Game.Genre genre : game.getGenres()) {                 // todo make private method
+            statement.setLong(1, game.getGameId());
+            statement.setInt(2, genre.ordinal());
+            statement.addBatch();
+        }
+        statement.executeBatch();
+    }
+
+    private String stringFromSet(Set<Platform> platforms) {
         String stringSet = platforms.toString().replaceAll("[\\[\\]\\s]", "").toLowerCase();
         return stringSet;
     }

@@ -25,16 +25,6 @@ public enum CommandType {
         return command;
     }
 
-//    CommandType(String... roles) {
-//        this.roles = List.of(roles);
-//    }
-
-//    public static Optional<CommandType> fromString(String type) {
-//        return Stream.of(CommandType.values())
-//                .filter(e -> e.name().equalsIgnoreCase(type))
-//                .findFirst();
-//    }
-
     public boolean isValidRole(User.Role role) {
         return roles.stream().anyMatch(r -> r == role);
     }

@@ -45,6 +45,10 @@ public class Game extends Entity {
         return gameId;
     }
 
+    public void setGameId(long gameId) {
+        this.gameId = gameId;
+    }
+
     public String getName() {
         return name;
     }
