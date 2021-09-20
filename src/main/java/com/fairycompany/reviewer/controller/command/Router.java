@@ -6,12 +6,11 @@ public class Router {
         FORWARD
     }
 
-    private RouterType type;
+    private RouterType type = RouterType.FORWARD;
     private String page;
 
 
-    public Router (RouterType type, String page) {
-        this.type = type;
+    public Router (String page) {
         this.page = page;
     }
 

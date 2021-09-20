@@ -8,6 +8,7 @@ import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +22,9 @@ public class LoginCommand implements Command {
 
     @Override
     public Router execute(HttpServletRequest request) {
-        Router router = new Router(Router.RouterType.REDIRECT, request.getContextPath());
+        Router router = new Router(request.getContextPath());
+        router.setType(Router.RouterType.REDIRECT);
+
         HttpSession session = request.getSession();
         String login = request.getParameter(LOGIN_PARAM);
         String password = request.getParameter(PASSWORD_PARAM);
@@ -37,7 +40,7 @@ public class LoginCommand implements Command {
                 session.setAttribute("errorLoginPassMessage", "This login or password is wrong");
             }
         } catch (ServiceException e) {
-            e.printStackTrace();            // todo
+            logger.log(Level.ERROR, "Some Error when authentication ", e);
             session.setAttribute("nullPage", "Some Error when authentication");
         }
 
