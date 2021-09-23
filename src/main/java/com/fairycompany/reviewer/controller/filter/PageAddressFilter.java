@@ -1,5 +1,6 @@
 package com.fairycompany.reviewer.controller.filter;
 
+import com.fairycompany.reviewer.controller.command.SessionAttribute;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class PageAddressFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String current = httpRequest.getContextPath();
-//        System.out.println(current);
+        //        System.out.println(current);
         int currentLength = current.length();
         String uri = httpRequest.getRequestURI();
 //        System.out.println(uri);
@@ -29,7 +30,7 @@ public class PageAddressFilter implements Filter {
 
         logger.log(Level.DEBUG, "Address of this page is {} ", current);
 
-        httpRequest.getSession().setAttribute("current_page", current);
+        httpRequest.getSession().setAttribute(SessionAttribute.CURRENT_PAGE, current);
         chain.doFilter(request, response);
     }
 

@@ -35,7 +35,7 @@ public class LoginCommand implements Command {
             if (user.isPresent()) {
                 session.setAttribute("user", user.get());
                 router.setType(Router.RouterType.FORWARD);
-                router.setPage(PagePath.MAIN_PAGE);
+                router.setPage(PagePath.EXAMPLE);
             } else {
                 session.setAttribute("errorLoginPassMessage", "This login or password is wrong");
             }
