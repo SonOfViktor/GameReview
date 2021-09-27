@@ -2,6 +2,7 @@ package com.fairycompany.reviewer.controller.command;
 
 import com.fairycompany.reviewer.controller.command.impl.LocalCommand;
 import com.fairycompany.reviewer.controller.command.impl.LoginCommand;
+import com.fairycompany.reviewer.controller.command.impl.SignUpCommand;
 import com.fairycompany.reviewer.model.entity.User;
 
 import java.util.List;
@@ -13,7 +14,8 @@ import static com.fairycompany.reviewer.model.entity.User.Role.*;
 
 public enum CommandType {
     LOGIN(new LoginCommand(), GUEST),
-    LOCALE(new LocalCommand(), GUEST, USER, ADMIN);
+    LOCALE(new LocalCommand(), GUEST, USER, ADMIN),
+    SIGN_UP(new SignUpCommand(), GUEST);
 
     private Set<User.Role> roles;
     private Command command;

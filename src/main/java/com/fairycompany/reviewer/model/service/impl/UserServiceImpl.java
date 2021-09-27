@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
 
     public Optional<User> authenticate (String login, String password) throws ServiceException {
-        Optional<User> user = Optional.empty();
+        Optional<User> user;
         String hashPassword = HashGenerator.hashPassword(password);
         try {
             user = userDao.findByLoginAndPassword(login, hashPassword);

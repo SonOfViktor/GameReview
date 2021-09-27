@@ -19,7 +19,7 @@ import java.util.Properties;
 
 public class EmailSender {
     private static final Logger logger = LogManager.getLogger();
-    private static final String PROPERTY_FILE = "properties\\mail.propertie";
+    private static final String PROPERTY_FILE = "properties\\mail.properties";
     private static final String USER_NAME_KEY = "mail.user.name";
     private static final String USER_PASSWORD_KEY = "mail.user.password";
     private final Properties properties = new Properties();

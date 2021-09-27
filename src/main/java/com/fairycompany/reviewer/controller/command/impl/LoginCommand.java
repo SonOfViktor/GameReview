@@ -3,6 +3,7 @@ package com.fairycompany.reviewer.controller.command.impl;
 import com.fairycompany.reviewer.controller.command.Command;
 import com.fairycompany.reviewer.controller.command.PagePath;
 import com.fairycompany.reviewer.controller.command.Router;
+import com.fairycompany.reviewer.controller.command.SessionRequestContent;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
@@ -35,7 +36,7 @@ public class LoginCommand implements Command {
             if (user.isPresent()) {
                 session.setAttribute("user", user.get());
                 router.setType(Router.RouterType.FORWARD);
-                router.setPage(PagePath.EXAMPLE);
+                router.setPage(PagePath.EXAMPLE);               // todo normal page
             } else {
                 session.setAttribute("errorLoginPassMessage", "This login or password is wrong");
             }

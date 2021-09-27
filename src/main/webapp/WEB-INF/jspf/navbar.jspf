@@ -1,0 +1,118 @@
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${locale}" scope="session" />
+<fmt:setBundle basename="local.pagecontent"/>
+
+
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="col-2">
+            <a class="navbar-brand" href="#"><fmt:message key="main.title"/></a>
+        </div>
+        <%--        <div class="collapse navbar-collapse" id="navbarSupportedContent">--%>
+        <%--            <ul class="navbar-nav me-auto mb-2 mb-lg-0">--%>
+        <%--                <li class="nav-item">--%>
+        <%--                    <a class="nav-link active" aria-current="page" href="#">Home</a>--%>
+        <%--                </li>--%>
+        <%--                <li class="nav-item">--%>
+        <%--                    <a class="nav-link" href="#">Link</a>--%>
+        <%--                </li>--%>
+        <%--                <li class="nav-item dropdown">--%>
+        <%--                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">--%>
+        <%--                        Dropdown--%>
+        <%--                    </a>--%>
+        <%--                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">--%>
+        <%--                        <li><a class="dropdown-item" href="#">Action</a></li>--%>
+        <%--                        <li><a class="dropdown-item" href="#">Another action</a></li>--%>
+        <%--                        <li><hr class="dropdown-divider"></li>--%>
+        <%--                        <li><a class="dropdown-item" href="#">Something else here</a></li>--%>
+        <%--                    </ul>--%>
+        <%--                </li>--%>
+        <%--                <li class="nav-item">--%>
+        <%--                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>--%>
+        <%--                </li>--%>
+        <%--            </ul>--%>
+        <div class="col-7 d-flex justify-content-center">
+            <form class="d-flex" style="width: 600px;">
+                <input class="form-control me-2" type="search" placeholder="<fmt:message key="main.search"/>"
+                       aria-label="Search">
+                <button class="btn btn-outline-success" type="submit"><fmt:message key="main.search"/></button>
+            </form>
+        </div>
+        <div class="col-1">
+            <a class="btn btn-info btn-sm"
+               href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
+                <fmt:message key="main.eng"/>
+            </a>
+            <a class="btn btn-info btn-sm"
+               href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
+                <fmt:message key="main.ru"/>
+            </a>
+        </div>
+
+        <div class="col-2 d-flex justify-content-center">
+            <!-- Modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <fmt:message key="main.sing_in"/>
+            </button>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><fmt:message key="login.log_in"/></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="controller">
+                            <input type="hidden" name="command" value="login"/>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">
+                                    <fmt:message key="login.login"/>
+                                </label>
+                                <input type="email" name="login" class="form-control" id="exampleInputEmail1"
+                                       aria-describedby="emailHelp"
+                                       pattern="[\d\w-]{3,25}@\w{2,10}\.\w{2,5}">
+                                <%--                                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>--%>
+                            </div>
+                            <div class="mb-3">
+                                <label
+                                        for="exampleInputPassword1" class="form-label"><fmt:message key="login.password"/>
+                                </label>
+                                <input type="password" name="password" class="form-control" id="exampleInputPassword1"
+                                pattern="(?=.*\d)(?=.*[!#$%^&*])(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}!#$%^&*]{8,20}">
+                            </div>
+                            <%--                                <div class="mb-3 form-check">--%>
+                            <%--                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">--%>
+                            <%--                                    <label class="form-check-label" for="exampleCheck1">Check me out</label>--%>
+                            <%--                                </div>--%>
+
+                            <div class="modal-footer">
+                                <div class="me-8">
+                                    <form method="get" action="controller">
+                                        <input type="hidden" name="command" value="sing_up"/>
+                                        <button type="submit" class="btn btn-primary">
+                                            <fmt:message key="login.sing_up"/>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <%--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><fmt:message key="login.close"/></button>--%>
+                                <button type="submit" class="btn btn-primary">
+                                    <fmt:message key="login.log_in"/>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <%--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">--%>
+    <%--            <span class="navbar-toggler-icon"></span>--%>
+    <%--        </button>--%>
+    <%--    </div>--%>
+</nav>
+
