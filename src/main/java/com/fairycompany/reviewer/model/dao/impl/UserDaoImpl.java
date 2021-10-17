@@ -19,6 +19,7 @@ import java.util.Optional;
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
     private static UserDaoImpl instance = new UserDaoImpl();
+    private static final String GENERATED_KEY = "GENERATED_KEY";
     private static final String FIND_ALL_SQL = """
             SELECT user_id, login, first_name, second_name, birthday_date, phone, balance, photo, role, status
             FROM users
@@ -58,7 +59,6 @@ public class UserDaoImpl implements UserDao {
             role_id = ?, status_id = ?
             WHERE user_id = ?
             """;
-
 
     private UserDaoImpl() {
     }
@@ -145,13 +145,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean add(User user) throws DaoException {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean add(User user, String password) throws DaoException {
+    public long add(User user, String password) throws DaoException {
+        long userId = 0;
+
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(ADD_NEW_USER_SQL)) {
+             PreparedStatement statement = connection.prepareStatement(ADD_NEW_USER_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getLogin());
             statement.setString(2, password);
             statement.setString(3, user.getFirstName());
@@ -162,13 +164,21 @@ public class UserDaoImpl implements UserDao {
             statement.setBlob(8, user.getPhoto());
             statement.setInt(9, user.getUserRole().ordinal());
             statement.setInt(10, user.getUserStatus().ordinal());
-            System.out.println(statement.executeUpdate());
+            statement.executeUpdate();
+            logger.log(Level.INFO, "User {} was added", user.getLogin());
+
+            ResultSet idSet = statement.getGeneratedKeys();
+            if (idSet.next()) {
+                userId = idSet.getLong(GENERATED_KEY);
+                logger.log(Level.DEBUG, "Added user's id is {}", userId);
+            }
+
         } catch (SQLException e) {
             logger.log(Level.ERROR, "Error when adding user. {}", e.getMessage());
             throw new DaoException("Error when adding user", e);
         }
 
-        return true;
+        return userId;
     }
 
     public boolean updatePassword(User user, String password) throws DaoException {

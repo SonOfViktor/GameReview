@@ -1,9 +1,7 @@
 package com.fairycompany.reviewer.controller.command.impl;
 
-import com.fairycompany.reviewer.controller.command.Command;
-import com.fairycompany.reviewer.controller.command.PagePath;
-import com.fairycompany.reviewer.controller.command.Router;
-import com.fairycompany.reviewer.controller.command.SessionRequestContent;
+import com.fairycompany.reviewer.controller.command.*;
+import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
@@ -15,34 +13,35 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
-import static com.fairycompany.reviewer.controller.command.RequestParameter.LOGIN_PARAM;
-import static com.fairycompany.reviewer.controller.command.RequestParameter.PASSWORD_PARAM;
+import static com.fairycompany.reviewer.controller.command.RequestParameter.LOGIN;
+import static com.fairycompany.reviewer.controller.command.RequestParameter.PASSWORD;
 
 public class LoginCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
 
     @Override
-    public Router execute(HttpServletRequest request) {
-        Router router = new Router(request.getContextPath());
+    public Router execute(HttpServletRequest request) throws CommandException {
+        HttpSession session = request.getSession();
+
+        Router router = new Router(PagePath.MAIN_PAGE);
         router.setType(Router.RouterType.REDIRECT);
 
-        HttpSession session = request.getSession();
-        String login = request.getParameter(LOGIN_PARAM);
-        String password = request.getParameter(PASSWORD_PARAM);
+        SessionRequestContent content = new SessionRequestContent();
+        content.extractValues(request);
 
-        UserServiceImpl service = new UserServiceImpl();
+
+        UserServiceImpl service = UserServiceImpl.getInstance();
         try {
-            Optional<User> user = service.authenticate(login, password);
+            Optional<User> user = service.authenticate(content);
             if (user.isPresent()) {
-                session.setAttribute("user", user.get());
-                router.setType(Router.RouterType.FORWARD);
-                router.setPage(PagePath.EXAMPLE);               // todo normal page
+                session.setAttribute(SessionAttribute.USER, user.get());
             } else {
-                session.setAttribute("errorLoginPassMessage", "This login or password is wrong");
+                session.setAttribute(SessionAttribute.LOGIN_MESSAGE_ERROR, true);
+//                int i = 10 / 0;       //todo delete
             }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Some Error when authentication ", e);
-            session.setAttribute("nullPage", "Some Error when authentication");
+            throw new CommandException("Some error when authentication", e);
         }
 
         return router;

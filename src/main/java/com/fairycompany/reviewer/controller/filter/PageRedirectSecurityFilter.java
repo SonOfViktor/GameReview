@@ -8,16 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebFilter(filterName = "PageRedirectSecurityFilter",
-            urlPatterns = "/pages/*",
-            initParams = {
-                @WebInitParam(name = "index_path", value = "/index.jsp")
-            })
+            urlPatterns = "/pages/*" )
 public class PageRedirectSecurityFilter implements Filter {
-    private String indexPath;
-
-    public void init(FilterConfig config) throws ServletException {
-        indexPath = config.getInitParameter("index_path");
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -25,7 +17,7 @@ public class PageRedirectSecurityFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        httpResponse.sendRedirect(httpRequest.getContextPath() + indexPath);
+        httpResponse.sendRedirect(httpRequest.getContextPath());
         chain.doFilter(request, response);
     }
 

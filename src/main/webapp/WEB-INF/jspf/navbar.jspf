@@ -1,5 +1,6 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setLocale value="${locale}" scope="session" />
 <fmt:setBundle basename="local.pagecontent"/>
@@ -8,7 +9,9 @@
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <div class="col-2">
-            <a class="navbar-brand" href="#"><fmt:message key="main.title"/></a>
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page">
+                <fmt:message key="main.title"/>
+            </a>
         </div>
         <%--        <div class="collapse navbar-collapse" id="navbarSupportedContent">--%>
         <%--            <ul class="navbar-nav me-auto mb-2 mb-lg-0">--%>
@@ -40,6 +43,7 @@
                 <button class="btn btn-outline-success" type="submit"><fmt:message key="main.search"/></button>
             </form>
         </div>
+
         <div class="col-1">
             <a class="btn btn-info btn-sm"
                href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
@@ -51,21 +55,38 @@
             </a>
         </div>
 
-        <div class="col-2 d-flex justify-content-center">
-            <!-- Modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <fmt:message key="main.sing_in"/>
-            </button>
-        </div>
+        <c:choose>
+            <c:when test="${empty user or user.getUserRole().name().toLowerCase() eq 'guest'}">
+                <div class="col-2 d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <fmt:message key="main.sing_in"/>
+                    </button>
+                </div>
+            </c:when>
+
+            <c:otherwise>
+                <div class="col-2 d-flex justify-content-center">
+                    <form method="get" action="controller">
+                        <input type="hidden" name="command" value="logout"/>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <fmt:message key="login.log_out"/>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"><fmt:message key="login.log_in"/></h5>
+                        <h5 class="modal-title" id="exampleModalLabel"><fmt:message key="login.login"/></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action="controller">
+                        <form class="needs-validation" novalidate method="post" action="controller">
                             <input type="hidden" name="command" value="login"/>
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">
@@ -73,15 +94,21 @@
                                 </label>
                                 <input type="email" name="login" class="form-control" id="exampleInputEmail1"
                                        aria-describedby="emailHelp"
-                                       pattern="[\d\w-]{3,25}@\w{2,10}\.\w{2,5}">
+                                       pattern="[\d\w-]{3,25}@\w{2,10}\.\w{2,5}" required>
+                                <div class="invalid-feedback">
+                                    <fmt:message key="sing_up.login.invalid_message"/>
+                                </div>
                                 <%--                                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>--%>
                             </div>
                             <div class="mb-3">
                                 <label
-                                        for="exampleInputPassword1" class="form-label"><fmt:message key="login.password"/>
+                                        for="exampleInputPassword" class="form-label"><fmt:message key="login.password"/>
                                 </label>
-                                <input type="password" name="password" class="form-control" id="exampleInputPassword1"
-                                pattern="(?=.*\d)(?=.*[!#$%^&*])(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}!#$%^&*]{8,20}">
+                                <input type="password" name="password" class="form-control" id="exampleInputPassword"
+                                pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
+                                <div class="invalid-feedback">
+                                    <fmt:message key="sing_up.password.invalid_message"/>
+                                </div>
                             </div>
                             <%--                                <div class="mb-3 form-check">--%>
                             <%--                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">--%>
@@ -89,14 +116,6 @@
                             <%--                                </div>--%>
 
                             <div class="modal-footer">
-                                <div class="me-8">
-                                    <form method="get" action="controller">
-                                        <input type="hidden" name="command" value="sing_up"/>
-                                        <button type="submit" class="btn btn-primary">
-                                            <fmt:message key="login.sing_up"/>
-                                        </button>
-                                    </form>
-                                </div>
 
                                 <%--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><fmt:message key="login.close"/></button>--%>
                                 <button type="submit" class="btn btn-primary">
@@ -104,6 +123,15 @@
                                 </button>
                             </div>
                         </form>
+                        <div class="me-8">
+                            <form method="get" action="controller">
+                                <input type="hidden" name="command" value="to_sing_up_page"/>
+                                <button type="submit" class="btn btn-primary">
+                                    <fmt:message key="login.sing_up"/>
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
 
                 </div>

@@ -17,7 +17,7 @@ public class User extends Entity{
     private Status userStatus;
 
     public enum Status {
-        ROOKIE, CRITIC, GRAND_MASTER, BANNED
+        NOT_CONFIRMED, BANNED, ROOKIE, CRITIC, GRAND_MASTER
     }
 
     public enum Role {

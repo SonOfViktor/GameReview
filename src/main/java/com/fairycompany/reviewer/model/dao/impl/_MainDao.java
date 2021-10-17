@@ -16,23 +16,23 @@ public class _MainDao {
     public static void main(String[] args) throws DaoException, SQLException {
         UserDaoImpl userDao = UserDaoImpl.getInstance();
 //
-//        User user = dao.findByLoginAndPassword("punksim@mail.ru", "zxc123asd").get();
+//        User user = userDao.findByLoginAndPassword("punksim@mail.ru", "zxc123asd").get();
 //        System.out.println(user);
-//        User newUser = new User.UserBuilder()
-//                .setLogin("Maksimus")
-//                .setFirstName("Maks")
-//                .setSecondName("Sil")
-//                .setBirthday(LocalDate.now())
-//                .setPhone(12345563)
-//                .setBalance(new BigDecimal("100.00"))
-//                .setUserRole(User.Role.GUEST)
-//                .setUserStatus(User.Status.GRAND_MASTER)
-//                .createUser();
-//        System.out.println(newUser);
+        User newUser = new User.UserBuilder()
+                .setLogin("SonOfViktor@yandex.ru")
+                .setFirstName("Максим")
+                .setSecondName("Силевич")
+                .setBirthday(LocalDate.of(1988,02,11))
+                .setPhone(295173826)
+                .setBalance(new BigDecimal("0"))
+                .setUserRole(User.Role.USER)
+                .setUserStatus(User.Status.NOT_CONFIRMED)
+                .createUser();
+        System.out.println(newUser);
 //
 //
-//        userDao.add(newUser, "zxc123asd");
-//        dao.updatePassword(newUser, "zxc123asd");
+        userDao.add(newUser, "zxc123asd");
+//        userDao.updatePassword(newUser, "zxc123asd");
 
 //        List<User> users = dao.findAll();
 //        for (User user : users) {
@@ -45,7 +45,7 @@ public class _MainDao {
 //        userDao.delete(7);
 
         // #game dao
-        GameDaoImpl gameDao = GameDaoImpl.getInstance();
+//        GameDaoImpl gameDao = GameDaoImpl.getInstance();
 //        Set<Platform> platforms = gameDao.getPlatform(2);
 //        System.out.println(platforms);
 
@@ -65,20 +65,20 @@ public class _MainDao {
 //        System.out.println(gameDao.delete(3));
 
         // add
-        Set<Platform> platforms = Set.of(Platform.XBOX_ONE, Platform.PC, Platform.PLAYSTATION_4);
-        Set<Game.Genre> genres = Set.of(Game.Genre.HORROR, Game.Genre.ACTION, Game.Genre.SHOOTER);
-//        System.out.println(gameDao.stringFromSet(platforms));
-        Game DeadSpace = new Game.GameBuilder()
-                .setName("Dead Space")
-                .setPublisher("Electronic Arts")
-                .setDeveloper("Valotion Games")
-                .setReleaseDate(LocalDate.of(2008, 05, 28))
-                .setPlatforms(platforms)
-                .setGenres(genres)
-                .setDescription("Очень страшный хорор")
-                .setTrailerUrl("https://www.youtube.com/watch?v=RYaJCmJgb9A")
-                .setPrice(new BigDecimal(10))
-                .createGame();
-        System.out.println(gameDao.add(DeadSpace));
+//        Set<Platform> platforms = Set.of(Platform.XBOX_ONE, Platform.PC, Platform.PLAYSTATION_4);
+//        Set<Game.Genre> genres = Set.of(Game.Genre.HORROR, Game.Genre.ACTION, Game.Genre.SHOOTER);
+////        System.out.println(gameDao.stringFromSet(platforms));
+//        Game DeadSpace = new Game.GameBuilder()
+//                .setName("Dead Space")
+//                .setPublisher("Electronic Arts")
+//                .setDeveloper("Valotion Games")
+//                .setReleaseDate(LocalDate.of(2008, 05, 28))
+//                .setPlatforms(platforms)
+//                .setGenres(genres)
+//                .setDescription("Очень страшный хорор")
+//                .setTrailerUrl("https://www.youtube.com/watch?v=RYaJCmJgb9A")
+//                .setPrice(new BigDecimal(10))
+//                .createGame();
+//        System.out.println(gameDao.add(DeadSpace));
     }
 }

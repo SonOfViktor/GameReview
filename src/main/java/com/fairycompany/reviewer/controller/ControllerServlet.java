@@ -1,17 +1,20 @@
 package com.fairycompany.reviewer.controller;
 
-import com.fairycompany.reviewer.controller.command.Command;
-import com.fairycompany.reviewer.controller.command.CommandProvider;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
-import com.fairycompany.reviewer.controller.command.Router;
+import com.fairycompany.reviewer.controller.command.*;
+import com.fairycompany.reviewer.exception.CommandException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 @WebServlet(name = "ControllerServlet", value = "/controller")
 public class ControllerServlet extends HttpServlet {
+    private static final Logger logger = LogManager.getLogger();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
@@ -25,11 +28,23 @@ public class ControllerServlet extends HttpServlet {
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stringCommand = request.getParameter(RequestParameter.COMMAND);
         Command command = CommandProvider.defineCommand(stringCommand).get();
-        Router router = command.execute(request);
+        SessionRequestContent content = new SessionRequestContent();
 
-        switch (router.getType()) {
-            case FORWARD -> request.getRequestDispatcher(router.getPage()).forward(request, response);
-            case REDIRECT -> response.sendRedirect(router.getPage());
+        try {
+            Router router = command.execute(request);
+
+            switch (router.getType()) {
+                case FORWARD -> request.getRequestDispatcher(router.getPage()).forward(request, response);
+                case REDIRECT -> response.sendRedirect(request.getContextPath() + router.getPage());
+                default -> {
+                    logger.log(Level.ERROR, "Router type {} is incorrect", router.getType());
+                    response.sendRedirect(request.getContextPath() + PagePath.ERROR_404);
+                }
+            }
+        } catch (CommandException e) {
+            logger.log(Level.ERROR, "Error when executing command {} ", stringCommand);
+            request.getSession().setAttribute("exception", e);
+            response.sendRedirect(request.getContextPath() + PagePath.EXCEPTION_ERROR_REDIRECT);
         }
     }
 }

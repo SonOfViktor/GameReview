@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class EmailSender {
+public class  EmailSender {
     private static final Logger logger = LogManager.getLogger();
     private static final String PROPERTY_FILE = "properties\\mail.properties";
     private static final String USER_NAME_KEY = "mail.user.name";

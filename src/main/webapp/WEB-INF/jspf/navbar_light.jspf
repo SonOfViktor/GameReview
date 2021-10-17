@@ -1,0 +1,25 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${locale}" scope="session" />
+<fmt:setBundle basename="local.pagecontent"/>
+
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="col-9">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page">
+                <fmt:message key="main.title"/>
+            </a>
+        </div>
+        <div class="col-1">
+            <a class="btn btn-info btn-sm"
+               href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
+                <fmt:message key="main.eng"/>
+            </a>
+            <a class="btn btn-info btn-sm"
+               href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
+                <fmt:message key="main.ru"/>
+            </a>
+        </div>
+    </div>
+</nav>
