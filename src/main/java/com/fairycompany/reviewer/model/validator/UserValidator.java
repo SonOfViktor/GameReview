@@ -17,15 +17,15 @@ public class UserValidator {
     }
 
     public boolean isLoginValid(String login) {
-        return login != null && !login.isEmpty() && login.matches(LOGIN_REGEX);
+        return login != null && !login.isBlank() && login.matches(LOGIN_REGEX);
     }
 
     public boolean isPasswordValid(String password) {
-        return password != null && !password.isEmpty() && password.matches(PASSWORD_REGEX);
+        return password != null && !password.isBlank() && password.matches(PASSWORD_REGEX);
     }
 
     public boolean isNameValid(String name) {
-        return name != null && !name.isEmpty() && name.matches(NAME_REGEX);
+        return name != null && !name.isBlank() && name.matches(NAME_REGEX);
     }
 
     public boolean passwordCheck(String password, String passwordChecker) {
@@ -33,7 +33,7 @@ public class UserValidator {
     }
 
     public boolean isPhoneValid(String phone) {
-        return phone != null && !phone.isEmpty() && phone.matches(PHONE_REGEX);
+        return phone != null && !phone.isBlank() && phone.matches(PHONE_REGEX);
     }
 
     public boolean isDateValid(LocalDate birthdayDate) {

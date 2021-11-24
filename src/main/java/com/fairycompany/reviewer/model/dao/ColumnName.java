@@ -30,6 +30,7 @@ public final class ColumnName {
     public static final String PHOTO = "photo";
     public static final String USER_ROLE_ID = "role_id";
     public static final String USER_STATUS_ID = "status_id";
+    public static final String FULL_NAME = "full_name";
 
     // roles
     public static final String ROLE_ID = "role_id";
@@ -74,6 +75,7 @@ public final class ColumnName {
     public static final String SOUND_RATING = "sound_rating";
     public static final String PLOT_RATING = "plot_rating";
     public static final String REVIEW = "review";
+    public static final String USER_AMOUNT = "user_amount";
 
     // likes
     public static final String LIKES_USER_ID = "user_id";
@@ -91,6 +93,10 @@ public final class ColumnName {
     public static final String PAYMENT_USER_ID = "user_id";
     public static final String PAYMENT_DATE = "payment_date";
 
+    // tokens
+    public static final String TOKEN_ID = "token_id";
+    public static final String TOKEN = "token";
+    public static final String TOKEN_CREATION_DATE = "create_date";
     private ColumnName(){
     }
 }

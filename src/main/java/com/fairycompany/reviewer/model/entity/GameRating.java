@@ -1,7 +1,5 @@
 package com.fairycompany.reviewer.model.entity;
 
-import java.util.List;
-
 public class GameRating extends Entity {
     private long gameRatingId;
     private long userId;
@@ -131,7 +129,7 @@ public class GameRating extends Entity {
         return builder.toString();
     }
 
-    public static class GameReviewBuilder {
+    public static class GameRatingBuilder {
 
         private long gameRatingId;
         private long userId;
@@ -142,42 +140,42 @@ public class GameRating extends Entity {
         private int plotRating;
         private String review;
 
-        public GameReviewBuilder setGameRatingId(long gameRatingId) {
+        public GameRatingBuilder setGameRatingId(long gameRatingId) {
             this.gameRatingId = gameRatingId;
             return this;
         }
 
-        public GameReviewBuilder setUserId(long userId) {
+        public GameRatingBuilder setUserId(long userId) {
             this.userId = userId;
             return this;
         }
 
-        public GameReviewBuilder setGameId(long gameId) {
+        public GameRatingBuilder setGameId(long gameId) {
             this.gameId = gameId;
             return this;
         }
 
-        public GameReviewBuilder setGameplayRating(int gameplayRating) {
+        public GameRatingBuilder setGameplayRating(int gameplayRating) {
             this.gameplayRating = gameplayRating;
             return this;
         }
 
-        public GameReviewBuilder setGraphicsRating(int graphicsRating) {
+        public GameRatingBuilder setGraphicsRating(int graphicsRating) {
             this.graphicsRating = graphicsRating;
             return this;
         }
 
-        public GameReviewBuilder setSoundRating(int soundRating) {
+        public GameRatingBuilder setSoundRating(int soundRating) {
             this.soundRating = soundRating;
             return this;
         }
 
-        public GameReviewBuilder setPlotRating(int plotRating) {
+        public GameRatingBuilder setPlotRating(int plotRating) {
             this.plotRating = plotRating;
             return this;
         }
 
-        public GameReviewBuilder setReview(String review) {
+        public GameRatingBuilder setReview(String review) {
             this.review = review;
             return this;
         }

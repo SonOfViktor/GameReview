@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface BaseDao <T extends Entity> {
@@ -21,7 +22,7 @@ public interface BaseDao <T extends Entity> {
 
     boolean delete(long id) throws DaoException;
 
-    boolean add(T t) throws DaoException;
+    long add(T t) throws DaoException;
 
     boolean update(T t) throws DaoException;
 

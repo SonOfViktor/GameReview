@@ -1,0 +1,28 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${locale}" scope="session" />
+<fmt:setBundle basename="local.pagecontent"/>
+
+<c:choose>
+    <c:when test="${empty game_map.total_rating}">
+        <div class="positive_bg">
+            N/A
+        </div>
+    </c:when>
+    <c:when test="${game_map.total_rating ge 75}">
+        <div class="positive_bg">
+                ${game_map.total_rating}
+        </div>
+    </c:when>
+    <c:when test="${game_map.total_rating ge 30}">
+        <div class="mixed_bg">
+                ${game_map.total_rating}
+        </div>
+    </c:when>
+    <c:otherwise>
+        <div class="negative_bg">
+                ${game_map.total_rating}
+        </div>
+    </c:otherwise>
+</c:choose>

@@ -50,7 +50,7 @@ public class SessionRequestContent {
     }
 
     public void removeSessionAttribute(String name) {
-        sessionAttributes.remove(name);
+        sessionAttributes.put(name, null);
     }
 
     private HashMap<String, Object> extractRequestAttribute(HttpServletRequest request) {

@@ -85,7 +85,7 @@ public class  EmailSender {
         MimeMessage message = new MimeMessage(session);
 
         message.setSubject(mailSubject);
-        message.setContent(mailText, "text/html");
+        message.setContent(mailText, "text/plain");
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(sendToEmail));
 
         logger.log(Level.DEBUG, "Message was generated");

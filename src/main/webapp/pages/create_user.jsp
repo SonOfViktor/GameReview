@@ -16,7 +16,7 @@
 <body>
 
 <%@include file= "../WEB-INF/jspf/navbar_light.jspf" %>
-<c:if test="${user_data_error}">
+<c:if test="${not empty user_data_message}">
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
             <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889
@@ -30,14 +30,14 @@
             <use xlink:href="#exclamation-triangle-fill"/>
         </svg>
         <div>
-            <fmt:message key="sing_up.data.invalid.message"/>
+            <fmt:message key="${user_data_message}"/>
         </div>
     </div>
 <%--    <c:remove var="sing_up_message_error" scope="session"/>--%>
 </c:if>
 
 <div class="container mt-5">
-   <form class="row g-3 needs-validation" novalidate method="post" action="controller">
+    <form class="row g-3 needs-validation" novalidate method="post" action="upload_image" enctype="multipart/form-data">
         <div>
             <input type="hidden" name="command" value="create_user">
         </div>
@@ -60,9 +60,9 @@
             </div>
         </div>
         <div class="col-5 mt-4">
-    <span id="passwordHelpInline" class="form-text">
-      <fmt:message key="sing_up.password_message"/>
-    </span>
+            <span id="passwordHelpInline" class="form-text">
+              <fmt:message key="sing_up.password_message"/>
+            </span>
         </div>
 
         <div class="w-100"></div>
@@ -74,8 +74,8 @@
                 <fmt:message key="sing_up.password.invalid_message"/>
             </div>
             <div class="text-danger">
-                <c:if test="${password_double_check_fail}" >
-                    <fmt:message key="sing_up.password.invalid_double_check_message"/>
+                <c:if test="${not empty password_message}">
+                    <fmt:message key="${password_message}"/>
                 </c:if>
             </div>
         </div>
@@ -106,36 +106,56 @@
             <label for="inputBirthday" class="form-label"><fmt:message key="sing_up.birthday"/></label>
             <input type="date" class="form-control" id="inputBirthday"
                    name="birthday" value="" required>
-<%--            <div class="invalid-feedback">--%>
-<%--                <fmt:message key="sing_up.birthday.invalid_message"/>--%>
-<%--            </div>--%>
+            <%--            <div class="invalid-feedback">--%>
+            <%--                <fmt:message key="sing_up.birthday.invalid_message"/>--%>
+            <%--            </div>--%>
             <div class="text-danger">
-                <c:if test="${birthday_error}" >
-                    <fmt:message key="sing_up.birthday.invalid_message"/>
+                <c:if test="${not empty birthday_message}">
+                    <fmt:message key="${birthday_message}"/>
                 </c:if>
             </div>
         </div>
 
         <div class="w-100"></div>
-        <div class="col-12">
-            <label for="inputTelephone" class="form-label"><fmt:message key="sing_up.phone"/></label>
-        </div>
-        <div class="col-auto pt-1">
-    <span id="telHelp" class="form-text">
-        <jsp:text>+375</jsp:text>
-    </span>
-        </div>
-        <div class="col-3">
+        <div class="input-group w-25">
+            <label for="inputTelephone" class="form-label col-12"><fmt:message key="sing_up.phone"/></label>
+            <span class="input-group-text" id="telephone">+375</span>
             <input type="tel" class="form-control" id="inputTelephone" placeholder="XX-XXX-XX-XX" name="phone" value=""
-            pattern="\d{2}-?\d{3}-?\d{2}-?\d{2}" required>
+                   aria-describedby="telephone" pattern="\d{2}-?\d{3}-?\d{2}-?\d{2}" required>
             <div class="invalid-feedback">
                 <fmt:message key="sing_up.phone.invalid_message"/>
             </div>
         </div>
 
+<%--        <div class="w-100"></div>--%>
+<%--        <div class="col-12">--%>
+<%--            <label for="inputTelephone" class="form-label"><fmt:message key="sing_up.phone"/></label>--%>
+<%--        </div>--%>
+<%--        <div class="col-auto pt-1">--%>
+<%--            <span id="telHelp" class="form-text">--%>
+<%--                <jsp:text>+375</jsp:text>--%>
+<%--            </span>--%>
+<%--        </div>--%>
+<%--        <div class="col-3">--%>
+<%--            <input type="tel" class="form-control" id="inputTelephone" placeholder="XX-XXX-XX-XX" name="phone" value=""--%>
+<%--                   pattern="\d{2}-?\d{3}-?\d{2}-?\d{2}" required>--%>
+<%--            <div class="invalid-feedback">--%>
+<%--                <fmt:message key="sing_up.phone.invalid_message"/>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+
+        <div class="w-100"></div>
+        <div class="col-5">
+            <label for="inputImage" class="form-label">Выберите фото</label>
+            <div class="input-group mb-3" id="inputImage">
+                <input type="file" class="form-control" id="inputGroupFile02" name="image">
+                <label class="input-group-text" for="inputGroupFile02">Upload</label>
+            </div>
+        </div>
+
         <div class="w-100"></div>
         <div class="col-12">
-            <div class="position-absolute start-50">
+            <div class="position-absolute start-50 pb-5">
                 <button type="submit" class="btn btn-primary"><fmt:message key="login.sing_up"/></button>
             </div>
         </div>

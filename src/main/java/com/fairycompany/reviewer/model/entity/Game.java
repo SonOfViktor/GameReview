@@ -3,6 +3,7 @@ package com.fairycompany.reviewer.model.entity;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,20 +13,21 @@ public class Game extends Entity {
     private String publisher;
     private String developer;
     private LocalDate releaseDate;
-    private Set<Platform> platforms;
-    private Set<Genre> genres;
+    private EnumSet<Platform> platforms;
+    private EnumSet<Genre> genres;
     private String description;
-    private Blob image;
+    private String image;
     private List<String> screenshots;
     private String trailerUrl;
     private BigDecimal price;
 
     public enum Genre {
-        ACTION, SHOOTER, STRATEGY, PLATFORMER, FIGHTING, RACING, RPG, HORROR, SLASHER, MMO, ADVENTURE, QUEST
+        ACTION, SHOOTER, STRATEGY, PLATFORMER, FIGHTING, RACING, RPG, HORROR, SLASHER, MMO, ADVENTURE, QUEST,
+        STEALTH, TOP_DOWN, THIRD_PERSON, FIRST_PERSON, TWO_DIMENSIONAL, METROIDVANIA, SOULS_LIKE
     }
 
-    private Game(long gameId, String name, String publisher, String developer, LocalDate releaseDate, Set<Platform> platforms,
-                Set<Genre> genres, String description, Blob image, List<String> screenshots,
+    private Game(long gameId, String name, String publisher, String developer, LocalDate releaseDate, EnumSet<Platform> platforms,
+                EnumSet<Genre> genres, String description, String image, List<String> screenshots,
                 String trailerUrl, BigDecimal price) {
         this.gameId = gameId;
         this.name = name;
@@ -81,19 +83,19 @@ public class Game extends Entity {
         this.releaseDate = releaseDate;
     }
 
-    public Set<Platform> getPlatform() {
+    public EnumSet<Platform> getPlatform() {
         return platforms;
     }
 
-    public void setPlatform(Set<Platform> platform) {
+    public void setPlatform(EnumSet<Platform> platform) {
         this.platforms= platform;
     }
 
-    public Set<Genre> getGenres() {
+    public EnumSet<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(EnumSet<Genre> genres) {
         this.genres = genres;
     }
 
@@ -105,11 +107,11 @@ public class Game extends Entity {
         this.description = description;
     }
 
-    public Blob getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Blob image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -200,10 +202,10 @@ public class Game extends Entity {
         private String publisher;
         private String developer;
         private LocalDate releaseDate;
-        private Set<Platform> platforms;
-        private Set<Genre> genres;
+        private EnumSet<Platform> platforms;
+        private EnumSet<Genre> genres;
         private String description;
-        private Blob image;
+        private String image;
         private List<String> screenshots;
         private String trailerUrl;
         private BigDecimal price;
@@ -233,12 +235,12 @@ public class Game extends Entity {
             return this;
         }
 
-        public GameBuilder setPlatforms(Set<Platform> platforms) {
+        public GameBuilder setPlatforms(EnumSet<Platform> platforms) {
             this.platforms = platforms;
             return this;
         }
 
-        public GameBuilder setGenres(Set<Genre> genres) {
+        public GameBuilder setGenres(EnumSet<Genre> genres) {
             this.genres = genres;
             return this;
         }
@@ -248,7 +250,7 @@ public class Game extends Entity {
             return this;
         }
 
-        public GameBuilder setImage(Blob image) {
+        public GameBuilder setImage(String image) {
             this.image = image;
             return this;
         }

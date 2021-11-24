@@ -4,6 +4,7 @@ import com.fairycompany.reviewer.controller.command.*;
 import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.entity.User;
+import com.fairycompany.reviewer.model.service.UserService;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -23,21 +24,20 @@ public class LoginCommand implements Command {
     public Router execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
 
-        Router router = new Router(PagePath.MAIN_PAGE);
+        Router router = new Router(PagePath.MAIN_PAGE_REDIRECT);
         router.setType(Router.RouterType.REDIRECT);
 
         SessionRequestContent content = new SessionRequestContent();
         content.extractValues(request);
 
 
-        UserServiceImpl service = UserServiceImpl.getInstance();
+        UserService service = UserServiceImpl.getInstance();
         try {
             Optional<User> user = service.authenticate(content);
             if (user.isPresent()) {
                 session.setAttribute(SessionAttribute.USER, user.get());
             } else {
-                session.setAttribute(SessionAttribute.LOGIN_MESSAGE_ERROR, true);
-//                int i = 10 / 0;       //todo delete
+                session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.LOGIN_ERROR);
             }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Some Error when authentication ", e);

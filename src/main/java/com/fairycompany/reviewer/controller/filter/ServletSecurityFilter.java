@@ -30,11 +30,7 @@ public class ServletSecurityFilter implements Filter {
         String command = request.getParameter(RequestParameter.COMMAND);
         CommandType type = CommandType.valueOf(command.toUpperCase());
         User user = (User) session.getAttribute(SessionAttribute.USER);
-        User.Role role = User.Role.GUEST;
-
-        if (user != null) {
-            role = user.getUserRole();
-        }
+        User.Role role = (user != null) ? user.getUserRole() : User.Role.GUEST;
 
         if (!type.isValidRole(role)) {
             httpResponse.sendError(PagePath.ACCESS_ERROR_PAGE_403);
