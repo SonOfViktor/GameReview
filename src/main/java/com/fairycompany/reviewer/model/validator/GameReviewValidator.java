@@ -3,7 +3,7 @@ package com.fairycompany.reviewer.model.validator;
 import java.util.List;
 
 public class GameReviewValidator {
-    private static final String TEXT_REVIEW_PATTERN = "[\\sА-Яа-яёЁ\\p{Graph}&&[^<>]]{10,1000}";
+    private static final String TEXT_REVIEW_PATTERN = "[\\sА-Яа-яёЁ\\p{Graph}&&[^<>]]{3,1000}";
     private static final String TWO_DIGIT_INT_PATTERN = "\\d{1,2}";
     private static final String ONE_HUNDRED = "100";
     private static final int MIN_RATING = 0;

@@ -87,6 +87,43 @@
         </div>
     </section>
 
+        <section>
+            <div class="container">
+            <nav aria-label="Navigation for countries">
+                <ul class="pagination  justify-content-center">
+                    <c:if test="${actual_page ne 1}">
+                        <li class="page-item">
+                            <a class="page-link" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=${actual_page-1}">
+                            Previous
+                        </a>
+                        </li>
+                    </c:if>
+
+                    <c:forEach begin="1" end="${page_amount}" var="i">
+                        <c:choose>
+                            <c:when test="${actual_page eq i}">
+                                <li class="page-item active"><a class="page-link">
+                                        ${i}</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link"
+                                                         href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=${i}">${i}</a>
+                                </li>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+
+                    <c:if test="${actual_page lt page_amount}">
+                        <li class="page-item"><a class="page-link"
+                                                 href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=${actual_page+1}">Next</a>
+                        </li>
+                    </c:if>
+                </ul>
+            </nav>
+            </div>
+        </section>
+
         <script src="js/validation.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
     </body>

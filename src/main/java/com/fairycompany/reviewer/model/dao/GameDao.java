@@ -10,7 +10,9 @@ import java.util.Optional;
 
 public interface GameDao extends BaseDao<Game> {
 
-    List<Map<String, Object>> findAllGamesWithRating() throws DaoException;
+    List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException;
+
+    long findTotalGameAmount() throws DaoException;
 
     Optional<Game> findGameByName(String name) throws DaoException;
 

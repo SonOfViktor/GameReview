@@ -6,6 +6,7 @@
     <title>Index Page</title>
 </head>
 <body>
-    <c:redirect url="/controller?command=to_main_page"/>
+    <c:set var="row_amount" value="5" scope="session"/>
+    <c:redirect url="/controller?command=to_main_page&actual_page=1"/>
 </body>
 </html>

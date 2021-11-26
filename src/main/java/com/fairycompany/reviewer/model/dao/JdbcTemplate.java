@@ -205,8 +205,8 @@ public class JdbcTemplate<T extends Entity> {
         return generatedId;
     }
 
-    public long executeCountRows(String sqlQuery, Object... parameters) throws DaoException {
-        long rowsCount = 0;
+    public long executeSelectCalculation(String sqlQuery, Object... parameters) throws DaoException {
+        long totalValue = 0;
 
         Connection connection = transactionManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
@@ -214,16 +214,15 @@ public class JdbcTemplate<T extends Entity> {
 
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.isBeforeFirst()) {
-                resultSet.next();
-                rowsCount = resultSet.getLong(COUNT_LINES_PARAMETER);
+            if (resultSet.next()) {
+                totalValue = resultSet.getLong(ColumnName.TOTAL_VALUE);
             }
         } catch (SQLException e) {
-            logger.log(Level.ERROR, "Error...Message: {}", e.getMessage());
-            throw new DaoException(e);
+            logger.log(Level.ERROR, "Error when finding value. {}", e.getMessage());
+            throw new DaoException("Error when finding value.", e);
         }
 
-        return rowsCount;
+        return totalValue;
     }
 
     public void insertBatch(String sql, List<Object[]> batchArguments) throws DaoException {

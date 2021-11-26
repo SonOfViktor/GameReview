@@ -35,7 +35,11 @@ public class GameDaoImpl implements GameDao {
             JOIN games_genres ON games_genres.game_id = games.game_id
             JOIN genres ON games_genres.genre_id = genres.genre_id
             GROUP BY games_genres.game_id
-            ORDER BY name
+            ORDER BY name LIMIT ?, ?
+            """;
+
+    private static final String FIND_TOTAL_GAME_AMOUNT = """
+            SELECT COUNT(*) AS total_value FROM game_rating.games
             """;
 
     private static final String FIND_ALL_SQL = """  
@@ -113,10 +117,18 @@ public class GameDaoImpl implements GameDao {
 //    }
 
     @Override
-    public List<Map<String, Object>> findAllGamesWithRating() throws DaoException {
+    public List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_ALL_GAMES_WITH_RATING, columnNames);
+        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_ALL_GAMES_WITH_RATING, columnNames, skippedRows, rowAmount);
         return games;
+    }
+
+    @Override
+    public long findTotalGameAmount() throws DaoException {
+        long totalGameAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_AMOUNT);
+        logger.log(Level.DEBUG, "Total game amount is {}", totalGameAmount);
+
+        return totalGameAmount;
     }
 
     @Override

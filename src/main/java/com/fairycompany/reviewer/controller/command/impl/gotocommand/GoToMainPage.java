@@ -21,7 +21,10 @@ public class GoToMainPage implements Command {
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
-        session.setAttribute(SessionAttribute.CURRENT_PAGE, PagePath.MAIN_PAGE_REDIRECT);
+        String mainPageRedirect = new StringBuilder(PagePath.MAIN_PAGE_REDIRECT)
+                .deleteCharAt(PagePath.MAIN_PAGE_REDIRECT.length()-1)
+                .append(request.getParameter(RequestParameter.ACTUAL_PAGE)).toString();
+        session.setAttribute(SessionAttribute.CURRENT_PAGE, mainPageRedirect);       // todo возможно это нахер не упёрлось
         Router router = new Router(PagePath.MAIN_PAGE);
 
         SessionRequestContent content = new SessionRequestContent();
@@ -31,8 +34,8 @@ public class GoToMainPage implements Command {
 
         try {
             List<Map<String, Object>> games = gameService.findAllGamesForMainPage(content);
-            session.setAttribute(SessionAttribute.GAME_LIST, games);
             content.insertValues(request);
+            session.setAttribute(SessionAttribute.GAME_LIST, games);
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Finding games is failed. {}", e.getMessage());
             throw new CommandException("Finding games is failed", e);

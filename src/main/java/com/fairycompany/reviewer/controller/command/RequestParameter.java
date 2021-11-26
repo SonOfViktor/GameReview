@@ -31,6 +31,9 @@ public final class RequestParameter {
     public static final String REVIEW = "review";
     public static final String SWITCH = "switch";
 
+    public static final String ROW_AMOUNT = "row_amount";
+    public static final String ACTUAL_PAGE = "actual_page";
+
 
 
     private RequestParameter() {

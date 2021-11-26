@@ -13,7 +13,7 @@ public class SessionRequestContent {
     private HashMap<String, Object> sessionAttributes;
 
     public void extractValues(HttpServletRequest request) {
-        requestParameters = request.getParameterMap();
+        requestParameters = request.getParameterMap();          // todo
         requestAttributes = extractRequestAttribute(request);
         sessionAttributes = extractSessionAttribute(request);
     }

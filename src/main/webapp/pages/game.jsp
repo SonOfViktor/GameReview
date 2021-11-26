@@ -85,7 +85,7 @@
                     </c:choose>
                 </div>
             </c:if>
-            <form id="form_review"  novalidate method="post" action="controller">
+            <form id="form_review" class="needs-validation" novalidate method="post" action="controller">
                 <fieldset <c:if test="${empty user}"> disabled </c:if>>
                     <legend class="px-3"><strong><fmt:message key="your_game_rating"/></strong></legend>
                     <div>
@@ -98,7 +98,7 @@
                             </c:otherwise>
                         </c:choose>
                         <input type="hidden" name="command" value="create_update_game_rating">
-                        <input type="hidden" name="game_id" value="${game.gameId}">
+                        <input type="hidden" name="game_id" value="${param.game_id}">
                     </div>
                     <div class="row">
                         <div class="col-6">

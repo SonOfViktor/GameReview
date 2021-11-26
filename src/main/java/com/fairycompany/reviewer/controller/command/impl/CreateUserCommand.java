@@ -21,6 +21,7 @@ public class CreateUserCommand implements Command {
 
         String currentPage = (String)content.getSessionAttribute(SessionAttribute.CURRENT_PAGE);
         Router router = new Router(currentPage);
+        router.setType(Router.RouterType.REDIRECT);             // todo to check
 
         String sourceLink = String.format(SOURCE_LINK_FORMAT, request.getScheme(), request.getServerName(),
                 request.getServerPort(), request.getContextPath());
@@ -31,7 +32,6 @@ public class CreateUserCommand implements Command {
         try {
             if (userService.addUser(content)) {
                 router.setPage(PagePath.MAIN_PAGE_REDIRECT);
-                router.setType(Router.RouterType.REDIRECT);
             } else {
                 content.insertValues(request);
             }

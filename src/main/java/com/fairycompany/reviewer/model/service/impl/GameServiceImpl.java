@@ -1,6 +1,7 @@
 package com.fairycompany.reviewer.model.service.impl;
 
 import com.fairycompany.reviewer.controller.command.RequestAttribute;
+import com.fairycompany.reviewer.controller.command.RequestParameter;
 import com.fairycompany.reviewer.controller.command.SessionRequestContent;
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.exception.ServiceException;
@@ -40,12 +41,22 @@ public class GameServiceImpl implements GameService {
     }
 
     public List<Map<String, Object>> findAllGamesForMainPage(SessionRequestContent content) throws ServiceException {
+        int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+        int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
+        logger.log(Level.DEBUG, "Actual page is {}", actualPage);
 
         List<Map<String, Object>> games;
         try {
             transactionManager.initTransaction();
 
-            games = gameDao.findAllGamesWithRating();
+            long skippedGames = (long) actualPage * rowAmount - rowAmount;
+            games = gameDao.findAllGamesWithRating(skippedGames, rowAmount);
+
+            long totalGameAmount = gameDao.findTotalGameAmount();
+            int pageAmount = (int) Math.ceil((double) totalGameAmount / rowAmount);
+
+            content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
+            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);   // todo одинаковое наименование с параметром
 
 //            for (Object platforms: games.get(ColumnName.PLATFORM)) {
 //                System.out.println(platforms);

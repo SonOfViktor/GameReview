@@ -15,6 +15,8 @@ public final class RequestAttribute {
     public static final String USER_TOTAL_RATING = "user_total_rating";
     public static final String USER_AMOUNT = "user_amount";
     public static final String REVIEWS_FOR_GAME = "reviews_for_game";
+    public static final String PAGE_AMOUNT = "page_amount";
+    public static final String ACTUAL_PAGE = "actual_page";
 
 
     public static final String REQUEST_MESSAGE = "message";

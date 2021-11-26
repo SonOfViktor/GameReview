@@ -19,6 +19,7 @@ public class LocalCommand implements Command {
         logger.log(Level.DEBUG, "Current page is " + currentPage);
 
         Router router = new Router(currentPage);
+        router.setType(Router.RouterType.REDIRECT);
 
         String currentLocale = (String) session.getAttribute(SessionAttribute.SESSION_LOCALE);
         String newLocale = request.getParameter(RequestParameter.LOCALE);
