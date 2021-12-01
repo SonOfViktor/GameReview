@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class GameValidator {
     private static final String STRING_FIELD_PATTERN = "[\\p{Alnum}][\\p{Alnum}\\s']{1,29}";
-    private static final String YOUTUBE_URL_PATTERN = "https://www\\.youtube\\.com/watch\\?v=[\\w_-]{10,20}";
+    private static final String YOUTUBE_URL_PATTERN = "https://www\\.youtube\\.com/embed/[\\w_-]{10,20}\\?&autoplay=1";
     private static final String DESCRIPTION_PATTERN = "[\\sА-Яа-яёЁ\\p{Graph}&&[^<>]]{10,1000}";
     private static final LocalDate LOW_LIMIT_DATE = LocalDate.of(2013, 11, 14);
     private static final BigDecimal MIN_PRICE = new BigDecimal("0.01");
@@ -35,7 +35,7 @@ public class GameValidator {
     }
 
     public boolean isCheckBoxDataValid(String[] data) {
-        return data.length > 0;
+        return data != null;
     }
 
     public boolean isYoutubeUrlValid(String ulr) {

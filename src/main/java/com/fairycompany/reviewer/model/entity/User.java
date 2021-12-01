@@ -131,8 +131,9 @@ public class User extends Entity{
         if (secondName != null ? !secondName.equals(user.secondName) : user.secondName != null) return false;
         if (birthday != null ? !birthday.equals(user.birthday) : user.birthday != null) return false;
         if (balance != null ? !balance.equals(user.balance) : user.balance != null) return false;
+        if (photo != null ? !photo.equals(user.photo) : user.photo != null) return false;
         if (userRole != user.userRole) return false;
-        return userStatus == user.userStatus;                   //todo add photo
+        return userStatus == user.userStatus;
     }
 
     @Override
@@ -143,6 +144,7 @@ public class User extends Entity{
         result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
         result = 31 * result + phone;
         result = 31 * result + (balance != null ? balance.hashCode() : 0);
+        result = 31 * result + (photo != null ? photo.hashCode() : 0);
         result = 31 * result + (userRole != null ? userRole.hashCode() : 0);
         result = 31 * result + (userStatus != null ? userStatus.hashCode() : 0);
         return result;
@@ -159,6 +161,7 @@ public class User extends Entity{
                 .append(", birthday = ").append(birthday)
                 .append(", phone = ").append(phone)
                 .append(", balance = ").append(balance)
+                .append(", photo = ").append(photo)
                 .append(", userRole = ").append(userRole)
                 .append(", userStatus = ").append(userStatus)
                 .append(" }");

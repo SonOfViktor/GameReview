@@ -46,6 +46,20 @@ public class GameRatingDaoImpl implements GameRatingDao {
             WHERE game_id = ? AND users.user_id <> ? AND TRIM(review) <> ''
             """;
 
+    private static final String COUNT_USER_GAME_RATING_AMOUNT_SQL = """
+            SELECT count(game_id) AS amount_game_rating, count(if(review <> '', 1, NULL)) AS amount_review,
+            	count(if(user_rating BETWEEN 0 AND 29, 1, NULL)) AS negative_amount,
+            	count(if(user_rating BETWEEN 30 AND 74, 1, NULL)) AS mixed_amount,
+            	count(if(user_rating BETWEEN 75 AND 100, 1, NULL)) AS positive_amount
+            FROM total_user_rating
+            WHERE user_id = ?
+            """;
+
+    private static final String FIND_USER_MIN_MAX_GAME_RATING_SQL = """
+            SELECT max_game_name, max_rating, min_game_name, min_rating FROM min_max_game_rating
+            WHERE user_id = ? LIMIT 1
+            """;
+
     private static final String ADD_NEW_GAME_RATING_SQL = """
             INSERT INTO game_rating (user_id, game_id, gameplay_rating, graphics_rating, sound_rating, plot_rating, review)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -104,12 +118,30 @@ public class GameRatingDaoImpl implements GameRatingDao {
     }
 
     @Override
+    public List<Map<String, Object>> findRatingAmount(long userId) throws DaoException {
+        Set<String> columnNames = Set.of(AMOUNT_GAME_RATING, AMOUNT_REVIEW, POSITIVE_AMOUNT, MIXED_AMOUNT, NEGATIVE_AMOUNT);
+        List<Map<String, Object>> ratingAmount = jdbcTemplate.executeSelectSomeFields(COUNT_USER_GAME_RATING_AMOUNT_SQL,
+                columnNames, userId);
+
+        return ratingAmount;
+    }
+
+    @Override
+    public List<Map<String, Object>> findMinMaxUserRating(long userId) throws DaoException {
+        Set<String> columnNames = Set.of(MAX_GAME_NAME, MAX_RATING, MIN_GAME_NAME, MIN_RATING);
+        List<Map<String, Object>> minMaxRating = jdbcTemplate.executeSelectSomeFields(FIND_USER_MIN_MAX_GAME_RATING_SQL,
+                columnNames, userId);
+
+        return minMaxRating;
+    }
+
+    @Override
     public boolean delete(long id) throws DaoException {        //todo
         return false;
     }
 
     @Override
-    public long add(GameRating gameRating) throws DaoException {        //todo
+    public long add(GameRating gameRating) throws DaoException {
         long gameRatingId = jdbcTemplate.executeInsertQuery(ADD_NEW_GAME_RATING_SQL,
                 gameRating.getUserId(),
                 gameRating.getGameId(),

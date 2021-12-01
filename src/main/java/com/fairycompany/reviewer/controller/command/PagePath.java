@@ -11,6 +11,11 @@ public class PagePath {
     public static final String CREATE_GAME_REDIRECT = "/controller?command=to_add_game_page";
     public static final String GAME_PAGE = "pages/game.jsp";
     public static final String GAME_PAGE_REDIRECT = "/controller?command=to_game_page";
+    public static final String USER_PAGE = "pages/user.jsp";
+    public static final String USER_PAGE_REDIRECT = "/controller?command=to_user_page";
+    public static final String USER_EDITOR_PAGE = "pages/user_editor.jsp";
+    public static final String USER_EDITOR_REDIRECT = "/controller?command=to_user_editor_page";
+
     public static final String EXCEPTION_ERROR = "pages/errors/checked_exception.jsp";
     public static final String EXCEPTION_ERROR_REDIRECT = "/controller?command=to_exception_page";
     public static final String ERROR_404 = "pages/errors/error_404.jsp";

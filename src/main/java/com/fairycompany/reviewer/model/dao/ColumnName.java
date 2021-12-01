@@ -76,6 +76,15 @@ public final class ColumnName {
     public static final String PLOT_RATING = "plot_rating";
     public static final String REVIEW = "review";
     public static final String USER_AMOUNT = "user_amount";
+    public static final String AMOUNT_GAME_RATING = "amount_game_rating";
+    public static final String AMOUNT_REVIEW = "amount_review";
+    public static final String POSITIVE_AMOUNT = "positive_amount";
+    public static final String MIXED_AMOUNT = "mixed_amount";
+    public static final String NEGATIVE_AMOUNT = "negative_amount";
+    public static final String MAX_GAME_NAME = "max_game_name";
+    public static final String MAX_RATING = "max_rating";
+    public static final String MIN_GAME_NAME = "min_game_name";
+    public static final String MIN_RATING = "min_rating";
 
     // likes
     public static final String LIKES_USER_ID = "user_id";

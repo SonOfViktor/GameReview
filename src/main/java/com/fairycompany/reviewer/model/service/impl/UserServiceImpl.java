@@ -1,9 +1,6 @@
 package com.fairycompany.reviewer.model.service.impl;
 
-import com.fairycompany.reviewer.controller.command.LocaleMessageKey;
-import com.fairycompany.reviewer.controller.command.RequestAttribute;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
-import com.fairycompany.reviewer.controller.command.SessionRequestContent;
+import com.fairycompany.reviewer.controller.command.*;
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.dao.TransactionManager;
@@ -12,6 +9,7 @@ import com.fairycompany.reviewer.model.dao.impl.UserDaoImpl;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.entity.UserToken;
 import com.fairycompany.reviewer.model.service.UserService;
+import com.fairycompany.reviewer.model.service.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.UserValidator;
 import com.fairycompany.reviewer.util.EmailSender;
 import com.fairycompany.reviewer.util.HashGenerator;
@@ -31,9 +29,10 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
 
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger();
+    private static final String HYPHEN = "-";
+    private static final String EMPTY_LINE = "";
     private static final String RELATIVE_IMAGE_PATH = "media" + File.separator + "people" + File.separator;
-    private static final String DEFAULT_IMAGE_PATH = "media" + File.separator + "people" + File.separator + "default.jpg";
-    private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DEFAULT_FILE = "pic\\default_user.jpg";
     private static final String REGISTRATION_SUBJECT_EMAIL = "Registration";
     private static final String LETTER = """
                 Greeting %s. Thanks for registering with GameReview!            
@@ -83,6 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean addUser(SessionRequestContent content) throws ServiceException {
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         boolean isUserAdded = false;
 
         String login = content.getRequestParameter(RequestParameter.LOGIN);
@@ -90,8 +90,9 @@ public class UserServiceImpl implements UserService {
         String surname = content.getRequestParameter(RequestParameter.SURNAME);
         String password = content.getRequestParameter(RequestParameter.PASSWORD);
         String passwordChecker = content.getRequestParameter(RequestParameter.PASSWORD_CHECK);
-        LocalDate birthday = getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
+        LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
         String phone = content.getRequestParameter(RequestParameter.PHONE);
+        String uploadFileDir = (String) content.getRequestAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY);
         Part part = (Part) content.getRequestAttribute(RequestAttribute.PART);
 
         UserValidator validator = UserValidator.getInstance();
@@ -101,19 +102,19 @@ public class UserServiceImpl implements UserService {
                 validator.isNameValid(name) &&
                 validator.isNameValid(surname) &&
                 validator.isPhoneValid(phone))) {
-            content.addRequestAttribute(RequestAttribute.USER_DATA_MESSAGE, LocaleMessageKey.USER_DATA_ERROR); //todo переделать под одну переменную
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
         } else if (!validator.isDateValid(birthday)) {
-            content.addRequestAttribute(RequestAttribute.BIRTHDAY_MESSAGE, LocaleMessageKey.BIRTHDAY_ERROR);
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
         } else if (!validator.passwordCheck(password, passwordChecker)) {
-            content.addRequestAttribute(RequestAttribute.PASSWORD_MESSAGE, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);
         } else {
-            String photoFile = (part != null) ? saveImage(content, part) : DEFAULT_IMAGE_PATH;      // todo util and check
+            String photoFile = serviceUtil.saveImage(uploadFileDir, RELATIVE_IMAGE_PATH, part, login, DEFAULT_FILE);
             User user = new User.UserBuilder()
                     .setLogin(login)
                     .setFirstName(name)
                     .setSecondName(surname)
                     .setBirthday(birthday)
-                    .setPhone(Integer.parseInt(phone))
+                    .setPhone(getPhoneFromString(phone))
                     .setBalance(BigDecimal.ZERO)
                     .setPhoto(photoFile)
                     .setUserRole(User.Role.USER)
@@ -146,6 +147,86 @@ public class UserServiceImpl implements UserService {
         return isUserAdded;
     }
 
+    @Override
+    public boolean updateUser(SessionRequestContent content) throws ServiceException {
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
+        boolean isUserUpdated = false;
+
+        User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+
+        String login = user.getLogin();
+        String name = content.getRequestParameter(RequestParameter.USER_NAME);
+        String surname = content.getRequestParameter(RequestParameter.SURNAME);
+        LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
+        String phone = content.getRequestParameter(RequestParameter.PHONE);
+
+        UserValidator validator = UserValidator.getInstance();
+
+        if (!(validator.isNameValid(name) && validator.isNameValid(surname) && validator.isPhoneValid(phone))) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
+        } else if (!validator.isDateValid(birthday)) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
+        } else {
+            try {
+                transactionManager.initTransaction();
+
+                user.setFirstName(name);
+                user.setSecondName(surname);
+                user.setBirthday(birthday);
+                user.setPhone(getPhoneFromString(phone));               //todo спросить про Cloneable и что делать с его исключением
+
+                userDao.update(user);
+
+                transactionManager.commit();
+
+                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.UPDATE_USER_SUCCESS);
+                isUserUpdated = true;
+            } catch (DaoException e) {
+                transactionManager.rollback();
+                logger.log(Level.ERROR, "Error when updating user with login {}, {}", login, e.getMessage());
+                throw new ServiceException("Error when updating user with login " + login, e);
+            } finally {
+                transactionManager.endTransaction();
+            }
+        }
+
+        return isUserUpdated;
+    }
+
+    @Override
+    public boolean updatePassword(SessionRequestContent content) throws ServiceException {
+        boolean isPasswordUpdated = false;
+        User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        long userId = user.getUserId();
+
+        String password = content.getRequestParameter(PASSWORD);
+        String passwordChecker = content.getRequestParameter(PASSWORD_CHECK);
+        try {
+            if (validator.isPasswordValid(password) && validator.passwordCheck(password, passwordChecker)) {
+                String hashPassword = HashGenerator.hashPassword(password);
+
+                transactionManager.initTransaction();
+                userDao.updatePassword(userId, hashPassword);
+                transactionManager.commit();
+
+                isPasswordUpdated = true;
+            }
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when updating password, {}", e.getMessage());
+            throw new ServiceException("Error when updating password", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return isPasswordUpdated;
+    }
+
+    @Override
+    public boolean updatePhoto(SessionRequestContent content) throws ServiceException {
+        return false;
+    }
+
     public boolean finishRegistration(SessionRequestContent content) throws ServiceException {
         boolean isRegistered = false;
 
@@ -173,38 +254,36 @@ public class UserServiceImpl implements UserService {
         return isRegistered;
     }
 
-    private String saveImage(SessionRequestContent content, Part part) {
-        String uploadFileDir = content.getRequestAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY) + RELATIVE_IMAGE_PATH;
-        logger.log(Level.DEBUG, "UploadFileDir is {}", uploadFileDir);
-//        File fileSaveDir = new File(uploadFileDir);
-//        if (!fileSaveDir.exists()) {
-//            fileSaveDir.mkdirs();
+//    private String saveImage(SessionRequestContent content, Part part) {
+////        String uploadFileDir = content.getRequestAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY) + RELATIVE_IMAGE_PATH;
+////        logger.log(Level.DEBUG, "UploadFileDir is {}", uploadFileDir);
+////
+////        String generatedFileName = null;
+////        try {
+////            String submittedFileName = part.getSubmittedFileName();
+////            String fileExtension = submittedFileName.substring(submittedFileName.lastIndexOf("."));
+////            generatedFileName = content.getRequestParameter(LOGIN) + fileExtension;
+////            String imagePath = uploadFileDir + File.separator + generatedFileName;
+////            part.write(imagePath);
+////            logger.log(Level.DEBUG, "Image path is {}", imagePath);
+////        } catch (IOException e) {
+////            logger.log(Level.ERROR, "Failed to upload file.", e);
+////        }
+////        return RELATIVE_IMAGE_PATH + generatedFileName;
+////    }
+//
+
+//    private LocalDate getDateFromString(String stringDate) {                //todo проверить работает ли утилита и удалить этот код
+//        LocalDate date = LocalDate.of(1, 1,1);
+//        if (stringDate != null && !stringDate.isEmpty()) {
+//            date = LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(DATE_PATTERN));
 //        }
+//        logger.log(Level.DEBUG, "Date is {}", date);
+//        return date;
+//    }
 
-        String generatedFileName = null;
-        try {
-            String submittedFileName = part.getSubmittedFileName();
-            String fileExtension = submittedFileName.substring(submittedFileName.lastIndexOf("."));
-            generatedFileName = content.getRequestParameter(LOGIN) + fileExtension;
-            String imagePath = uploadFileDir + File.separator + generatedFileName;
-            part.write(imagePath);
-//            Path imagePath = new File(uploadFileDir + File.separator + generatedFileName).toPath();       // todo delete
-            logger.log(Level.DEBUG, "Image path is {}", imagePath);
-//            Files.copy(inputStream, imagePath, StandardCopyOption.REPLACE_EXISTING);                      //todo delete
-        } catch (IOException e) {
-            logger.log(Level.ERROR, "Failed to upload file.", e);
-//            requestContent.addSessionAttribute(SessionAttribute.ERROR_KEY, BundleKey.INVALID_UPLOAD_FILE);
-        }
-        return RELATIVE_IMAGE_PATH + generatedFileName;
-    }
-
-    private LocalDate getDateFromString(String stringDate) {                //todo make util
-        LocalDate date = LocalDate.of(1, 1,1);
-        if (stringDate != null && !stringDate.isEmpty()) {
-            date = LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(DATE_PATTERN));
-        }
-        logger.log(Level.DEBUG, "Date is {}", date);
-        return date;
+    private int getPhoneFromString(String phone) {
+        return Integer.parseInt(phone.replace(HYPHEN, EMPTY_LINE));
     }
 
     private boolean sendRegisterEmail(SessionRequestContent content, long tokenId, String token) {

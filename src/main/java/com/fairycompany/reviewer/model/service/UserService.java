@@ -11,5 +11,11 @@ public interface UserService {
 
     boolean addUser(SessionRequestContent content) throws ServiceException;
 
+    boolean updateUser(SessionRequestContent content) throws ServiceException;
+
+    boolean updatePassword(SessionRequestContent content) throws ServiceException;
+
+    boolean updatePhoto(SessionRequestContent content) throws ServiceException;
+
     boolean finishRegistration(SessionRequestContent content) throws ServiceException;
 }

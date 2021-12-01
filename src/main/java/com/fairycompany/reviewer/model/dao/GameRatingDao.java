@@ -13,4 +13,8 @@ public interface GameRatingDao extends BaseDao<GameRating> {
     List<Map<String, Object>> findUserAmount(long gameId) throws DaoException;
 
     List<Map<String, Object>> findReviewsForGame(long gameId, long userId) throws DaoException;
+
+    List<Map<String, Object>> findRatingAmount(long userId) throws DaoException;
+
+    List<Map<String, Object>> findMinMaxUserRating(long userId) throws DaoException;
 }

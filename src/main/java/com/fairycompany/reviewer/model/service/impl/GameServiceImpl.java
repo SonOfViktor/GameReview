@@ -28,6 +28,7 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
 
 public class GameServiceImpl implements GameService {
     private static final String RELATIVE_IMAGE_PATH = "media" + File.separator + "game" + File.separator;
+    private static final String DEFAULT_FILE = "pic\\default_game.jpg";
     private static final Logger logger = LogManager.getLogger();
     private GameDao gameDao = GameDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
@@ -56,19 +57,7 @@ public class GameServiceImpl implements GameService {
             int pageAmount = (int) Math.ceil((double) totalGameAmount / rowAmount);
 
             content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
-            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);   // todo одинаковое наименование с параметром
-
-//            for (Object platforms: games.get(ColumnName.PLATFORM)) {
-//                System.out.println(platforms);
-//            }
-
-//            List<EnumSet<Platform>> platforms = games.get(ColumnName.PLATFORM).stream()
-//                    .map(platform -> makeEnumSet(platform, Platform.class))
-//                    .toList();
-//            System.out.println(platforms);
-//            content.addRequestAttribute(RequestAttribute.PLATFORMS, platforms);
-
-//            content.addRequestAttribute(RequestAttribute.GAME_LIST, games);           // todo i need to think
+            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
         } catch (DaoException e) {
             transactionManager.rollback();
             logger.log(Level.ERROR, "Error when finding games, {}", e.getMessage());
@@ -105,7 +94,7 @@ public class GameServiceImpl implements GameService {
             validator.isCheckBoxDataValid(genres) && validator.isYoutubeUrlValid(youtubeUrl) &&
             validator.isDescriptionValid(description)) {
 
-            String image = serviceUtil.saveImage(imageUploadDirectory, part, RELATIVE_IMAGE_PATH, name);
+            String image = serviceUtil.saveImage(imageUploadDirectory, RELATIVE_IMAGE_PATH, part, name, DEFAULT_FILE);
 
             Game game = new Game.GameBuilder()
                     .setName(name)
@@ -129,6 +118,7 @@ public class GameServiceImpl implements GameService {
                 isGameAdded = true;
             } catch (DaoException e) {
                 transactionManager.rollback();
+                deleteFile(imageUploadDirectory + image);
                 logger.log(Level.ERROR, "Error when adding game {}, {}", name, e.getMessage());
                 throw new ServiceException("Error when adding game " + name, e);
             } finally {
@@ -142,6 +132,13 @@ public class GameServiceImpl implements GameService {
     private static <T extends Enum<T>> EnumSet<T> makeEnumSet(String[] array, Class<T> enumClass) {
         Set<T> set = Arrays.stream(array).map(s -> Enum.valueOf(enumClass, s.toUpperCase())).collect(Collectors.toSet());
         return EnumSet.copyOf(set);
+    }
+
+    private void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
 }

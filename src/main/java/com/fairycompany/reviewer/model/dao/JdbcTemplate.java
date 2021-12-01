@@ -46,7 +46,7 @@ public class JdbcTemplate<T extends Entity> {
         Optional<T> result = Optional.empty();
         List<T> list = executeSelectQuery(sqlQuery, parameters);
 
-        if (!list.isEmpty()) {                          // todo else log меня уже за это натягивали
+        if (!list.isEmpty()) {
             result = Optional.of(list.get(0));
         } else {
             logger.log(Level.WARN, "Element isn't found");
@@ -55,29 +55,9 @@ public class JdbcTemplate<T extends Entity> {
         return result;
     }
 
-//    public Map<T, Integer> executeSelectQueryForMap(String sqlQuery, String columnName, Object... parameters) throws DaoException {
-//        Map<T, Integer> map = new HashMap<>();
-//
-//        Connection connection = transactionManager.getConnection();
-//        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-//            setParametersInPreparedStatement(statement, parameters);
-//
-//            ResultSet resultSet = statement.executeQuery();
-//
-//            while (resultSet.next()) {
-//                T entity = resultSetHandler.resultToObject(resultSet);
-//                map.put(entity, resultSet.getInt(columnName));
-//            }
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Error when finding all elements. {}", e.getMessage());
-//            throw new DaoException(e);
-//        }
-//        return map;
-//    }
-
 //    public Map<String, List<Object>> executeSelectQueryFromTables(String sqlQuery, Set<String> columnNames,
 //                                                                  Object... parameters) throws DaoException {
-//        Map<String, List<Object>> map = new HashMap<>();
+//        Map<String, List<Object>> map = new HashMap<>();              todo delete :(
 //
 //        Connection connection = transactionManager.getConnection();
 //        try (PreparedStatement statement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -150,24 +130,6 @@ public class JdbcTemplate<T extends Entity> {
         }
         return extractedValues;
     }
-
-//    public int executeSelectQueryForInt(String sqlQuery, String columnName) throws DaoException {
-//        int i = 0;
-//
-//        Connection connection = transactionManager.getConnection();
-//        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-//            ResultSet resultSet = statement.executeQuery();
-//
-//            if (resultSet.next()) {
-//                i = resultSet.getInt(columnName);
-//            }
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Error when finding this element. {}", e.getMessage());
-//            throw new DaoException(e);
-//        }
-//
-//        return i;
-//    }
 
         public boolean executeUpdateDeleteFields(String sqlQuery, Object... parameters) throws DaoException {
         Connection connection = transactionManager.getConnection();

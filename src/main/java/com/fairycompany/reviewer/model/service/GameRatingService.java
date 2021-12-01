@@ -9,4 +9,6 @@ public interface GameRatingService {
 
     boolean addUpdateGameReview(SessionRequestContent content) throws ServiceException;
 
+    boolean findUserRatingAmount(SessionRequestContent content) throws ServiceException;
+
 }

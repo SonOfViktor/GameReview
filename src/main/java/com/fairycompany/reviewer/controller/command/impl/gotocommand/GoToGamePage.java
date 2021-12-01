@@ -19,12 +19,13 @@ import java.util.Map;
 
 public class GoToGamePage implements Command {
     private static final Logger logger = LogManager.getLogger();
+    private static final String AND_GAME_ID = "&game_id=";
 
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
-        session.setAttribute(SessionAttribute.CURRENT_PAGE, (PagePath.GAME_PAGE_REDIRECT + "&game_id=" +
-                request.getParameter(RequestParameter.GAME_ID)));       // todo поправить
+        session.setAttribute(SessionAttribute.CURRENT_PAGE, (PagePath.GAME_PAGE_REDIRECT + AND_GAME_ID +
+                request.getParameter(RequestParameter.GAME_ID)));
         Router router = new Router(PagePath.GAME_PAGE);
 
         SessionRequestContent content = new SessionRequestContent();
@@ -42,11 +43,10 @@ public class GoToGamePage implements Command {
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
 
         try {
-            User user = (User) session.getAttribute(SessionAttribute.USER);
-
-                GameRating rating = gameRatingService.findGameRating(content);
-                request.setAttribute(RequestAttribute.USER_RATING, rating);
-                content.insertValues(request);
+            User user = (User) session.getAttribute(SessionAttribute.USER);         //todo проверить нужна ли эта строчка
+            GameRating rating = gameRatingService.findGameRating(content);
+            request.setAttribute(RequestAttribute.USER_RATING, rating);
+            content.insertValues(request);
 
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Game page is not available. {}", e.getMessage());

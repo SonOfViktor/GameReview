@@ -1,8 +1,6 @@
 package com.fairycompany.reviewer.controller;
 
-import com.fairycompany.reviewer.controller.command.PagePath;
-import com.fairycompany.reviewer.controller.command.RequestAttribute;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
+import com.fairycompany.reviewer.controller.command.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,6 +19,7 @@ import java.io.IOException;
 public class ImageServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
     private static final String UPLOAD_DIR = "media";
+    private static final String CONTENT_TYPE = "content-type";
     private static final String IMAGE = "image";
 
     @Override
@@ -39,34 +38,31 @@ public class ImageServlet extends HttpServlet {
                 processPart(request, response, part);
             } catch (IOException | ServletException e) {
                 logger.log(Level.ERROR, "Failed to upload file.", e);
-//                request.setAttribute(RequestAttribute.ERROR_KEY, BundleKey.INVALID_UPLOAD_FILE);
-               request.getRequestDispatcher(PagePath.CREATE_USER).forward(request, response);
+                session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.UPLOAD_FILE_FAILED);
+                response.sendRedirect(request.getContextPath() + session.getAttribute(SessionAttribute.CURRENT_PAGE));
             }
         } else {
             logger.log(Level.WARN, "The user is trying to upload a file size that is too large");
-//            session.setAttribute(RequestAttribute.ERROR_KEY, BundleKey.BIG_FILE_SIZE);
-            response.sendRedirect(request.getContextPath() + PagePath.CREATE_USER_REDIRECT);
+            session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.FILE_BIG_SIZE);
+            response.sendRedirect(request.getContextPath() + session.getAttribute(SessionAttribute.CURRENT_PAGE));
         }
     }
 
     private void processPart(HttpServletRequest request, HttpServletResponse response, Part part)
             throws ServletException, IOException {
-        String fileName = part.getSubmittedFileName();
-        if (!fileName.isBlank()) {
-            String mimeType = getServletContext().getMimeType(fileName);
-            if (mimeType.startsWith("image/")) {
-                String uploadFileDirectory = request.getServletContext().getRealPath("");
-                request.setAttribute(RequestAttribute.PART, part);
-                request.setAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY, uploadFileDirectory);
-                request.getRequestDispatcher("/controller").forward(request, response);
-            } else {
-                logger.log(Level.WARN, "The user is trying to upload a wrong file type");
-//                HttpSession session = request.getSession();
-//                session.setAttribute(RequestAttribute.ERROR_KEY, BundleKey.INVALID_UPLOAD_FILE_TYPE);
-                response.sendRedirect(request.getContextPath() + PagePath.CREATE_USER_REDIRECT);
-            }
-        } else {                                                                            // todo это лишнее наверно
+        String mimeType = part.getHeader(CONTENT_TYPE);
+        long partSize = part.getSize();
+
+        if (part.getSize() == 0 || mimeType.startsWith("image/")) {
+            String uploadFileDirectory = request.getServletContext().getRealPath("");
+            request.setAttribute(RequestAttribute.PART, part);
+            request.setAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY, uploadFileDirectory);
             request.getRequestDispatcher("/controller").forward(request, response);
+        } else {
+            logger.log(Level.WARN, "The user tried to upload a file with a wrong type");
+            HttpSession session = request.getSession();
+            session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.INVALID_FILE_TYPE);
+            response.sendRedirect(request.getContextPath() + session.getAttribute(SessionAttribute.CURRENT_PAGE));
         }
     }
 

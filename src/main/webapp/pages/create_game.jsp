@@ -59,25 +59,25 @@
             <label for="inputPlatform" class="form-label"><fmt:message key="add_game_platform"/></label>
             <div id="inputPlatform">
                 <div class="form-check form-check-inline" >
-                    <input class="form-check-input" type="checkbox" name="platform" id="ps4" value="Playstation 4">
+                    <input class="form-check-input" type="checkbox" name="platform" id="ps4" value="playstation_4">
                     <label class="form-check-label" for="ps4">
                         PlayStation 4
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="platform" id="xboxOne" value="Xbox One">
+                    <input class="form-check-input" type="checkbox" name="platform" id="xboxOne" value="xbox_one">
                     <label class="form-check-label" for="xboxOne">
                         Xbox One
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="platform" id="nintendoSwitch" value="Nintendo Switch">
+                    <input class="form-check-input" type="checkbox" name="platform" id="nintendoSwitch" value="nintendo_switch">
                     <label class="form-check-label" for="nintendoSwitch">
                         Nintendo Switch
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="platform" id="pc" value="PC">
+                    <input class="form-check-input" type="checkbox" name="platform" id="pc" value="pc">
                     <label class="form-check-label" for="pc">
                         PC
                     </label>
@@ -185,7 +185,7 @@
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" name="genre" id="top_down" value="top_down">
                     <label class="form-check-label" for="top_down">
-                        Top_down
+                        Top Down
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
@@ -262,6 +262,7 @@
     </form>
 </div>
 
+<script src="js/reload.js"></script>
 <script src="js/validation.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

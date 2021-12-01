@@ -56,8 +56,7 @@ public class UserDaoImpl implements UserDao {
             """;
     private static final String UPDATE_USER_SQL = """
             UPDATE users
-            SET login = ?, first_name = ?, second_name = ?, birthday_date = ?, phone = ?, balance = ?, photo = ?,
-            role_id = ?, status_id = ?
+            SET first_name = ?, second_name = ?, birthday_date = ?, phone = ?
             WHERE user_id = ?
             """;
 
@@ -122,8 +121,8 @@ public class UserDaoImpl implements UserDao {
         return userId;
     }
 
-    public boolean updatePassword(User user, String password) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_PASSWORD_SQL, password, user.getUserId());
+    public boolean updatePassword(long userId, String password) throws DaoException {
+        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_PASSWORD_SQL, password, userId);
 
         return isUpdated;
     }
@@ -136,7 +135,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean update(User user) throws DaoException {
-        return false;
+        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_SQL,
+                user.getFirstName(),
+                user.getSecondName(),
+                user.getBirthday(),
+                user.getPhone(),
+                user.getUserId());
+        return true;
     }
 
 }

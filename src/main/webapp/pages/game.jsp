@@ -159,10 +159,10 @@
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <c:choose>
                                     <c:when test="${empty user_total_rating}">
-                                        <fmt:message key="game_rating_public_button"/>
+                                        <fmt:message key="public_button"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <fmt:message key="game_rating_update_button"/>
+                                        <fmt:message key="update_button"/>
                                     </c:otherwise>
                                 </c:choose>
                             </button>
@@ -205,10 +205,10 @@
                         <button type="submit" class="btn btn-primary btn-sm" form="form_review">
                             <c:choose>
                                 <c:when test="${empty user_total_rating}">
-                                    <fmt:message key="game_rating_public_button"/>
+                                    <fmt:message key="public_button"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <fmt:message key="game_rating_update_button"/>
+                                    <fmt:message key="update_button"/>
                                 </c:otherwise>
                             </c:choose>
                         </button>
@@ -230,6 +230,7 @@
 
 </div>
 </section>
+<script src="js/reload.js"></script>
 <script src="js/validation.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 </body>

@@ -83,6 +83,31 @@ public class GameRatingServiceImpl implements GameRatingService {
         return rating;
     }
 
+    public boolean findUserRatingAmount(SessionRequestContent content) throws ServiceException {
+        User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        long userId = user.getUserId();
+
+        try {
+            transactionManager.initTransaction();
+
+            List<Map<String, Object>> userRatingAmount = gameRatingDao.findRatingAmount(userId);
+            content.addRequestAttribute(RequestAttribute.USER_RATING_AMOUNT, userRatingAmount.get(0));
+
+            List<Map<String, Object>> minMaxUserRating = gameRatingDao.findMinMaxUserRating(userId);
+            if (!minMaxUserRating.isEmpty()) {
+                content.addRequestAttribute(RequestAttribute.MIN_MAX_USER_RATING, minMaxUserRating.get(0));
+            }
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when finding amount of rating of this user {}. {}", userId, e.getMessage());
+            throw new ServiceException("Error when finding amount of rating of this user " + userId, e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return true;
+    }
+
     public boolean addUpdateGameReview(SessionRequestContent content) throws ServiceException {
         boolean isGameReviewAdded = false;
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);

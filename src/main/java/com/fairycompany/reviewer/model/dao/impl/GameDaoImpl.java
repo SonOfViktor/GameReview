@@ -95,26 +95,8 @@ public class GameDaoImpl implements GameDao {
     public List<Game> findAll() throws DaoException {
         List<Game> games = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL);
 
-//        try (Connection connection = ConnectionPool.getInstance().getConnection();
-//             Statement statement = connection.createStatement();
-//             ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL)){
-//
-//            games = createGame(resultSet);
-//
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Error when finding all games. {}", e.getMessage());
-//            throw new DaoException("Error when finding all games", e);
-//        }
         return games;
     }
-
-//    @Override
-//    public Map<String, List<Object>> findAllGamesWithRating() throws DaoException {
-//        Set<String> columnNames = Set.of(NAME, PUBLISHER, RELEASE_DATE, DESCRIPTION, IMAGE, PRICE, PLATFORM, TOTAL_RATING);
-//        Map<String, List<Object>> games = jdbcTemplate.executeSelectQueryFromTables(FIND_ALL_GAMES_MAIN_PAGE_SQL, columnNames);
-//
-//        return games;
-//    }
 
     @Override
     public List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException {
@@ -134,22 +116,6 @@ public class GameDaoImpl implements GameDao {
     @Override
     public Optional<Game> findEntityById(long id) throws DaoException {
         Optional<Game> game = jdbcTemplate.executeSelectQueryForObject(FIND_BY_ID_SQL, id);
-//        try (Connection connection = ConnectionPool.getInstance().getConnection();
-//             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-//            statement.setLong(1, id);
-//            try (ResultSet resultSet = statement.executeQuery()) {
-//                List<Game> games = createGame(resultSet);
-//                if (!games.isEmpty()) {
-//                    game = Optional.of(games.get(0));
-//                }
-//                else {
-//                    logger.log(Level.WARN, "Game with Id {} isn't found", id);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Error when finding game with Id {}. {}", id, e.getMessage());
-//            throw new DaoException("Error when finding game with Id " + id, e);
-//        }
 
         return game;
     }
@@ -157,22 +123,6 @@ public class GameDaoImpl implements GameDao {
     @Override
     public Optional<Game> findGameByName(String name) throws DaoException {
         Optional<Game> game = jdbcTemplate.executeSelectQueryForObject(FIND_BY_NAME_SQL, name);
-//        try (Connection connection = ConnectionPool.getInstance().getConnection();
-//             PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME_SQL)) {
-//            statement.setString(1, name);
-//            try (ResultSet resultSet = statement.executeQuery()) {
-//                List<Game> games = createGame(resultSet);
-//                if (!games.isEmpty()) {
-//                    game = Optional.of(games.get(0));
-//                }
-//                else {
-//                    logger.log(Level.WARN, "Game with Id {} isn't found", name);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Error when finding game with Id {}. {}", name, e.getMessage());
-//            throw new DaoException("Error when finding game with Id " + name, e);
-//        }
 
         return game;
     }
@@ -214,90 +164,16 @@ public class GameDaoImpl implements GameDao {
         return false;
     }
 
-//    private List<Game> createGame(ResultSet gameResultSet) throws SQLException {
-//        List<Game> games = new ArrayList<>();
-//        while (gameResultSet.next()) {
-//            Game game = new Game.GameBuilder()
-//                    .setGameId(gameResultSet.getLong(GAME_ID))
-//                    .setName(gameResultSet.getString(NAME))
-//                    .setPublisher(gameResultSet.getString(PUBLISHER))
-//                    .setDeveloper(gameResultSet.getString(DEVELOPER))
-//                    .setReleaseDate(gameResultSet.getDate(RELEASE_DATE).toLocalDate())
-//                    .setDescription(gameResultSet.getString(DESCRIPTION))
-//                    .setImage(gameResultSet.getString(IMAGE))
-//                    .setPrice(gameResultSet.getBigDecimal(PRICE))
-//                    .setTrailerUrl(gameResultSet.getString(TRAILER_URL))
-//                    .setGenres(getGenre(gameResultSet.getLong(GAME_ID)))
-//                    .setPlatforms(makePlatformSet(gameResultSet))
-//                    .createGame();
-//            games.add(game);
-//        }
-//
-//        return games;
-//    }
-
-//    private EnumSet<Platform> makePlatformSet(ResultSet resultSet) throws SQLException {
-//        String[] strings = resultSet.getString(PLATFORM).split(COMMA_REGEX);
-//        EnumSet<Platform> platforms = EnumSet.copyOf(Arrays.stream(strings)
-//                .map(o -> Platform.valueOf(o.toUpperCase()))
-//                .collect(Collectors.toSet()));
-//
-//        return platforms;
-//    }
-
-    public EnumSet<Game.Genre> getGenre(long gameId) throws SQLException {
-        EnumSet<Game.Genre> genres = null;
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_ALL_GENRE_SQL)) {
-            statement.setLong(1, gameId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    genres.add(Game.Genre.valueOf(resultSet.getString(GENRE).toUpperCase()));
-                }
-            }
-        }
-        return genres;
-    }
-
-    // todo replace to BaseDao
-    private void rollback(Connection connection) {
-        try {
-            connection.rollback();
-            logger.log(Level.DEBUG, "Rollback executed");
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "Rollback didn't execute. {}", e.getMessage());
-            // todo DaoException?
-        }
-    }
-
-//    private long getGameIdFromDB(Game game, PreparedStatement statement) throws SQLException {
-//        statement.setString(1, game.getName());
-//        ResultSet resultSet = statement.executeQuery();
-//        long gameId = 0;
-//        if(resultSet.next()) {
-//            gameId = resultSet.getLong("game_id");
-//        }
-//        return gameId;
-//    }
-
-
     public boolean addGenres(long gameId, EnumSet<Game.Genre> set) throws DaoException {
         List<Object[]> batchArguments = new ArrayList<>();
-        set.forEach(item -> {
-            Object[] arguments = new Object[] {gameId, item.ordinal()};
+        set.forEach(genre -> {
+            Object[] arguments = new Object[] {gameId, genre.ordinal()};
             batchArguments.add(arguments);
         });
 
         jdbcTemplate.insertBatch(ADD_GAME_GENRE_SQL, batchArguments);
 
         return true;
-
-//        for (Game.Genre genre : set) {
-//            statement.setLong(1, gameId);
-//            statement.setInt(2, genre.ordinal());
-//            statement.addBatch();
-//        }
-//        statement.executeBatch();
     }
 
     private String stringFromSet(Set<Platform> platforms) {

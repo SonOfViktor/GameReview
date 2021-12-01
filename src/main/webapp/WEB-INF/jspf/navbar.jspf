@@ -6,13 +6,14 @@
 <fmt:setBundle basename="local.pagecontent"/>
 
 
-<nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
+<nav class="navbar navbar-light bg-light mb-4">
+    <div class="container-fluid py-2">
         <div class="col-2">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1">
                 <fmt:message key="main.title"/>
             </a>
         </div>
+
         <%--        <div class="collapse navbar-collapse" id="navbarSupportedContent">--%>
         <%--            <ul class="navbar-nav me-auto mb-2 mb-lg-0">--%>
         <%--                <li class="nav-item">--%>
@@ -45,14 +46,29 @@
         </div>
 
         <div class="col-1">
-            <a class="btn btn-info btn-sm"
-               href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
-                <fmt:message key="main.eng"/>
-            </a>
-            <a class="btn btn-info btn-sm"
-               href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
-                <fmt:message key="main.ru"/>
-            </a>
+            <c:choose>
+                <c:when test="${locale eq 'en_EN'}">
+                    <a class="btn btn-info btn-sm"
+                       href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
+                        <fmt:message key="main.ru"/>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <a class="btn btn-info btn-sm"
+                       href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
+                        <fmt:message key="main.eng"/>
+                    </a>
+                </c:otherwise>
+            </c:choose>
+
+<%--            <a class="btn btn-info btn-sm"--%>
+<%--               href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">--%>
+<%--                <fmt:message key="main.eng"/>--%>
+<%--            </a>--%>
+<%--            <a class="btn btn-info btn-sm"--%>
+<%--               href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">--%>
+<%--                <fmt:message key="main.ru"/>--%>
+<%--            </a>--%>
         </div>
 
         <c:choose>
@@ -66,17 +82,17 @@
 
             <c:otherwise>
                 <div class="col-1 d-flex justify-content-end">
-                    <img src="${user.photo}" class="rounded-circle" width="50" height="50">
+                    <a href="${pageContext.request.contextPath}/controller?command=to_user_page">
+                        <img src="${user.photo}" class="rounded-circle">
+                    </a>
                 </div>
 
                 <div class="col-1 d-flex justify-content-center">
                     <form method="get" action="controller">
                         <input type="hidden" name="command" value="logout"/>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">
-                                <fmt:message key="login.log_out"/>
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <fmt:message key="login.log_out"/>
+                        </button>
                     </form>
                 </div>
             </c:otherwise>

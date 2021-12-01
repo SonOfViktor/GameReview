@@ -24,7 +24,7 @@ public class GoToMainPage implements Command {
         String mainPageRedirect = new StringBuilder(PagePath.MAIN_PAGE_REDIRECT)
                 .deleteCharAt(PagePath.MAIN_PAGE_REDIRECT.length()-1)
                 .append(request.getParameter(RequestParameter.ACTUAL_PAGE)).toString();
-        session.setAttribute(SessionAttribute.CURRENT_PAGE, mainPageRedirect);       // todo возможно это нахер не упёрлось
+        session.setAttribute(SessionAttribute.CURRENT_PAGE, mainPageRedirect);       // todo возможно это не упёрлось
         Router router = new Router(PagePath.MAIN_PAGE);
 
         SessionRequestContent content = new SessionRequestContent();
