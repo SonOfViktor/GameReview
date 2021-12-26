@@ -28,7 +28,6 @@ public class ControllerServlet extends HttpServlet {
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stringCommand = request.getParameter(RequestParameter.COMMAND);
         Command command = CommandProvider.defineCommand(stringCommand).get();
-//        SessionRequestContent content = new SessionRequestContent();
 
         try {
             Router router = command.execute(request);

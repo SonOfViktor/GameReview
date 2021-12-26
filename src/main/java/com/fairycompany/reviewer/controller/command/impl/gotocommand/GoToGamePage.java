@@ -1,57 +1,44 @@
 package com.fairycompany.reviewer.controller.command.impl.gotocommand;
 
 import com.fairycompany.reviewer.controller.command.*;
+import com.fairycompany.reviewer.controller.command.impl.AbstractCommand;
 import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.GameRating;
-import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.GameRatingService;
+import com.fairycompany.reviewer.model.service.GameService;
 import com.fairycompany.reviewer.model.service.impl.GameRatingServiceImpl;
+import com.fairycompany.reviewer.model.service.impl.GameServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
-
-public class GoToGamePage implements Command {
-    private static final Logger logger = LogManager.getLogger();
-    private static final String AND_GAME_ID = "&game_id=";
+public class GoToGamePage extends AbstractCommand {
 
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionAttribute.CURRENT_PAGE, (PagePath.GAME_PAGE_REDIRECT + AND_GAME_ID +
-                request.getParameter(RequestParameter.GAME_ID)));
+        String gamePage = String.format(PagePath.GAME_PAGE_REDIRECT, request.getParameter(RequestParameter.GAME_ID),
+                request.getParameter(RequestParameter.ACTUAL_PAGE));
+
+        content.extractValues(request);
+        content.addSessionAttribute(SessionAttribute.CURRENT_PAGE, gamePage);
         Router router = new Router(PagePath.GAME_PAGE);
 
-        SessionRequestContent content = new SessionRequestContent();
-        content.extractValues(request);
+        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
 
-        long gameId = Long.parseLong(request.getParameter(RequestParameter.GAME_ID));
-        List<Map<String, Object>> gameList = (List<Map<String, Object>>)session.getAttribute(SessionAttribute.GAME_LIST);
-
-        Map<String, Object> game = gameList.stream()                            // todo util
-                .filter(t -> Game.class.cast(t.get("game")).getGameId() == gameId)
-                .findFirst()
-                .get();
-        request.setAttribute(RequestAttribute.GAME_MAP, game);
-
+        GameService gameService = GameServiceImpl.getInstance();
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
 
         try {
-            User user = (User) session.getAttribute(SessionAttribute.USER);         //todo проверить нужна ли эта строчка
+            Game game = gameService.findGame(gameId).get();
+            request.setAttribute(RequestAttribute.GAME, game);
             GameRating rating = gameRatingService.findGameRating(content);
             request.setAttribute(RequestAttribute.USER_RATING, rating);
-            content.insertValues(request);
-
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Game page is not available. {}", e.getMessage());
             throw new CommandException("Game page is not available.", e);
         }
+        content.insertValues(request);
 
         return router;
     }

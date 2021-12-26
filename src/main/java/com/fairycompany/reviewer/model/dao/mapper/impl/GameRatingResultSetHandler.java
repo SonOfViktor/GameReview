@@ -21,6 +21,7 @@ public class GameRatingResultSetHandler implements ResultSetHandler<GameRating> 
                 .setSoundRating(resultSet.getInt(SOUND_RATING))
                 .setPlotRating(resultSet.getInt(PLOT_RATING))
                 .setReview(resultSet.getString(REVIEW))
+                .setPublicationDate(resultSet.getTimestamp(PUBLICATION_DATE).toLocalDateTime())
                 .createGameRating();
         return rating;
     }

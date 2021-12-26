@@ -6,7 +6,6 @@ import com.fairycompany.reviewer.controller.command.SessionAttribute;
 import com.fairycompany.reviewer.controller.command.SessionRequestContent;
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.exception.ServiceException;
-import com.fairycompany.reviewer.model.dao.ColumnName;
 import com.fairycompany.reviewer.model.dao.GameRatingDao;
 import com.fairycompany.reviewer.model.dao.TransactionManager;
 import com.fairycompany.reviewer.model.dao.impl.GameRatingDaoImpl;
@@ -23,12 +22,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static com.fairycompany.reviewer.model.dao.ColumnName.*;
+import static com.fairycompany.reviewer.controller.command.RequestParameter.ACTUAL_PAGE;
+import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_AMOUNT;
 
 public class GameRatingServiceImpl implements GameRatingService {
     private static final Logger logger = LogManager.getLogger();
-    private static final int ZERO = 0;
-    private static final String EMPTY_LINE = "";
+//    private static final int ZERO = 0;
+//    private static final String EMPTY_LINE = "";
     private static final String CREATE = "create";
     private static final String UPDATE = "update";
     private GameRatingDao gameRatingDao = GameRatingDaoImpl.getInstance();
@@ -42,8 +42,8 @@ public class GameRatingServiceImpl implements GameRatingService {
         return instance;
     }
 
-    public GameRating findGameRating(SessionRequestContent content) throws ServiceException {           //todo ask question
-        GameRating rating = null;
+    public GameRating findGameRating(SessionRequestContent content) throws ServiceException {
+        GameRating rating = new GameRating();
         long userId = 0;
         long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
@@ -61,16 +61,25 @@ public class GameRatingServiceImpl implements GameRatingService {
 
                     int userRating = calculateUserRating(rating);
                     content.addRequestAttribute(RequestAttribute.USER_TOTAL_RATING, userRating);
-                } else {
-                    rating = makeDefaultGameRating(userId, gameId);
                 }
             }
 
-            Map<String, Object> userAmountMap = gameRatingDao.findUserAmount(gameId).get(0);
-            long userAmount = (!userAmountMap.containsValue(null)) ? (Long) userAmountMap.get(USER_AMOUNT) : 0;
+            Number totalGameRating = gameRatingDao.findTotalGameRating(gameId);
+            content.addRequestAttribute(RequestAttribute.TOTAL_GAME_RATING, totalGameRating);
+
+            long userAmount = gameRatingDao.findUserAmount(gameId);
             content.addRequestAttribute(RequestAttribute.USER_AMOUNT, userAmount);
 
-            List<Map<String, Object>> reviewsForGame = gameRatingDao.findReviewsForGame(gameId, userId);
+            int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+            int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
+            long skippedGames = (long) actualPage * rowAmount - rowAmount;
+            List<Map<String, Object>> reviewsForGame = gameRatingDao.findReviewsForGame(gameId, userId, skippedGames, rowAmount);
+
+            long totalGameRatingReview = gameRatingDao.findTotalGameRatingReview(gameId, userId);
+            int pageAmount = (int) Math.ceil((double) totalGameRatingReview / rowAmount);
+
+            content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
+            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
             content.addRequestAttribute(RequestAttribute.REVIEWS_FOR_GAME, reviewsForGame);
         } catch (DaoException e) {
             transactionManager.rollback();
@@ -98,7 +107,6 @@ public class GameRatingServiceImpl implements GameRatingService {
                 content.addRequestAttribute(RequestAttribute.MIN_MAX_USER_RATING, minMaxUserRating.get(0));
             }
         } catch (DaoException e) {
-            transactionManager.rollback();
             logger.log(Level.ERROR, "Error when finding amount of rating of this user {}. {}", userId, e.getMessage());
             throw new ServiceException("Error when finding amount of rating of this user " + userId, e);
         } finally {
@@ -118,7 +126,7 @@ public class GameRatingServiceImpl implements GameRatingService {
         String graphicsRating = content.getRequestParameter(RequestParameter.GRAPHICS_RATING);
         String soundRating = content.getRequestParameter(RequestParameter.SOUND_RATING);
         String plotRating = content.getRequestParameter(RequestParameter.PLOT_RATING);
-        String review = (String) content.getRequestParameter(RequestParameter.REVIEW);
+        String review = content.getRequestParameter(RequestParameter.REVIEW);
 
         review = (review == null || review.isBlank()) ? "" : review;
         List<String> allRatings = List.of(plotRating, graphicsRating, soundRating, gameplayRating);
@@ -160,18 +168,63 @@ public class GameRatingServiceImpl implements GameRatingService {
         return isGameReviewAdded;
     }
 
-    private GameRating makeDefaultGameRating(long userId, long gameId) {
-        GameRating defaultRating = new GameRating.GameRatingBuilder()
-                .setUserId(userId)
-                .setGameId(gameId)
-                .setGameplayRating(ZERO)
-                .setGraphicsRating(ZERO)
-                .setSoundRating(ZERO)
-                .setPlotRating(ZERO)
-                .setReview(EMPTY_LINE)
-                .createGameRating();
-        return defaultRating;
+    @Override
+    public boolean deleteUserRating(SessionRequestContent content) throws ServiceException {
+        User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        long userId = user.getUserId();
+        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+
+        try {
+            transactionManager.initTransaction();
+
+            gameRatingDao.deleteUserRating(userId, gameId);
+
+            transactionManager.commit();
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when deleting user's rating. {}", e.getMessage());
+            throw new ServiceException("Error when deleting user's rating", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return true;
     }
+
+    @Override
+    public boolean deleteUserReview(SessionRequestContent content) throws ServiceException {
+        long gameRatingId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_RATING_ID));
+
+        try {
+            transactionManager.initTransaction();
+
+            gameRatingDao.deleteUserReview(gameRatingId);
+
+            transactionManager.commit();
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when deleting user's comment. {}", e.getMessage());
+            throw new ServiceException("Error when deleting user's comment", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return true;
+    }
+
+//    private GameRating makeDefaultGameRating(long userId, long gameId) {
+//        GameRating defaultRating = new GameRating.GameRatingBuilder()
+//                .setUserId(userId)
+//                .setGameId(gameId)
+//                .setGameplayRating(ZERO)
+//                .setGraphicsRating(ZERO)
+//                .setSoundRating(ZERO)
+//                .setPlotRating(ZERO)
+//                .setReview(EMPTY_LINE)
+//                .setPublicationDate(null)
+//                .createGameRating();
+//        return defaultRating;
+//    }
 
     private int calculateUserRating(GameRating rating) {
         IntStream streamUserRating = IntStream.of(rating.getGameplayRating(), rating.getGraphicsRating(),

@@ -6,20 +6,28 @@
 
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <div class="col-9">
+        <div class="col-9 ps-4">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page">
+                <i class="bi bi-joystick"></i>
                 <fmt:message key="main.title"/>
+                <i class="bi bi-controller"></i>
             </a>
         </div>
         <div class="col-1">
-            <a class="btn btn-info btn-sm"
-               href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
-                <fmt:message key="main.eng"/>
-            </a>
-            <a class="btn btn-info btn-sm"
-               href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
-                <fmt:message key="main.ru"/>
-            </a>
+            <c:choose>
+                <c:when test="${locale eq 'en_EN'}">
+                    <a class="btn btn-info btn-sm"
+                       href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
+                        <fmt:message key="main.ru"/>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <a class="btn btn-info btn-sm"
+                       href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
+                        <fmt:message key="main.eng"/>
+                    </a>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </nav>

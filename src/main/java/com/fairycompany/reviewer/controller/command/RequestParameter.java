@@ -2,6 +2,9 @@ package com.fairycompany.reviewer.controller.command;
 
 public final class RequestParameter {
     public static final String COMMAND = "command";
+
+
+    public static final String USER_ID = "user_id";
     public static final String LOGIN = "login";
     public static final String PASSWORD = "password";
     public static final String LOCALE = "locale";
@@ -10,6 +13,9 @@ public final class RequestParameter {
     public static final String SURNAME = "surname";
     public static final String BIRTHDAY = "birthday";
     public static final String PHONE = "phone";
+    public static final String IMAGE = "image";
+    public static final String USER_ROLE = "role";
+    public static final String USER_STATUS = "status";
     public static final String REGISTER_CODE = "register_code";
     public static final String TOKEN_ID = "token_id";
 
@@ -24,6 +30,7 @@ public final class RequestParameter {
     public static final String YOUTUBE_URL = "trailer";
     public static final String GAME_DESCRIPTION = "game_description";
 
+    public static final String GAME_RATING_ID = "game_rating_id";
     public static final String GRAPHICS_RATING = "graphics";
     public static final String PLOT_RATING = "plot";
     public static final String GAMEPLAY_RATING = "gameplay";

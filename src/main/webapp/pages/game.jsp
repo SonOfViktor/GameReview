@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib prefix="s" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ctg" uri="/WEB-INF/tld/custom.tld" %>
 <fmt:setLocale value="${locale}" scope="session" />
 <fmt:setBundle basename="local.pagecontent"/>
 
@@ -13,14 +13,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/vk.css" rel="stylesheet">
     <link rel="stylesheet" href="css/gr.style.css">
 
-    <c:set var="game" value="${game_map.game}"/>
+
 
     <title>${game.name}</title>
 </head>
 <body>
+<header>
 <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+</header>
 
 <%@include file= "../WEB-INF/jspf/message.jspf" %>
 
@@ -45,7 +49,7 @@
 
     <div class="row">
         <div class="col-2">
-            <img src="${game.image}" alt="">
+            <img src="${game.image}" alt="" class="shadow bg-white rounded">
         </div>
 
         <div class="col-6">
@@ -156,16 +160,22 @@
                             </div>
                         </div>
                         <div class="col-6 align-self-center text-center">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <c:choose>
-                                    <c:when test="${empty user_total_rating}">
+                            <c:choose>
+                                <c:when test="${empty user_total_rating}">
+                                    <button type="submit" class="btn btn-primary btn-lg">
                                         <fmt:message key="public_button"/>
-                                    </c:when>
-                                    <c:otherwise>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <button type="submit" class="btn btn-primary btn-lg mb-3">
                                         <fmt:message key="update_button"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </button>
+                                    </button> </br>
+                                    <a class="btn btn-primary btn-lg" role="button"
+                                       href="${pageContext.request.contextPath}/controller?command=delete_rating&game_id=${game.gameId}">
+                                        <fmt:message key="delete_button"/>
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </fieldset>
@@ -195,11 +205,16 @@
         <div class="row mt-5 mb-5">
                 <fieldset <c:if test="${empty user}"> disabled </c:if>>
                     <div class="col-6">
-                        <label for="inputTextReview" class="form-label review_label">
-                            ${user.firstName} ${user.secondName}
-                        </label>
+                        <div class="row justify-content-between mb-0 review_label">
+                            <div class="col-6">
+                                ${user.firstName} ${user.secondName}
+                            </div>
+                            <div class="col-6 text-end">
+                                <ctg:show-date/>
+                            </div>
+                        </div>
                         <textarea form="form_review" class="form-control overflow-auto" id="inputTextReview" name="review" rows="4"
-                                  maxlength="1000" required>${user_rating.review}</textarea>
+                                  maxlength="1000">${user_rating.review}</textarea>
                     </div>
                     <div class="col-6 align-self-center text-end mt-2">
                         <button type="submit" class="btn btn-primary btn-sm" form="form_review">
@@ -218,18 +233,78 @@
 
         <div class="row d-flex d-flex justify-content-between">
             <c:forEach var="map" items="${reviews_for_game}">
-            <div class="col-5 mb-5">
-                <label for="inputReview" class="form-label review_label">${map.full_name}</label>
-                <textarea class="form-control overflow-auto" id="inputReview" rows="4"
-                          maxlength="1000" readonly required>${map.review}
-                    </textarea>
-            </div>
+                <div class="col-6 mb-5">
+                    <div class="row">
+                        <div class="col-11">
+                            <div class="row justify-content-between mb-0 review_label">
+                                <div class="col-6">
+                                        ${map.full_name}
+                                </div>
+                                <div class="col-6 text-end">
+                                    <fmt:formatDate value="${map.publication_date}" type="both" pattern="dd-MM-yyyy HH:mm:ss"></fmt:formatDate>
+                                </div>
+                            </div>
+                            <textarea class="form-control overflow-auto" id="inputReview" rows="4"
+                                      maxlength="1000" readonly required>${map.review}
+                            </textarea>
+                        </div>
+                        <c:if test="${user.userRole eq 'ADMIN'}">
+                            <div class="col-1 align-self-center">
+                                <a href="${pageContext.request.contextPath}/controller?command=delete_review&game_rating_id=${map.game_rating_id}"
+                                   class="link-dark fs-5">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </c:if>
+                    </div>
+                </div>
             </c:forEach>
+
+            <div class="container">
+                <nav aria-label="Navigation">
+                    <ul class="pagination justify-content-center">
+                        <c:if test="${actual_page ne 1}">
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/controller?command=to_game_page&game_id=${game.gameId}&actual_page=${actual_page-1}">
+                                    <fmt:message key="previous"/>
+                                </a>
+                            </li>
+                        </c:if>
+
+                        <c:forEach begin="1" end="${page_amount}" var="i">
+                            <c:choose>
+                                <c:when test="${actual_page eq i}">
+                                    <li class="page-item active"><a class="page-link">
+                                            ${i}</a>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li class="page-item"><a class="page-link"
+                                        href="${pageContext.request.contextPath}/controller?command=to_game_page&game_id=${game.gameId}&actual_page=${i}">${i}</a>
+                                    </li>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+
+                        <c:if test="${actual_page lt page_amount}">
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/controller?command=to_game_page&game_id=${game.gameId}&actual_page=${actual_page+1}">
+                                    <fmt:message key="next"/>
+                                </a>
+                            </li>
+                        </c:if>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
-
 </div>
 </section>
+
+<%@include file= "../WEB-INF/jspf/footer.jspf" %>
+
 <script src="js/reload.js"></script>
 <script src="js/validation.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>

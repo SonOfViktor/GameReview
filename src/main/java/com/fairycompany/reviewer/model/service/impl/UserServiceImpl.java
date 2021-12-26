@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
@@ -53,6 +55,34 @@ public class UserServiceImpl implements UserService {
 
     public static UserServiceImpl getInstance() {
         return instance;
+    }
+
+    public List<User> findAllUsers(SessionRequestContent content) throws ServiceException {
+        int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+        int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
+
+        List<User> users;
+
+        try {
+            transactionManager.initTransaction();
+
+            long skippedUsers = (long) actualPage * rowAmount - rowAmount;
+            users = userDao.findAll(skippedUsers, rowAmount);
+
+            long totalUserAmount = userDao.findTotalUserAmount();
+            int pageAmount = (int) Math.ceil((double) totalUserAmount / rowAmount);
+
+            content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
+            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when finding games, {}", e.getMessage());
+            throw new ServiceException("Error when finding games", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return users;
     }
 
     public Optional<User> authenticate (SessionRequestContent content) throws ServiceException {
@@ -92,8 +122,7 @@ public class UserServiceImpl implements UserService {
         String passwordChecker = content.getRequestParameter(RequestParameter.PASSWORD_CHECK);
         LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
         String phone = content.getRequestParameter(RequestParameter.PHONE);
-        String uploadFileDir = (String) content.getRequestAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY);
-        Part part = (Part) content.getRequestAttribute(RequestAttribute.PART);
+        String photoFile = (String) content.getRequestAttribute(RequestAttribute.USER_PHOTO);
 
         UserValidator validator = UserValidator.getInstance();
 
@@ -108,7 +137,6 @@ public class UserServiceImpl implements UserService {
         } else if (!validator.passwordCheck(password, passwordChecker)) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);
         } else {
-            String photoFile = serviceUtil.saveImage(uploadFileDir, RELATIVE_IMAGE_PATH, part, login, DEFAULT_FILE);
             User user = new User.UserBuilder()
                     .setLogin(login)
                     .setFirstName(name)
@@ -199,11 +227,12 @@ public class UserServiceImpl implements UserService {
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
         long userId = user.getUserId();
 
-        String password = content.getRequestParameter(PASSWORD);
+        String newPassword = content.getRequestParameter(PASSWORD);
         String passwordChecker = content.getRequestParameter(PASSWORD_CHECK);
+
         try {
-            if (validator.isPasswordValid(password) && validator.passwordCheck(password, passwordChecker)) {
-                String hashPassword = HashGenerator.hashPassword(password);
+            if (validator.isPasswordValid(newPassword) && validator.passwordCheck(newPassword, passwordChecker)) {
+                String hashPassword = HashGenerator.hashPassword(newPassword);
 
                 transactionManager.initTransaction();
                 userDao.updatePassword(userId, hashPassword);
@@ -223,16 +252,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePhoto(SessionRequestContent content) throws ServiceException {
-        return false;
+    public boolean updateUserByAdmin(SessionRequestContent content) throws ServiceException {
+        long userId = Long.parseLong(content.getRequestParameter(USER_ID));
+        int role = User.Role.valueOf(content.getRequestParameter(USER_ROLE).toUpperCase()).ordinal();
+        int status = User.Status.valueOf(content.getRequestParameter(USER_STATUS).toUpperCase()).ordinal();
+
+        try {
+                transactionManager.initTransaction();
+
+                userDao.updateRoleAndStatus(userId, role, status);
+
+                transactionManager.commit();
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when updating status and role, {}", e.getMessage());
+            throw new ServiceException("Error when updating status and role", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+        return true;
     }
+
+    //    @Override         //todo update не доходит до сервиса (пока)
+    //    public boolean updatePhoto(SessionRequestContent content) throws ServiceException {
+    //        return false;
+    //    }
 
     public boolean finishRegistration(SessionRequestContent content) throws ServiceException {
         boolean isRegistered = false;
 
         String registerCode = content.getRequestParameter(REGISTER_CODE);
         long tokenId = Long.parseLong(content.getRequestParameter(TOKEN_ID));
-        //todo validation maybe
+        //todo validation
 
         try {
             transactionManager.initTransaction();
@@ -254,33 +305,27 @@ public class UserServiceImpl implements UserService {
         return isRegistered;
     }
 
-//    private String saveImage(SessionRequestContent content, Part part) {
-////        String uploadFileDir = content.getRequestAttribute(RequestAttribute.IMAGE_UPLOAD_DIRECTORY) + RELATIVE_IMAGE_PATH;
-////        logger.log(Level.DEBUG, "UploadFileDir is {}", uploadFileDir);
-////
-////        String generatedFileName = null;
-////        try {
-////            String submittedFileName = part.getSubmittedFileName();
-////            String fileExtension = submittedFileName.substring(submittedFileName.lastIndexOf("."));
-////            generatedFileName = content.getRequestParameter(LOGIN) + fileExtension;
-////            String imagePath = uploadFileDir + File.separator + generatedFileName;
-////            part.write(imagePath);
-////            logger.log(Level.DEBUG, "Image path is {}", imagePath);
-////        } catch (IOException e) {
-////            logger.log(Level.ERROR, "Failed to upload file.", e);
-////        }
-////        return RELATIVE_IMAGE_PATH + generatedFileName;
-////    }
-//
+    @Override
+    public boolean deleteUser(SessionRequestContent content) throws ServiceException {
+        User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        long userId = user.getUserId();
 
-//    private LocalDate getDateFromString(String stringDate) {                //todo проверить работает ли утилита и удалить этот код
-//        LocalDate date = LocalDate.of(1, 1,1);
-//        if (stringDate != null && !stringDate.isEmpty()) {
-//            date = LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(DATE_PATTERN));
-//        }
-//        logger.log(Level.DEBUG, "Date is {}", date);
-//        return date;
-//    }
+        try {
+            transactionManager.initTransaction();
+
+            userDao.delete(userId);
+
+            transactionManager.commit();
+        } catch (DaoException e) {
+            transactionManager.rollback();
+            logger.log(Level.ERROR, "Error when finishing registration {}. ", e.getMessage());
+            throw new ServiceException("Error when finishing registration", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
+
+        return true;
+    }
 
     private int getPhoneFromString(String phone) {
         return Integer.parseInt(phone.replace(HYPHEN, EMPTY_LINE));

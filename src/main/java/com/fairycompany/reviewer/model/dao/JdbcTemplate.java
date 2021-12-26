@@ -167,8 +167,8 @@ public class JdbcTemplate<T extends Entity> {
         return generatedId;
     }
 
-    public long executeSelectCalculation(String sqlQuery, Object... parameters) throws DaoException {
-        long totalValue = 0;
+    public Number executeSelectCalculation(String sqlQuery, String columnName, Object... parameters) throws DaoException {
+        Number totalValue = null;
 
         Connection connection = transactionManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
@@ -177,7 +177,7 @@ public class JdbcTemplate<T extends Entity> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                totalValue = resultSet.getLong(ColumnName.TOTAL_VALUE);
+                totalValue = (Number) resultSet.getObject(columnName);          // todo новый instance of
             }
         } catch (SQLException e) {
             logger.log(Level.ERROR, "Error when finding value. {}", e.getMessage());
@@ -187,7 +187,7 @@ public class JdbcTemplate<T extends Entity> {
         return totalValue;
     }
 
-    public void insertBatch(String sql, List<Object[]> batchArguments) throws DaoException {
+    public void executeBatch(String sql, List<Object[]> batchArguments) throws DaoException {
         Connection connection = transactionManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (Object[] sqlArgument : batchArguments) {

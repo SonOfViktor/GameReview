@@ -6,12 +6,10 @@ import com.fairycompany.reviewer.model.dao.JdbcTemplate;
 import com.fairycompany.reviewer.model.dao.mapper.impl.GameResultSetHandler;
 import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.Platform;
-import com.fairycompany.reviewer.model.pool.ConnectionPool;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
@@ -29,8 +27,8 @@ public class GameDaoImpl implements GameDao {
             ORDER BY name
             """;
 
-    private static final String FIND_ALL_GAMES_WITH_RATING = """
-            SELECT games.*, GROUP_CONCAT(genre SEPARATOR ',') AS genre, total_rating FROM game_rating.games
+    private static final String FIND_ALL_GAMES_WITH_RATING_SQL = """
+            SELECT games.*, GROUP_CONCAT(genre SEPARATOR ',') AS genre, total_rating FROM games
             LEFT JOIN total_game_rating ON games.game_id = total_game_rating.game_id
             JOIN games_genres ON games_genres.game_id = games.game_id
             JOIN genres ON games_genres.genre_id = genres.genre_id
@@ -38,8 +36,8 @@ public class GameDaoImpl implements GameDao {
             ORDER BY name LIMIT ?, ?
             """;
 
-    private static final String FIND_TOTAL_GAME_AMOUNT = """
-            SELECT COUNT(*) AS total_value FROM game_rating.games
+    private static final String FIND_TOTAL_GAME_AMOUNT_SQL = """
+            SELECT COUNT(*) AS total_value FROM games
             """;
 
     private static final String FIND_ALL_SQL = """  
@@ -56,9 +54,11 @@ public class GameDaoImpl implements GameDao {
             """;
 
     private static final String FIND_BY_ID_SQL = """
-            SELECT game_id, name, publisher, developer, release_date, description, image, trailer_url, price, platform
-            FROM games
-            WHERE game_id = ?
+            SELECT games.*, GROUP_CONCAT(genre SEPARATOR ',') AS genre FROM games
+            JOIN games_genres ON games_genres.game_id = games.game_id
+            JOIN genres ON games_genres.genre_id = genres.genre_id
+            GROUP BY games_genres.game_id
+            HAVING game_id = ?
             """;
 
     private static final String FIND_BY_NAME_SQL = """
@@ -67,7 +67,7 @@ public class GameDaoImpl implements GameDao {
             WHERE name = ?
             """;
 
-    private static final String DELETE_BY_ID_SQL = """          
+    private static final String DELETE_GAME_SQL = """          
             DELETE FROM games WHERE game_id = ?
             """;
 
@@ -79,6 +79,15 @@ public class GameDaoImpl implements GameDao {
     private static final String ADD_GAME_GENRE_SQL = """
             INSERT INTO games_genres (game_id, genre_id)
             VALUE (?, ?)
+            """;
+    private static final String DELETE_GAME_GENRE_SQL = """
+            DELETE FROM games_genres WHERE game_id = ?
+            """;
+
+    private static final String UPDATE_GAME_SQL = """
+            UPDATE games
+            SET name = ?, publisher = ?, developer = ?, platform = ?, release_date = ?, price = ?, trailer_url = ?, description = ?
+            WHERE game_id = ?
             """;
 
     private JdbcTemplate<Game> jdbcTemplate;
@@ -101,16 +110,16 @@ public class GameDaoImpl implements GameDao {
     @Override
     public List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_ALL_GAMES_WITH_RATING, columnNames, skippedRows, rowAmount);
+        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_ALL_GAMES_WITH_RATING_SQL, columnNames, skippedRows, rowAmount);
         return games;
     }
 
     @Override
     public long findTotalGameAmount() throws DaoException {
-        long totalGameAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_AMOUNT);
+        Number totalGameAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_AMOUNT_SQL, TOTAL_VALUE);
         logger.log(Level.DEBUG, "Total game amount is {}", totalGameAmount);
 
-        return totalGameAmount;
+        return (totalGameAmount != null) ? totalGameAmount.longValue() : 0;
     }
 
     @Override
@@ -128,19 +137,10 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public boolean delete(long id) throws DaoException {
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement gameStatement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
+    public boolean delete(long gameId) throws DaoException {
+        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_GAME_SQL, gameId);
 
-            gameStatement.setLong(1, id);
-            gameStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "Error when deleting game with Id {}. {}", id, e.getMessage());
-            throw new DaoException("Error when deleting game with Id " + id, e);
-        }
-
-        return true;
+        return isDeleted;
     }
 
     @Override
@@ -161,7 +161,17 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public boolean update(Game game) throws DaoException {
-        return false;
+        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_GAME_SQL,
+                game.getName(),
+                game.getPublisher(),
+                game.getDeveloper(),
+                stringFromSet(game.getPlatform()),
+                Date.valueOf(game.getReleaseDate()),
+                game.getPrice(),
+                game.getTrailerUrl(),
+                game.getDescription(),
+                game.getGameId());
+        return isUpdated;
     }
 
     public boolean addGenres(long gameId, EnumSet<Game.Genre> set) throws DaoException {
@@ -171,9 +181,15 @@ public class GameDaoImpl implements GameDao {
             batchArguments.add(arguments);
         });
 
-        jdbcTemplate.insertBatch(ADD_GAME_GENRE_SQL, batchArguments);
+        jdbcTemplate.executeBatch(ADD_GAME_GENRE_SQL, batchArguments);
 
         return true;
+    }
+
+    public boolean deleteGenres(long gameId) throws DaoException {
+        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_GAME_GENRE_SQL, gameId);
+
+        return isDeleted;
     }
 
     private String stringFromSet(Set<Platform> platforms) {

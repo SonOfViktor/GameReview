@@ -75,6 +75,7 @@ public final class ColumnName {
     public static final String SOUND_RATING = "sound_rating";
     public static final String PLOT_RATING = "plot_rating";
     public static final String REVIEW = "review";
+    public static final String PUBLICATION_DATE = "publication_date";
     public static final String USER_AMOUNT = "user_amount";
     public static final String AMOUNT_GAME_RATING = "amount_game_rating";
     public static final String AMOUNT_REVIEW = "amount_review";

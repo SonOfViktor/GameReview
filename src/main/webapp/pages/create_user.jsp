@@ -9,6 +9,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/gr.style.css">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/vk.css" rel="stylesheet">
 
     <title><fmt:message key="sing_up.title"/></title>
 </head>
@@ -18,6 +21,7 @@
 
 <%@include file= "../WEB-INF/jspf/message.jspf" %>
 
+<section>
 <div class="container mt-5">
     <form class="row g-3 needs-validation" novalidate method="post" action="upload_image" enctype="multipart/form-data">
         <div>
@@ -82,7 +86,7 @@
         <div class="col-3">
             <label for="inputBirthday" class="form-label"><fmt:message key="sing_up.birthday"/></label>
             <input type="date" class="form-control" id="inputBirthday"
-                   name="birthday" value="" required>
+                   name="birthday" required>
             <div class="invalid-feedback">
                 <fmt:message key="sing_up.birthday.invalid_message"/>
             </div>
@@ -103,19 +107,20 @@
         <div class="col-5">
             <label for="inputImage" class="form-label"><fmt:message key="choose_photo"/></label>
             <div class="input-group mb-3" id="inputImage">
-                <input type="file" class="form-control" id="inputGroupFile02" name="image">
+                <input type="file" class="form-control" id="inputGroupFile02" name="image" accept="image/*">
                 <label class="input-group-text" for="inputGroupFile02"><fmt:message key="upload"/></label>
             </div>
         </div>
 
         <div class="w-100"></div>
-        <div class="col-12">
-            <div class="position-absolute start-50 pb-5">
-                <button type="submit" class="btn btn-primary"><fmt:message key="login.sing_up"/></button>
-            </div>
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-primary"><fmt:message key="login.sing_up"/></button>
         </div>
     </form>
 </div>
+</section>
+
+<%@include file= "../WEB-INF/jspf/footer.jspf" %>
 
 <script src="js/reload.js"></script>
 <script src="js/validation.js"></script>

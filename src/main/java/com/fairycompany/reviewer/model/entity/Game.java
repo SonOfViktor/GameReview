@@ -23,7 +23,7 @@ public class Game extends Entity {
 
     public enum Genre {
         ACTION, SHOOTER, STRATEGY, PLATFORMER, FIGHTING, RACING, RPG, HORROR, SLASHER, MMO, ADVENTURE, QUEST,
-        STEALTH, TOP_DOWN, THIRD_PERSON, FIRST_PERSON, TWO_DIMENSIONAL, METROIDVANIA, SOULS_LIKE
+        STEALTH, TOP_DOWN, THIRD_PERSON, FIRST_PERSON, TWO_DIMENSIONAL, METROIDVANIA, SOULS_LIKE, OPEN_WORLD
     }
 
     private Game(long gameId, String name, String publisher, String developer, LocalDate releaseDate, EnumSet<Platform> platforms,

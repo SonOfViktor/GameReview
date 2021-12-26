@@ -11,4 +11,8 @@ public interface GameRatingService {
 
     boolean findUserRatingAmount(SessionRequestContent content) throws ServiceException;
 
+    boolean deleteUserRating(SessionRequestContent content) throws ServiceException;
+
+    boolean deleteUserReview(SessionRequestContent content) throws ServiceException;
+
 }

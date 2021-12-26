@@ -1,0 +1,32 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<footer class="bg-light mt-4">
+    <div class="container">
+        <div class="row ">
+            <div class="col-12 text-center">
+                <i class="bi bi-xbox text-success fs-3 mx-2"></i>
+                <i class="bi bi-playstation text-primary fs-3 me-3"></i>
+
+                <a href="https://www.facebook.com/profile.php?id=100075910212064" target="_blank" class="btn btn-outline-dark mx-3">
+                    <i class="bi bi-facebook"></i>
+                </a>
+                <a href="https://steamcommunity.com/id/punksim" target="_blank" class="btn btn-outline-dark mx-3">
+                    <i class="bi bi-steam"></i>
+                </a>
+                <a href="https://github.com/SonOfViktor/" target="_blank" class="btn btn-outline-dark mx-3">
+                    <i class="bi bi-github"></i>
+                </a>
+                <a href="https://www.instagram.com/silevichmaksim/" target="_blank" class="btn btn-outline-dark mx-3">
+                    <i class="bi bi-instagram"></i>
+                </a>
+                <a href="https://vk.com/id50198591" target="_blank" class="btn btn-outline-dark mx-3">
+                    <i class="icon-vkontakte"></i>
+                </a>
+
+                <i class="bi bi-nintendo-switch text-danger fs-3 ms-3"></i>
+                <i class="bi bi-windows text-info fs-3 mx-2"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+

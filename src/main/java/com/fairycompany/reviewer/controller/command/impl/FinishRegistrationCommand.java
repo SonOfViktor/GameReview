@@ -7,19 +7,14 @@ import com.fairycompany.reviewer.model.service.UserService;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class FinishRegistrationCommand implements Command {
-    private static final Logger logger = LogManager.getLogger();
+public class FinishRegistrationCommand extends AbstractCommand {
 
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
+        content.extractValues(request);
         Router router = new Router(PagePath.MAIN_PAGE_REDIRECT);
         router.setType(Router.RouterType.REDIRECT);
-
-        SessionRequestContent content = new SessionRequestContent();
-        content.extractValues(request);
 
         UserService userService = UserServiceImpl.getInstance();
 

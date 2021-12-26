@@ -1,0 +1,111 @@
+img {
+    height: 200px;
+    width: 150px;
+}
+
+.user img {
+    height: 250px;
+    width: 200px;
+}
+
+nav img {
+    height: 50px;
+    width: 50px;
+}
+
+.score {
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    font-family: Arial,Helvetica,sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+    border-radius: 6px;
+    line-height: 2em;
+}
+
+.score_game {
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    font-family: Arial,Helvetica,sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    height: 75px;
+    width: 75px;
+    font-size: 38px;
+    border-radius: 6px;
+    line-height: 2em;
+}
+
+.score_user {
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    font-family: Arial,Helvetica,sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    height: 40px;
+    width: 40px;
+    font-size: 20px;
+    border-radius: 55%;
+    line-height: 2em;
+}
+
+.description {
+    height: 120px;
+    width: 80%;
+}
+
+.summary {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    line-height: 28px;
+    max-height: 110px;
+    text-overflow: ellipsis;
+}
+
+.positive_bg {
+    background-color: #6c3;
+}
+
+.mixed_bg {
+    background-color: #fc3;
+}
+
+.negative_bg {
+    background-color: #f00;
+}
+
+.review_label {
+    margin-bottom: 0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+html, body {
+    height: 100%;
+}
+
+.wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 1 auto;
+}
+
+footer {
+    padding: 20px 0;
+}
+
+.bi:hover {
+    color: red;
+}

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 public class LogoutCommand implements Command {
+
     @Override
     public Router execute(HttpServletRequest request) {
         Router router = new Router(PagePath.MAIN_PAGE_REDIRECT);
@@ -15,6 +16,7 @@ public class LogoutCommand implements Command {
 
         HttpSession session = request.getSession();
         session.removeAttribute(SessionAttribute.USER);
+        session.invalidate();
 
         return router;
     }

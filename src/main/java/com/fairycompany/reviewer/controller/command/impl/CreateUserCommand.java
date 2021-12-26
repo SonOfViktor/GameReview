@@ -6,42 +6,47 @@ import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.service.UserService;
 import com.fairycompany.reviewer.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class CreateUserCommand implements Command {
-    private static final Logger logger = LogManager.getLogger();
+import java.io.File;
+import java.util.Optional;
+
+public class CreateUserCommand extends AbstractCommand {
+    private static final String RELATIVE_IMAGE_PATH = "media\\people";
+    private static final String DEFAULT_FILE = "pic\\default_user.jpg";
     private static final String SOURCE_LINK_FORMAT = "%s://%s:%s/%s";
 
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
-        HttpSession session = request.getSession();
-        SessionRequestContent content = new SessionRequestContent();
-        content.extractValues(request);
+        initCommand(request);
 
-        String currentPage = (String) content.getSessionAttribute(SessionAttribute.CURRENT_PAGE);
-        Router router = new Router(currentPage);
-        router.setType(Router.RouterType.REDIRECT);             // todo to check
+        String uploadDirectory = request.getServletContext().getRealPath(RELATIVE_IMAGE_PATH);
 
-        String sourceLink = String.format(SOURCE_LINK_FORMAT, request.getScheme(), request.getServerName(),
-                request.getServerPort(), request.getContextPath());
-        content.addRequestAttribute(RequestAttribute.SOURCE_LINK, sourceLink);
+        Optional<String> imageName = saveImage(request, uploadDirectory, DEFAULT_FILE);
+        if (imageName.isPresent()) {
+            content.addRequestAttribute(RequestAttribute.USER_PHOTO,
+                    RELATIVE_IMAGE_PATH + File.separator + imageName.get());
 
-        UserService userService = UserServiceImpl.getInstance();
+            String sourceLink = String.format(SOURCE_LINK_FORMAT, request.getScheme(), request.getServerName(),
+                    request.getServerPort(), request.getContextPath());
+            content.addRequestAttribute(RequestAttribute.SOURCE_LINK, sourceLink);
 
-        try {
-            if (userService.addUser(content)) {
-                router.setPage(PagePath.MAIN_PAGE_REDIRECT);
-                session.setAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.USER_CREATION_SUCCESSFUL);
-            } else {
-                content.insertValues(request);
+            UserService userService = UserServiceImpl.getInstance();
+
+            try {
+                if (userService.addUser(content)) {
+                    router.setPage(PagePath.MAIN_PAGE_REDIRECT);
+                    content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.USER_CREATION_SUCCESSFUL);
+                } else {
+                    deleteFile(uploadDirectory + File.separator + imageName.get());     // todo будет время подумай, два раза повтор удаления
+                }
+            } catch (ServiceException e) {
+                logger.log(Level.ERROR, "Adding user failed. {}", e.getMessage());
+                deleteFile(uploadDirectory + File.separator + imageName.get());
+                throw new CommandException("Adding user failed", e);
             }
-        } catch (ServiceException e) {
-            logger.log(Level.ERROR, "Adding user is failed. {}", e.getMessage());
-            throw new CommandException("Adding user is failed", e);
         }
+        content.insertValues(request);
 
         return router;
     }

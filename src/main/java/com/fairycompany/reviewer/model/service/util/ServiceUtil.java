@@ -1,7 +1,5 @@
 package com.fairycompany.reviewer.model.service.util;
 
-import com.fairycompany.reviewer.controller.command.RequestAttribute;
-import com.fairycompany.reviewer.controller.command.SessionRequestContent;
 import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +18,9 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.LOGI
 public class ServiceUtil {
     private static final Logger logger = LogManager.getLogger();
     private static final String DEFAULT_FILE_EXTENSION = ".jpg";
+    private static final LocalDate DEFAULT_DATE = LocalDate.of(0001, 01, 01);
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final int DATE_LENGTH = 10;
     private static final ServiceUtil instance = new ServiceUtil();
 
     private ServiceUtil() {
@@ -31,12 +31,9 @@ public class ServiceUtil {
     }
 
     public LocalDate getDateFromString(String stringDate) {
-        LocalDate date = LocalDate.of(1, 1,1);
-        if (stringDate != null && !stringDate.isEmpty()) {
-            date = LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(DATE_PATTERN));
-        }
-        logger.log(Level.DEBUG, "Date is {}", date);
-        return date;
+        return (stringDate != null && stringDate.length() == DATE_LENGTH) ?      //todo проверить оформление
+                LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(DATE_PATTERN)) :
+                DEFAULT_DATE;
     }
 
     public String saveImage(String uploadDirectory, String relativePath, Part part, String newFileName, String defaultFile) {
@@ -70,6 +67,13 @@ public class ServiceUtil {
         }
 
         return relativePath + generatedFileName;
+    }
+
+    public void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
 }

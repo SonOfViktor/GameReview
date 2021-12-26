@@ -1,5 +1,7 @@
 package com.fairycompany.reviewer.model.entity;
 
+import java.time.LocalDateTime;
+
 public class GameRating extends Entity {
     private long gameRatingId;
     private long userId;
@@ -9,9 +11,13 @@ public class GameRating extends Entity {
     private int soundRating;
     private int plotRating;
     private String review;
+    private LocalDateTime publicationDate;
+
+    public GameRating(){
+    }
 
     private GameRating(long gameRatingId, long userId, long gameId, int gameplayRating, int graphicsRating,
-                      int soundRating, int plotRating, String review) {
+                      int soundRating, int plotRating, String review, LocalDateTime publicationDate) {
         this.gameRatingId = gameRatingId;
         this.userId = userId;
         this.gameId = gameId;
@@ -20,6 +26,7 @@ public class GameRating extends Entity {
         this.soundRating = soundRating;
         this.plotRating = plotRating;
         this.review = review;
+        this.publicationDate = publicationDate;
     }
 
     public long getGameRatingId() {
@@ -82,33 +89,41 @@ public class GameRating extends Entity {
         this.review = review;
     }
 
+    public LocalDateTime getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(LocalDateTime publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GameRating that = (GameRating) o;
+        GameRating rating = (GameRating) o;
 
-        if (gameRatingId != that.gameRatingId) return false;
-        if (userId != that.userId) return false;
-        if (gameId != that.gameId) return false;
-        if (gameplayRating != that.gameplayRating) return false;
-        if (graphicsRating != that.graphicsRating) return false;
-        if (soundRating != that.soundRating) return false;
-        if (plotRating != that.plotRating) return false;
-        return review != null ? review.equals(that.review) : that.review == null;
+        if (userId != rating.userId) return false;
+        if (gameId != rating.gameId) return false;
+        if (gameplayRating != rating.gameplayRating) return false;
+        if (graphicsRating != rating.graphicsRating) return false;
+        if (soundRating != rating.soundRating) return false;
+        if (plotRating != rating.plotRating) return false;
+        if (review != null ? !review.equals(rating.review) : rating.review != null) return false;
+        return publicationDate != null ? publicationDate.equals(rating.publicationDate) : rating.publicationDate == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (gameRatingId ^ (gameRatingId >>> 32));
-        result = 31 * result + (int) (userId ^ (userId >>> 32));
+        int result = (int) (userId ^ (userId >>> 32));
         result = 31 * result + (int) (gameId ^ (gameId >>> 32));
         result = 31 * result + gameplayRating;
         result = 31 * result + graphicsRating;
         result = 31 * result + soundRating;
         result = 31 * result + plotRating;
         result = 31 * result + (review != null ? review.hashCode() : 0);
+        result = 31 * result + (publicationDate != null ? publicationDate.hashCode() : 0);
         return result;
     }
 
@@ -124,6 +139,7 @@ public class GameRating extends Entity {
                 .append(", soundRating = ").append(soundRating)
                 .append(", plotRating = ").append(plotRating)
                 .append(", review = ").append(review)
+                .append(", publication date = ").append(publicationDate)
                 .append(" }");
 
         return builder.toString();
@@ -139,6 +155,7 @@ public class GameRating extends Entity {
         private int soundRating;
         private int plotRating;
         private String review;
+        private LocalDateTime publicationDate;
 
         public GameRatingBuilder setGameRatingId(long gameRatingId) {
             this.gameRatingId = gameRatingId;
@@ -180,9 +197,14 @@ public class GameRating extends Entity {
             return this;
         }
 
+        public GameRatingBuilder setPublicationDate(LocalDateTime publicationDate) {
+            this.publicationDate = publicationDate;
+            return this;
+        }
+
         public GameRating createGameRating() {
             return new GameRating(gameRatingId, userId, gameId, gameplayRating, graphicsRating, soundRating,
-                    plotRating, review);
+                    plotRating, review, publicationDate);
         }
     }
 }

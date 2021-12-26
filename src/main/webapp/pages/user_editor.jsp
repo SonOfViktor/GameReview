@@ -9,9 +9,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/gr.style.css">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/vk.css" rel="stylesheet">
 
     <title><fmt:message key="user_editor_page"/></title>
 </head>
@@ -30,7 +31,7 @@
             <form class="needs-validation" novalidate method="post" action="controller">
                 <input type="hidden" name="command" value="update_user">
                 <div class="row mb-3">
-                    <label for="inputFirstName" class="col-3 col-form-label"><fmt:message key="sing_up.name"/></label>
+                    <label for="inputFirstName" class="col-3 col-form-label"><fmt:message key="user_name"/></label>
                     <div class="col-8">
                         <input type="text" class="form-control" id="inputFirstName" name="name"
                             value="${user.firstName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
@@ -40,7 +41,7 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="inputSecondName" class="col-3 col-form-label"><fmt:message key="sing_up.surname"/></label>
+                    <label for="inputSecondName" class="col-3 col-form-label"><fmt:message key="user_surname"/></label>
                     <div class="col-8">
                         <input type="text" class="form-control" id="inputSecondName" name="surname"
                             value="${user.secondName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
@@ -50,7 +51,7 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="inputBirthday" class="col-3 col-form-label"><fmt:message key="sing_up.birthday"/></label>
+                    <label for="inputBirthday" class="col-3 col-form-label"><fmt:message key="user_birthday"/></label>
                     <div class ="col-8">
                         <input type="date" class="form-control" id="inputBirthday"
                                name="birthday" value="${user.birthday}" required>
@@ -60,7 +61,7 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="inputPhone" class="col-3 col-form-label"><fmt:message key="sing_up.phone"/></label>
+                    <label for="inputPhone" class="col-3 col-form-label"><fmt:message key="user_phone"/></label>
                     <div class="col-8">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="telephone">+375</span>
@@ -93,9 +94,9 @@
             <form class="needs-validation" novalidate method="post" action="controller">
                 <input type="hidden" name="command" value="update_password">
                 <div class="row mb-3">
-                    <label for="inputPassword" class="col-3 col-form-label"><fmt:message key="new_password"/></label>
+                    <label for="newPassword" class="col-3 col-form-label"><fmt:message key="new_password"/></label>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="inputPassword" name="password"
+                        <input type="password" class="form-control" id="newPassword" name="password"
                                pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
                         <div class="invalid-feedback">
                             <fmt:message key="sing_up.password.invalid_message"/>
@@ -134,7 +135,8 @@
                 <input type="hidden" name="command" value="update_photo">
                 <div class="row mb-3">
                     <div class="col-3">
-                        <img src="${user.photo}" class="shadow bg-white rounded">
+<%--                        <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
+                        <img src="<%--http://localhost:8080/gamereview/--%>${user.photo} <%--?date=${calendar.timeInMillis}--%>" class="shadow bg-white rounded">
                     </div>
                     <div class="col-8 align-self-center">
                         <label for="inputImage" class="form-label"><fmt:message key="choose_photo"/></label>
@@ -151,9 +153,30 @@
                 </div>
             </form>
         </div>
-
+        <hr>
     </div>
 </section>
+<section class="mb-5">
+    <div class="container">
+        <div class="col-7 mx-auto">
+            <div class="row">
+                <form method="post" action="controller">
+                    <input type="hidden" name="command" value="delete_user">
+                    <div class="col-12 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary"><fmt:message key="delete_button"/></button>
+<%--                        <a class="btn btn-primary"--%>
+<%--    &lt;%&ndash;                       todo delete actual_page&ndash;%&gt;--%>
+<%--                           href="${pageContext.request.contextPath}/controller?command=delete_user&user_id=${game.userId}&actual_page=1" role="button">--%>
+<%--                            <fmt:message key="delete_button"/>--%>
+<%--                        </a>--%>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%@include file= "../WEB-INF/jspf/footer.jspf" %>
 
 <script src="js/reload.js"></script>
 <script src="js/validation.js"></script>
