@@ -20,6 +20,9 @@ public final class RequestAttribute {
     public static final String ACTUAL_PAGE = "actual_page";
     public static final String USER_RATING_AMOUNT = "user_rating_amount";
     public static final String MIN_MAX_USER_RATING = "min_max_user_rating";
+    public static final String TOTAL_PRICE = "total_price";
+    public static final String TOTAL_PRICE_LIST = "total_price_list";
+    public static final String PAYMENT_LIST = "payment_list";
 
     private RequestAttribute() {
     }

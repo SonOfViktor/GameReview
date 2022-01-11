@@ -12,13 +12,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
-import static com.fairycompany.reviewer.model.dao.ColumnName.GAME_ID;
 
 public class GameResultSetHandler implements ResultSetHandler<Game> {
     private static final String COMMA_REGEX = ",";
 
     @Override
-    public Game resultToObject(ResultSet resultSet) throws SQLException {
+    public Game resultSetToObject(ResultSet resultSet) throws SQLException {
         Game game = new Game.GameBuilder()
                 .setGameId(resultSet.getLong(GAME_ID))
                 .setName(resultSet.getString(NAME))
@@ -33,15 +32,6 @@ public class GameResultSetHandler implements ResultSetHandler<Game> {
                 .setGenres(makeEnumSet(resultSet.getString(GENRE).split(COMMA_REGEX), Game.Genre.class))
                 .createGame();
         return game;
-    }
-
-    private EnumSet<Platform> makePlatformSet(ResultSet resultSet) throws SQLException {
-        String[] strings = resultSet.getString(PLATFORM).split(COMMA_REGEX);
-        EnumSet<Platform> platforms = EnumSet.copyOf(Arrays.stream(strings)
-                .map(o -> Platform.valueOf(o.toUpperCase()))
-                .collect(Collectors.toSet()));
-
-        return platforms;
     }
 
     private static <T extends Enum<T>> EnumSet<T> makeEnumSet(String[] array, Class<T> enumClass) {

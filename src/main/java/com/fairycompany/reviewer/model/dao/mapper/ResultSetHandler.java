@@ -7,5 +7,5 @@ import java.sql.SQLException;
 
 public interface ResultSetHandler<T extends Entity> {
 
-    T resultToObject(ResultSet resultSet) throws SQLException;
+    T resultSetToObject(ResultSet resultSet) throws SQLException;
 }

@@ -31,7 +31,7 @@ public class JdbcTemplate<T extends Entity> {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                T entity = resultSetHandler.resultToObject(resultSet);
+                T entity = resultSetHandler.resultSetToObject(resultSet);
                 list.add(entity);
             }
         } catch (SQLException e) {
@@ -92,7 +92,7 @@ public class JdbcTemplate<T extends Entity> {
 
             while (resultSet.next()) {
                 Map<String, Object> rowValues = new HashMap<>();
-                T entity = resultSetHandler.resultToObject(resultSet);
+                T entity = resultSetHandler.resultSetToObject(resultSet);
                 String gameKey = entity.getClass().getSimpleName().toLowerCase();
                 rowValues.put(gameKey, entity);
                 for (String name : columnNames) {

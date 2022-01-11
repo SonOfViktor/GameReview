@@ -12,7 +12,7 @@ import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class TokenResultSetHandler implements ResultSetHandler<UserToken> {
     @Override
-    public UserToken resultToObject(ResultSet resultSet) throws SQLException {
+    public UserToken resultSetToObject(ResultSet resultSet) throws SQLException {
         long userId = resultSet.getLong(USER_ID);
         String token = resultSet.getString(TOKEN);
         Timestamp creationDate = resultSet.getTimestamp(TOKEN_CREATION_DATE);

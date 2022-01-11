@@ -210,7 +210,7 @@
                                 ${user.firstName} ${user.secondName}
                             </div>
                             <div class="col-6 text-end">
-                                <ctg:show-date/>
+                                <ctg:show-date dateTime="${user_rating.publicationDate}"/>
                             </div>
                         </div>
                         <textarea form="form_review" class="form-control overflow-auto" id="inputTextReview" name="review" rows="4"

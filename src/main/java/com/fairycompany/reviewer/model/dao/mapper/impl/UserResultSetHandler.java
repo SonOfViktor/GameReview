@@ -7,11 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
-import static com.fairycompany.reviewer.model.dao.ColumnName.STATUS;
 
 public class UserResultSetHandler implements ResultSetHandler<User> {
     @Override
-    public User resultToObject(ResultSet resultSet) throws SQLException {
+    public User resultSetToObject(ResultSet resultSet) throws SQLException {
         User user = new User.UserBuilder()
                 .setUserId(resultSet.getLong(USER_ID))
                 .setLogin(resultSet.getString(LOGIN))
@@ -19,7 +18,6 @@ public class UserResultSetHandler implements ResultSetHandler<User> {
                 .setSecondName(resultSet.getString(SECOND_NAME))
                 .setBirthday(resultSet.getDate(BIRTHDAY_DATE).toLocalDate())
                 .setPhone(resultSet.getInt(PHONE))
-                .setBalance(resultSet.getBigDecimal(BALANCE))
                 .setPhoto(resultSet.getString(PHOTO))
                 .setUserRole(User.Role.valueOf(resultSet.getString(ROLE).toUpperCase()))
                 .setUserStatus(User.Status.valueOf(resultSet.getString(STATUS).toUpperCase()))

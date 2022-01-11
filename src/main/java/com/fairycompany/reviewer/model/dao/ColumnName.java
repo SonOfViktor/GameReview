@@ -9,7 +9,6 @@ public final class ColumnName {
     public static final String GAMES = "games";
     public static final String GAMES_PLATFORMS = "games_platforms";
     public static final String PLATFORMS = "platforms";
-    public static final String SCREENSHOTS = "screenshots";
     public static final String GENRES = "genres";
     public static final String GAMES_GENRES = "games_genres";
     public static final String GAME_RATING = "game_rating";
@@ -25,7 +24,6 @@ public final class ColumnName {
     public static final String SECOND_NAME = "second_name";
     public static final String BIRTHDAY_DATE = "birthday_date";
     public static final String PHONE = "phone";
-    public static final String USER_RATING = "user_rating";
     public static final String BALANCE = "balance";
     public static final String PHOTO = "photo";
     public static final String USER_ROLE_ID = "role_id";
@@ -52,11 +50,6 @@ public final class ColumnName {
     public static final String TRAILER_URL = "trailer_url";
     public static final String PRICE = "price";
     public static final String PLATFORM = "platform";
-
-    // screenshots
-    public static final String SCREENSHOT_ID = "screenshot_id";
-    public static final String SCREENSHOTS_GAME_ID = "game_id";
-    public static final String SCREENSHOT = "screenshot";
 
     // genres
     public static final String GENRES_ID = "genres_id";
@@ -87,21 +80,19 @@ public final class ColumnName {
     public static final String MIN_GAME_NAME = "min_game_name";
     public static final String MIN_RATING = "min_rating";
 
-    // likes
-    public static final String LIKES_USER_ID = "user_id";
-    public static final String LIKES_GAME_RATING_ID = "game_rating_id";
-    public static final String LIKE = "like";
-
     // orders
     public static final String ORDER_ID = "order_id";
     public static final String ORDER_GAME_ID = "game_id";
     public static final String ORDER_PAYMENT_ID = "payment_id";
     public static final String ORDER_PLATFORM = "platform";
+    public static final String ORDER_GAME_KEY = "game_key";
+    public static final String ORDER_PRICE = "order_price";
 
     // payments
     public static final String PAYMENT_ID = "payment_id";
     public static final String PAYMENT_USER_ID = "user_id";
     public static final String PAYMENT_DATE = "payment_date";
+    public static final String TOTAL_PRICE = "total_price";
 
     // tokens
     public static final String TOKEN_ID = "token_id";

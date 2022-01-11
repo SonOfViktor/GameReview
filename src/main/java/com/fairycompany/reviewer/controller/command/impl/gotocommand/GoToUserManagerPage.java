@@ -27,8 +27,8 @@ public class GoToUserManagerPage extends AbstractCommand {
             List<User> users = userService.findAllUsers(content);
             content.addRequestAttribute(RequestAttribute.USER_LIST, users);
         } catch (ServiceException e) {
-            logger.log(Level.ERROR, "Finding users is failed. {}", e.getMessage());
-            throw new CommandException("Finding users is failed", e);
+            logger.log(Level.ERROR, "Finding users failed. {}", e.getMessage());
+            throw new CommandException("Finding users failed", e);
         }
         content.insertValues(request);
 

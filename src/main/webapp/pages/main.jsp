@@ -55,13 +55,42 @@
                                 <%@include file= "../WEB-INF/jspf/total_rating.jspf" %>
                             </div>
                         </div>
+
                         <div class="col-2 align-self-center">
-                            <a href="" class="fs-2 fw-bold link-dark text-decoration-none position-relative">
-                                <div class="col-12 text-center">
+                            <div class="dropdown">
+                                <button class="btn bnt-link fs-2 fw-bold link-dark text-decoration-none position-relative dropdown-toggle"
+                                        role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"
+                                        <c:if test="${empty user or user.getUserRole().name().toLowerCase() eq 'guest'}">disabled</c:if>>
                                     ${game.price}
                                     <i class="bi bi-cash-coin link-success "></i>
-                                </div>
-                            </a>
+                                </button>
+
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <c:forEach var="platform" items="${game.platform}">
+                                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/controller?command=add_game_to_shopping_cart&game_id=${game.gameId}&platform=${platform}">
+                                                ${platform}
+                                        </a></li>
+                                    </c:forEach>
+                                </ul>
+                            </div>
+
+                        <%--                            <c:choose>--%>
+<%--                                <c:when test="${empty user or user.getUserRole().name().toLowerCase() eq 'guest'}">--%>
+<%--                                    <div class="col-12 text-center fs-2 fw-bold text-secondary position-relative">--%>
+<%--                                        ${game.price}--%>
+<%--                                        <i class="bi-cash-coin"></i>--%>
+<%--                                    </div>--%>
+<%--                                </c:when>--%>
+<%--                                <c:otherwise>--%>
+<%--                                    <a href="${pageContext.request.contextPath}/controller?command=add_game_to_shopping_cart&game_id=${game.gameId}"--%>
+<%--                                    class="fs-2 fw-bold link-dark text-decoration-none position-relative">--%>
+<%--                                        <div class="col-12 text-center">--%>
+<%--                                                ${game.price}--%>
+<%--                                            <i class="bi bi-cash-coin link-success "></i>--%>
+<%--                                        </div>--%>
+<%--                                    </a>--%>
+<%--                                </c:otherwise>--%>
+<%--                            </c:choose>--%>
                         </div>
                     </div>
                 </c:forEach>

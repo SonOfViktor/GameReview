@@ -1,48 +1,70 @@
 package com.fairycompany.reviewer.model.entity;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 public class Order extends Entity {
     private long orderId;
-    private long userId;
-    private long gameId;
+    private long paymentId;
+    private String gameName;
     private Platform platform;
-    private LocalDateTime paymentDate;
+    private BigDecimal price;
+    private String gameKey;
 
-    public Order(long orderId, long userId, long gameId, Platform platform, LocalDateTime paymentDate) {
+    private Order(long orderId, String gameName, long paymentId, Platform platform, BigDecimal price, String gameKey) {
         this.orderId = orderId;
-        this.userId = userId;
-        this.gameId = gameId;
+        this.paymentId = paymentId;
+        this.gameName = gameName;
         this.platform = platform;
-        this.paymentDate = paymentDate;
+        this.price = price;
+        this.gameKey = gameKey;
     }
 
     public long getOrderId() {
         return orderId;
     }
 
-    public long getUserId() {
-        return userId;
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public long getPaymentId() {
+        return paymentId;
     }
 
-    public long getGameId() {
-        return gameId;
+    public void setPaymentId(long paymentId) {
+        this.paymentId = paymentId;
     }
 
-    public void setGameId(long gameId) {
-        this.gameId = gameId;
+    public String getGameName() {
+        return gameName;
     }
 
-    public LocalDateTime getPayment_date() {
-        return paymentDate;
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
     }
 
-    public void setPayment_date(LocalDateTime payment_date) {
-        this.paymentDate = payment_date;
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getGameKey() {
+        return gameKey;
+    }
+
+    public void setGameKey(String gameKey) {
+        this.gameKey = gameKey;
     }
 
     @Override
@@ -53,33 +75,80 @@ public class Order extends Entity {
         Order order = (Order) o;
 
         if (orderId != order.orderId) return false;
-        if (userId != order.userId) return false;
-        if (gameId != order.gameId) return false;
+        if (paymentId != order.paymentId) return false;
+        if (gameName != null ? !gameName.equals(order.gameName) : order.gameName != null) return false;
         if (platform != order.platform) return false;
-        return paymentDate != null ? paymentDate.equals(order.paymentDate) : order.paymentDate == null;
+        if (price != null ? !price.equals(order.price) : order.price != null) return false;
+        return gameKey != null ? gameKey.equals(order.gameKey) : order.gameKey == null;
     }
 
     @Override
     public int hashCode() {
         int result = (int) (orderId ^ (orderId >>> 32));
-        result = 31 * result + (int) (userId ^ (userId >>> 32));
-        result = 31 * result + (int) (gameId ^ (gameId >>> 32));
+        result = 31 * result + (int) (paymentId ^ (paymentId >>> 32));
+        result = 31 * result + (gameName != null ? gameName.hashCode() : 0);
         result = 31 * result + (platform != null ? platform.hashCode() : 0);
-        result = 31 * result + (paymentDate != null ? paymentDate.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (gameKey != null ? gameKey.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder()
-                .append("Order { ")
+                .append("Order{ ")
                 .append("orderId = ").append(orderId)
-                .append(", userId = ").append(userId)
-                .append(", gameId = ").append(gameId)
+                .append(", paymentId = ").append(paymentId)
+                .append(", gameName = ").append(gameName)
                 .append(", platform = ").append(platform)
-                .append(", payment_date = ").append(paymentDate)
+                .append(", price = ").append(price)
+                .append(", platforms = ").append(platform)
+                .append(", gameKey = ").append(gameKey)
                 .append(" }");
-
         return builder.toString();
+    }
+
+    public static class OrderBuilder {
+
+        private long orderId;
+        private long paymentId;
+        private String gameName;
+        private Platform platform;
+        private BigDecimal price;
+        private String gameKey;
+
+        public OrderBuilder setOrderId(long orderId) {
+            this.orderId = orderId;
+            return this;
+        }
+
+        public OrderBuilder setGameName(String gameName) {
+            this.gameName = gameName;
+            return this;
+        }
+
+        public OrderBuilder setPaymentId(long paymentId) {
+            this.paymentId = paymentId;
+            return this;
+        }
+
+        public OrderBuilder setPlatform(Platform platform) {
+            this.platform = platform;
+            return this;
+        }
+
+        public OrderBuilder setPrice(BigDecimal price) {
+            this.price = price;
+            return this;
+        }
+
+        public OrderBuilder setGameKey(String gameKey) {
+            this.gameKey = gameKey;
+            return this;
+        }
+
+        public Order createOrder() {
+            return new Order(orderId, gameName, paymentId, platform, price, gameKey);
+        }
     }
 }

@@ -11,7 +11,6 @@ public class User extends Entity{
     private String secondName;
     private LocalDate birthday;
     private int phone;
-    private BigDecimal balance;
     private String photo;
     private Role userRole;
     private Status userStatus;
@@ -25,14 +24,13 @@ public class User extends Entity{
     }
 
     private User(long userId, String login, String firstName, String secondName, LocalDate birthday,
-                 int phone, BigDecimal balance, String photo, Role userRole, Status userStatus) {
+                 int phone, String photo, Role userRole, Status userStatus) {
         this.userId = userId;
         this.login = login;
         this.firstName = firstName;
         this.secondName = secondName;
         this.birthday = birthday;
         this.phone = phone;
-        this.balance = balance;
         this.photo = photo;
         this.userRole = userRole;
         this.userStatus = userStatus;
@@ -86,14 +84,6 @@ public class User extends Entity{
         this.phone = phone;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
     public String getPhoto() {
         return photo;
     }
@@ -130,7 +120,6 @@ public class User extends Entity{
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
         if (secondName != null ? !secondName.equals(user.secondName) : user.secondName != null) return false;
         if (birthday != null ? !birthday.equals(user.birthday) : user.birthday != null) return false;
-        if (balance != null ? !balance.equals(user.balance) : user.balance != null) return false;
         if (photo != null ? !photo.equals(user.photo) : user.photo != null) return false;
         if (userRole != user.userRole) return false;
         return userStatus == user.userStatus;
@@ -143,7 +132,6 @@ public class User extends Entity{
         result = 31 * result + (secondName != null ? secondName.hashCode() : 0);
         result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
         result = 31 * result + phone;
-        result = 31 * result + (balance != null ? balance.hashCode() : 0);
         result = 31 * result + (photo != null ? photo.hashCode() : 0);
         result = 31 * result + (userRole != null ? userRole.hashCode() : 0);
         result = 31 * result + (userStatus != null ? userStatus.hashCode() : 0);
@@ -160,7 +148,6 @@ public class User extends Entity{
                 .append(", secondName = ").append(secondName)
                 .append(", birthday = ").append(birthday)
                 .append(", phone = ").append(phone)
-                .append(", balance = ").append(balance)
                 .append(", photo = ").append(photo)
                 .append(", userRole = ").append(userRole)
                 .append(", userStatus = ").append(userStatus)
@@ -176,7 +163,6 @@ public class User extends Entity{
         private String secondName;
         private LocalDate birthday;
         private int phone;
-        private BigDecimal balance;
         private String photo;
         private Role userRole;
         private Status userStatus;
@@ -211,11 +197,6 @@ public class User extends Entity{
             return this;
         }
 
-        public UserBuilder setBalance(BigDecimal balance) {
-            this.balance = balance;
-            return this;
-        }
-
         public UserBuilder setPhoto(String photo) {
             this.photo = photo;
             return this;
@@ -232,7 +213,7 @@ public class User extends Entity{
         }
 
         public User createUser() {
-            return new User(userId, login, firstName, secondName, birthday, phone, balance, photo, userRole, userStatus);
+            return new User(userId, login, firstName, secondName, birthday, phone, photo, userRole, userStatus);
         }
     }
 }

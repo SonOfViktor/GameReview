@@ -70,6 +70,11 @@
                                role="button">
                                 <fmt:message key="edit_account"/>
                             </a>
+                            <a class="btn btn-primary lh-sm mx-3"
+                               href="${pageContext.request.contextPath}/controller?command=to_payment_page&actual_page=1"
+                               role="button">
+                                <fmt:message key="payments"/>
+                            </a>
                         </div>
                     </div>
 

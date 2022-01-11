@@ -9,18 +9,19 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
-import static com.fairycompany.reviewer.model.dao.ColumnName.TOTAL_VALUE;
+import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
     private static UserDaoImpl instance = new UserDaoImpl();
     private static final String FIND_ALL_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, balance, photo, role, status
+            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
@@ -28,14 +29,14 @@ public class UserDaoImpl implements UserDao {
             """;
 
     private static final String FIND_ALL_WITH_PAGINATION_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, balance, photo, role, status
+            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
             ORDER BY user_id LIMIT ?, ?
             """;
     private static final String FIND_BY_ID_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, balance, photo, role, status
+            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
@@ -44,8 +45,14 @@ public class UserDaoImpl implements UserDao {
     private static final String FIND_TOTAL_USER_AMOUNT = """
             SELECT COUNT(*) AS total_value FROM users
             """;
+
+    private static final String FIND_USER_BALANCE_SQL = """
+            SELECT balance FROM users
+            WHERE user_id = ?
+            """;
+
     private static final String FIND_BY_LOGIN_AND_PASSWORD_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, balance, photo, role, status
+            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
@@ -55,9 +62,8 @@ public class UserDaoImpl implements UserDao {
             DELETE FROM users WHERE user_id = ?
             """;
     private static final String ADD_NEW_USER_SQL = """
-            INSERT INTO users (login, password, first_name, second_name, birthday_date, phone, balance, photo,
-            role_id, status_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (login, password, first_name, second_name, birthday_date, phone, photo, role_id, status_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
     private static final String UPDATE_PASSWORD_SQL = """
             UPDATE users SET password = ?
@@ -74,6 +80,10 @@ public class UserDaoImpl implements UserDao {
     private static final String UPDATE_USER_SQL = """
             UPDATE users
             SET first_name = ?, second_name = ?, birthday_date = ?, phone = ?
+            WHERE user_id = ?
+            """;
+    private static final String UPDATE_USER_BALANCE_SQL = """
+            UPDATE users SET balance = ?
             WHERE user_id = ?
             """;
 
@@ -122,6 +132,12 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    public BigDecimal findUserBalance(long userId) throws DaoException {
+        Number totalGameRating = jdbcTemplate.executeSelectCalculation(FIND_USER_BALANCE_SQL, BALANCE, userId);
+
+        return (BigDecimal) totalGameRating;
+    }
+
     @Override
     public long add(User user) throws DaoException {
         throw new UnsupportedOperationException();
@@ -136,7 +152,6 @@ public class UserDaoImpl implements UserDao {
                 user.getSecondName(),
                 Date.valueOf(user.getBirthday()),
                 user.getPhone(),
-                user.getBalance(),
                 user.getPhoto(),
                 user.getUserRole().ordinal(),
                 user.getUserStatus().ordinal());
@@ -159,6 +174,12 @@ public class UserDaoImpl implements UserDao {
 
     public boolean updateRoleAndStatus(long userId, int userRole, int userStatus) throws DaoException {
         boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_ROLE_AND_STATUS_SQL, userRole, userStatus, userId);
+
+        return isUpdated;
+    }
+
+    public boolean updateUserBalance(long userId, BigDecimal newUserBalance) throws DaoException {
+        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_BALANCE_SQL, newUserBalance, userId);
 
         return isUpdated;
     }

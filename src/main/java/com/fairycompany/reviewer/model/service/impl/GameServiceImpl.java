@@ -7,6 +7,7 @@ import com.fairycompany.reviewer.model.dao.GameDao;
 import com.fairycompany.reviewer.model.dao.TransactionManager;
 import com.fairycompany.reviewer.model.dao.impl.GameDaoImpl;
 import com.fairycompany.reviewer.model.entity.Game;
+import com.fairycompany.reviewer.model.entity.Order;
 import com.fairycompany.reviewer.model.entity.Platform;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.GameService;
@@ -138,6 +139,30 @@ public class GameServiceImpl implements GameService {
         }
 
         return isGameAdded;
+    }
+
+    @Override
+    public void addGameToShoppingCart(SessionRequestContent content) throws ServiceException {
+        long gameId = Long.parseLong(content.getRequestParameter(GAME_ID));
+        Platform platform = Platform.valueOf(content.getRequestParameter(PLATFORM));
+        Game game = findGame(gameId).get();
+        Order order = new Order.OrderBuilder().setGameName(game.getName()).setPlatform(platform).createOrder();
+        Map<Order, Game> shoppingCart = (Map) content.getSessionAttribute(SessionAttribute.SHOPPING_CART);
+        if (!shoppingCart.containsKey(order)) {
+            shoppingCart.put(order, game);
+        } else {
+            shoppingCart.remove(order);
+        }
+    }
+
+    @Override
+    public void deleteGameFromShoppingCart(SessionRequestContent content) {
+        String gameName = content.getRequestParameter(GAME_NAME);
+        Platform platform = Platform.valueOf(content.getRequestParameter(PLATFORM));
+        Order order = new Order.OrderBuilder().setGameName(gameName).setPlatform(platform).createOrder();
+        Map<Order, Game> shoppingCart = (Map) content.getSessionAttribute(SessionAttribute.SHOPPING_CART);
+
+        shoppingCart.remove(order);
     }
 
     @Override

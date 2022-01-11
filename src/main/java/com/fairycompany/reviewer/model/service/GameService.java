@@ -16,6 +16,10 @@ public interface GameService {
 
     boolean addGame(SessionRequestContent content) throws ServiceException;
 
+    void addGameToShoppingCart(SessionRequestContent content) throws ServiceException;
+
+    void deleteGameFromShoppingCart(SessionRequestContent content);
+
     boolean updateGame(SessionRequestContent content) throws ServiceException;
 
     boolean updateGenres(SessionRequestContent content) throws ServiceException;

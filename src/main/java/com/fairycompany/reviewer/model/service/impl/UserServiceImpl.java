@@ -76,8 +76,8 @@ public class UserServiceImpl implements UserService {
             content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
         } catch (DaoException e) {
             transactionManager.rollback();
-            logger.log(Level.ERROR, "Error when finding games, {}", e.getMessage());
-            throw new ServiceException("Error when finding games", e);
+            logger.log(Level.ERROR, "Error when finding users, {}", e.getMessage());
+            throw new ServiceException("Error when finding users", e);
         } finally {
             transactionManager.endTransaction();
         }
@@ -143,7 +143,6 @@ public class UserServiceImpl implements UserService {
                     .setSecondName(surname)
                     .setBirthday(birthday)
                     .setPhone(getPhoneFromString(phone))
-                    .setBalance(BigDecimal.ZERO)
                     .setPhoto(photoFile)
                     .setUserRole(User.Role.USER)
                     .setUserStatus(User.Status.NOT_CONFIRMED)

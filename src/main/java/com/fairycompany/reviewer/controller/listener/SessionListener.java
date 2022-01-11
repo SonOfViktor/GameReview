@@ -1,12 +1,12 @@
 package com.fairycompany.reviewer.controller.listener;
 
 import com.fairycompany.reviewer.controller.command.SessionAttribute;
-import com.fairycompany.reviewer.model.entity.Order;
-import jakarta.servlet.*;
+import com.fairycompany.reviewer.model.entity.Game;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebListener
 public class SessionListener implements HttpSessionListener {
@@ -18,8 +18,6 @@ public class SessionListener implements HttpSessionListener {
         HttpSession session = se.getSession();
         session.setAttribute(SessionAttribute.SESSION_LOCALE, DEFAULT_LOCALE);
         session.setAttribute(SessionAttribute.ROW_AMOUNT, ROW_AMOUNT);
-
-
     }
 
     @Override

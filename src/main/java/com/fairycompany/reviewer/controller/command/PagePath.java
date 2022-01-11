@@ -15,11 +15,15 @@ public class PagePath {
     public static final String USER_PAGE_REDIRECT = "/controller?command=to_user_page";
     public static final String USER_EDITOR_PAGE = "pages/user_editor.jsp";
     public static final String USER_EDITOR_REDIRECT = "/controller?command=to_user_editor_page";
+    public static final String PAYMENT_PAGE = "/pages/payments.jsp";
+    public static final String PAYMENT_REDIRECT = "/controller?command=to_payment_page&actual_page=";
     public static final String USER_MANAGER_PAGE = "/pages/user_manager.jsp";
     public static final String USER_MANAGER_REDIRECT = "/controller?command=to_user_manager_page&actual_page=";
     public static final String GAME_MANAGER_PAGE = "/pages/game_manager.jsp";
     public static final String GAME_MANAGER_REDIRECT = "/controller?command=to_game_manager_page&actual_page=";
     public static final String GAME_EDITOR_PAGE = "pages/game_editor.jsp";
+    public static final String SHOPPING_CART_PAGE = "pages/shopping_cart.jsp";
+    public static final String SHOPPING_CART_REDIRECT = "/controller?command=to_shopping_cart";
     public static final String GAME_EDITOR_PAGE_REDIRECT = "/controller?command=to_game_editor_page&game_id=";
     public static final String LOGOUT_REDIRECT = "/controller?command=logout";
 
