@@ -40,6 +40,7 @@ public final class RequestParameter {
 
     public static final String ROW_AMOUNT = "row_amount";
     public static final String ACTUAL_PAGE = "actual_page";
+    public static final String SEARCH_FIELD = "search_field";
 
 
 

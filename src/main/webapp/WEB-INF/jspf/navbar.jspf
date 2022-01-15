@@ -16,9 +16,14 @@
         </div>
 
         <div class="col-6 d-flex justify-content-center">
-            <form class="d-flex" style="width: 600px;">
+            <form class="d-flex needs-validation" novalidate style="width: 600px;">
+                <input type="hidden" name="command" value="search_game">
+                <input type="hidden" name="actual_page" value="1">
                 <input class="form-control me-2" type="search" placeholder="<fmt:message key="main.search"/>"
-                       aria-label="Search">
+                       aria-label="Search" name="search_field" value="${param.search_field}" pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{0,29}">
+                <div class="invalid-feedback">
+                    <fmt:message key="add_game_name_invalid_message"/>
+                </div>
                 <button class="btn btn-outline-success" type="submit"><fmt:message key="main.search"/></button>
             </form>
         </div>
@@ -96,7 +101,6 @@
                                 <div class="invalid-feedback">
                                     <fmt:message key="sing_up.login.invalid_message"/>
                                 </div>
-                                <%--                                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>--%>
                             </div>
                             <div class="mb-3">
                                 <label
@@ -108,14 +112,8 @@
                                     <fmt:message key="sing_up.password.invalid_message"/>
                                 </div>
                             </div>
-                            <%--                                <div class="mb-3 form-check">--%>
-                            <%--                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">--%>
-                            <%--                                    <label class="form-check-label" for="exampleCheck1">Check me out</label>--%>
-                            <%--                                </div>--%>
 
                             <div class="modal-footer">
-
-                                <%--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><fmt:message key="login.close"/></button>--%>
                                 <button type="submit" class="btn btn-primary">
                                     <fmt:message key="login.log_in"/>
                                 </button>
@@ -129,16 +127,10 @@
                                 </button>
                             </form>
                         </div>
-
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-    <%--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">--%>
-    <%--            <span class="navbar-toggler-icon"></span>--%>
-    <%--        </button>--%>
-    <%--    </div>--%>
 </nav>
 

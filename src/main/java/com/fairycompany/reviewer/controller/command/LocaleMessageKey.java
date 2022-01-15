@@ -25,6 +25,7 @@ public class LocaleMessageKey {
     public static final String ADD_GAME_RATING_FAILED = "add_game_rating_failed";
     public static final String PURCHASE_GAME_SUCCESS = "purchase_game_successful";
     public static final String PURCHASE_GAME_FAILED = "purchase_game_failed";
+    public static final String SEARCH_ERROR = "add_game_name_invalid_message";
 
 
     private LocaleMessageKey() {

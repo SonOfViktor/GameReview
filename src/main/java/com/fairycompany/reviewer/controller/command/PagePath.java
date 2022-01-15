@@ -5,6 +5,7 @@ public class PagePath {
     public static final String LOGIN = "pages/login.jsp";                               // todo delete
     public static final String MAIN_PAGE = "pages/main.jsp";
     public static final String MAIN_PAGE_REDIRECT = "/controller?command=to_main_page&actual_page=1";
+    public static final String SEARCH_REDIRECT = "/controller?command=search_game&actual_page=%s&search_field=%s";
     public static final String CREATE_USER = "pages/create_user.jsp";
     public static final String CREATE_USER_REDIRECT = "/controller?command=to_sing_up_page";
     public static final String CREATE_GAME = "pages/create_game.jsp";

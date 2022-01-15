@@ -4,11 +4,11 @@
 <section>
     <div class="container">
         <nav aria-label="Navigation">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center"<c:if test="${page_amount eq 1}">hidden</c:if>>
                 <c:if test="${actual_page ne 1}">
                     <li class="page-item">
                         <a class="page-link"
-                           href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${actual_page-1}">
+                           href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${actual_page-1}${extra_param}">
                             <fmt:message key="previous"/>
                         </a>
                     </li>
@@ -23,7 +23,7 @@
                         </c:when>
                         <c:otherwise>
                             <li class="page-item"><a class="page-link"
-                                                     href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${i}">${i}</a>
+                                                     href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${i}${extra_param}">${i}</a>
                             </li>
                         </c:otherwise>
                     </c:choose>
@@ -32,7 +32,7 @@
                 <c:if test="${actual_page lt page_amount}">
                     <li class="page-item">
                         <a class="page-link"
-                           href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${actual_page+1}">
+                           href="${pageContext.request.contextPath}/controller?command=${command}&actual_page=${actual_page+1}${extra_param}">
                             <fmt:message key="next"/>
                         </a>
                     </li>

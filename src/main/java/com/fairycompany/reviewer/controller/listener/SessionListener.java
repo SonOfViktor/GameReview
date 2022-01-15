@@ -1,17 +1,13 @@
 package com.fairycompany.reviewer.controller.listener;
 
 import com.fairycompany.reviewer.controller.command.SessionAttribute;
-import com.fairycompany.reviewer.model.entity.Game;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @WebListener
 public class SessionListener implements HttpSessionListener {
     private static final String DEFAULT_LOCALE = "en_EN";
-    private static final int ROW_AMOUNT = 5;
+    private static final int ROW_AMOUNT = 6;
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {

@@ -9,17 +9,13 @@ import com.fairycompany.reviewer.model.dao.impl.GameDaoImpl;
 import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.Order;
 import com.fairycompany.reviewer.model.entity.Platform;
-import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.GameService;
 import com.fairycompany.reviewer.model.service.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.GameValidator;
-import com.fairycompany.reviewer.model.validator.UserValidator;
-import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -28,9 +24,8 @@ import java.util.stream.Collectors;
 import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
 
 public class GameServiceImpl implements GameService {
-//    private static final String RELATIVE_IMAGE_PATH = "media" + File.separator + "game" + File.separator;
-//    private static final String DEFAULT_FILE = "pic\\default_game.jpg";
     private static final Logger logger = LogManager.getLogger();
+    private static final String ANY_SYMBOLS_SQL_PATTERN = "%";
     private GameDao gameDao = GameDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
     private static GameServiceImpl instance = new GameServiceImpl();
@@ -45,6 +40,7 @@ public class GameServiceImpl implements GameService {
     public List<Map<String, Object>> findAllGamesWithRating(SessionRequestContent content) throws ServiceException {
         int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
+
         logger.log(Level.DEBUG, "Actual game page is {}", actualPage);
 
         List<Map<String, Object>> games;
@@ -66,6 +62,43 @@ public class GameServiceImpl implements GameService {
             transactionManager.endTransaction();
         }
 
+        return games;
+    }
+
+    public List<Map<String, Object>> findSearchGamesWithRating(SessionRequestContent content) throws ServiceException {
+        List<Map<String, Object>> games;
+        GameValidator validator = GameValidator.getInstance();
+        String searchField = content.getRequestParameter(SEARCH_FIELD);
+
+        if(validator.isSearchFieldValid(searchField)) {
+            searchField = searchField + ANY_SYMBOLS_SQL_PATTERN;
+        } else {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.SEARCH_ERROR);
+            searchField = ANY_SYMBOLS_SQL_PATTERN;
+        }
+
+        int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+        int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
+
+        logger.log(Level.DEBUG, "Actual game page is {}", actualPage);
+
+        try {
+            transactionManager.initTransaction();
+
+            long skippedGames = (long) actualPage * rowAmount - rowAmount;
+            games = gameDao.findSearchGamesWithRating(searchField, skippedGames, rowAmount);
+
+            long totalGameAmount = gameDao.findSearchGameAmount(searchField);
+            int pageAmount = (int) Math.ceil((double) totalGameAmount / rowAmount);
+
+            content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
+            content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
+        } catch (DaoException e) {
+            logger.log(Level.ERROR, "Error when finding games, {}", e.getMessage());
+            throw new ServiceException("Error when finding games", e);
+        } finally {
+            transactionManager.endTransaction();
+        }
         return games;
     }
 

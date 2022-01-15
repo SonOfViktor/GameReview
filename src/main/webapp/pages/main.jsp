@@ -17,13 +17,14 @@
     </head>
 
     <body>
+    <div class="wrapper">
         <header>
             <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
         </header>
 
         <%@include file= "../WEB-INF/jspf/message.jspf" %>
 
-        <main>
+        <main class="content">
         <section class="games">
             <div class="container mb-4">
                 <c:forEach var="game_map" items="${game_list}">
@@ -74,34 +75,27 @@
                                 </ul>
                             </div>
 
-                        <%--                            <c:choose>--%>
-<%--                                <c:when test="${empty user or user.getUserRole().name().toLowerCase() eq 'guest'}">--%>
-<%--                                    <div class="col-12 text-center fs-2 fw-bold text-secondary position-relative">--%>
-<%--                                        ${game.price}--%>
-<%--                                        <i class="bi-cash-coin"></i>--%>
-<%--                                    </div>--%>
-<%--                                </c:when>--%>
-<%--                                <c:otherwise>--%>
-<%--                                    <a href="${pageContext.request.contextPath}/controller?command=add_game_to_shopping_cart&game_id=${game.gameId}"--%>
-<%--                                    class="fs-2 fw-bold link-dark text-decoration-none position-relative">--%>
-<%--                                        <div class="col-12 text-center">--%>
-<%--                                                ${game.price}--%>
-<%--                                            <i class="bi bi-cash-coin link-success "></i>--%>
-<%--                                        </div>--%>
-<%--                                    </a>--%>
-<%--                                </c:otherwise>--%>
-<%--                            </c:choose>--%>
                         </div>
                     </div>
                 </c:forEach>
             </div>
         </section>
 
-            <c:set var="command" value="to_main_page"/>
+            <c:choose>
+                <c:when test="${empty param.search_field}">
+                    <c:set var="command" value="to_main_page"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="extra_param" value="&search_field=${param.search_field}"></c:set>
+                    <c:set var="command" value="search_game"/>
+                </c:otherwise>
+            </c:choose>
+
             <%@include file= "../WEB-INF/jspf/pagination.jspf" %>
         </main>
 
         <%@include file= "../WEB-INF/jspf/footer.jspf" %>
+    </div>
 
         <script src="js/reload.js"></script>
         <script src="js/validation.js"></script>

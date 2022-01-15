@@ -20,7 +20,9 @@
 </head>
 <body>
 <div class="wrapper">
-    <%@include file="../WEB-INF/jspf/navbar.jspf" %>
+    <header>
+        <%@include file="../WEB-INF/jspf/navbar.jspf" %>
+    </header>
 
     <main class="content">
         <section class="user mb-5">

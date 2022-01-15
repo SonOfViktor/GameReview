@@ -76,18 +76,20 @@ public class TransactionManager {
 
     public void rollback() {
         Connection connection = threadConnection.get();
-        if (connection != null) {
-            try {
+        try {
+            if (connection != null) {
                 connection.rollback();
-            } catch (SQLException e) {
-                logger.log(Level.ERROR, "Failed to rollback. A database access error occurs: ", e);
             }
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, "Failed to rollback. A database access error occurs: ", e);
         }
     }
 
     private void close(Connection connection) {
         try {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         } catch (SQLException e) {
             logger.log(Level.ERROR, "Connection didn't close. ", e);
         }

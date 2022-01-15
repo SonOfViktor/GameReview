@@ -12,6 +12,8 @@ public interface GameService {
 
     List<Map<String, Object>> findAllGamesWithRating(SessionRequestContent content) throws ServiceException;
 
+    List<Map<String, Object>> findSearchGamesWithRating(SessionRequestContent content) throws ServiceException;
+
     Optional<Game> findGame(long gameId) throws ServiceException;
 
     boolean addGame(SessionRequestContent content) throws ServiceException;

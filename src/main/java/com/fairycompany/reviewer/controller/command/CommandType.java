@@ -41,7 +41,8 @@ public enum CommandType {
     TO_GAME_MANAGER_PAGE(new GoToGameManagerPage(), ADMIN),
     TO_GAME_EDITOR_PAGE(new GoToGameEditorPage(), ADMIN),
     TO_SHOPPING_CART(new GoToShoppingCart(), USER, ADMIN),
-    PURCHASE_GAMES(new PurchaseGamesCommand(), USER, ADMIN);
+    PURCHASE_GAMES(new PurchaseGamesCommand(), USER, ADMIN),
+    SEARCH_GAME(new SearchGameCommand(), GUEST, USER, ADMIN);
 
     private Set<User.Role> roles;
     private Command command;

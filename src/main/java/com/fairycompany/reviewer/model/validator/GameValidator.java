@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public class GameValidator {
     private static final String STRING_FIELD_PATTERN = "[\\p{Alnum}][\\p{Alnum}\\s']{1,29}";
+    private static final String SEARCH_FIELD_PATTERN = "[\\p{Alnum}][\\p{Alnum}\\s']{0,29}";
     private static final String YOUTUBE_URL_PATTERN = "https://www\\.youtube\\.com/embed/[\\w_-]{10,20}\\?&autoplay=1";
     private static final String DESCRIPTION_PATTERN = "[\\sА-Яа-яёЁ\\p{Graph}&&[^<>]]{10,1000}";
     private static final LocalDate LOW_LIMIT_DATE = LocalDate.of(2013, 11, 14);
@@ -23,6 +24,10 @@ public class GameValidator {
 
     public boolean isStringFieldValid(String field) {
         return field != null && !field.isBlank() && field.matches(STRING_FIELD_PATTERN);
+    }
+
+    public boolean isSearchFieldValid(String field) {
+        return field != null && !field.isBlank() && field.matches(SEARCH_FIELD_PATTERN);
     }
 
     public boolean isReleaseDateValid(LocalDate releaseDate) {
