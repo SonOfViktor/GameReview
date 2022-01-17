@@ -10,7 +10,7 @@ import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.Order;
 import com.fairycompany.reviewer.model.entity.Platform;
 import com.fairycompany.reviewer.model.service.GameService;
-import com.fairycompany.reviewer.model.service.util.ServiceUtil;
+import com.fairycompany.reviewer.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.GameValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -305,28 +305,6 @@ public class GameServiceImpl implements GameService {
             transactionManager.endTransaction();
         }
         return true;
-    }
-
-    //    public List<String> makeGenreNames() {
-//        List<String> genres = Arrays.stream(Game.Genre.values())
-//                .map(Enum::name)
-//                .peek(String::toLowerCase)
-//                .toList();
-//        return genres;
-//    }
-
-    private Game takeGameFromList(SessionRequestContent content) {
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
-        List<Map<String, Object>> gameList =
-                (List<Map<String, Object>>) content.getSessionAttribute(SessionAttribute.GAME_LIST);
-
-        Game game = gameList.stream()
-                .map(gameMap -> Game.class.cast(gameMap.get(RequestAttribute.GAME)))
-                .filter(g -> g.getGameId() == gameId)
-                .findFirst()
-                .get();
-
-        return game;
     }
 
     private static <T extends Enum<T>> EnumSet<T> makeEnumSet(String[] array, Class<T> enumClass) {

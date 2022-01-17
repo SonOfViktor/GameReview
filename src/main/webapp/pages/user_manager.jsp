@@ -66,14 +66,13 @@
                                         </select>
                                     </td>
                                     <td><select class="form-select form-select-sm" name="status">
-    <%--todo            Если статусов больше не будет, то так и оставить, если добавить, то нужен метод Сергея--%>
                                             <c:choose>
-                                                <c:when test="${user.userStatus eq 'ROOKIE'}">
-                                                    <option value="rookie" selected>Rookie</option>
+                                                <c:when test="${user.userStatus eq 'ACTIVE'}">
+                                                    <option value="rookie" selected>Active</option>
                                                     <option value="banned">Banned</option>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <option value="rookie">Rookie</option>
+                                                    <option value="rookie">Active</option>
                                                     <option value="banned" selected>Banned</option>
                                                 </c:otherwise>
                                             </c:choose>

@@ -13,24 +13,12 @@ public class GameRating extends Entity {
     private String review;
     private LocalDateTime publicationDate;
 
-    public GameRating(){
-    }
-
-    private GameRating(long gameRatingId, long userId, long gameId, int gameplayRating, int graphicsRating,
-                      int soundRating, int plotRating, String review, LocalDateTime publicationDate) {
-        this.gameRatingId = gameRatingId;
-        this.userId = userId;
-        this.gameId = gameId;
-        this.gameplayRating = gameplayRating;
-        this.graphicsRating = graphicsRating;
-        this.soundRating = soundRating;
-        this.plotRating = plotRating;
-        this.review = review;
-        this.publicationDate = publicationDate;
-    }
-
     public long getGameRatingId() {
         return gameRatingId;
+    }
+
+    public void setGameRatingId(long gameRatingId) {
+        this.gameRatingId = gameRatingId;
     }
 
     public long getUserId() {
@@ -104,6 +92,7 @@ public class GameRating extends Entity {
 
         GameRating rating = (GameRating) o;
 
+        if (gameRatingId != rating.gameRatingId) return false;
         if (userId != rating.userId) return false;
         if (gameId != rating.gameId) return false;
         if (gameplayRating != rating.gameplayRating) return false;
@@ -116,7 +105,8 @@ public class GameRating extends Entity {
 
     @Override
     public int hashCode() {
-        int result = (int) (userId ^ (userId >>> 32));
+        int result = (int) (gameRatingId ^ (gameRatingId >>> 32));
+        result = 31 * result + (int) (userId ^ (userId >>> 32));
         result = 31 * result + (int) (gameId ^ (gameId >>> 32));
         result = 31 * result + gameplayRating;
         result = 31 * result + graphicsRating;
@@ -146,65 +136,59 @@ public class GameRating extends Entity {
     }
 
     public static class GameRatingBuilder {
+        private GameRating rating;
 
-        private long gameRatingId;
-        private long userId;
-        private long gameId;
-        private int gameplayRating;
-        private int graphicsRating;
-        private int soundRating;
-        private int plotRating;
-        private String review;
-        private LocalDateTime publicationDate;
+        public GameRatingBuilder() {
+            rating = new GameRating();
+        }
 
         public GameRatingBuilder setGameRatingId(long gameRatingId) {
-            this.gameRatingId = gameRatingId;
+            rating.setGameRatingId(gameRatingId);
             return this;
         }
 
         public GameRatingBuilder setUserId(long userId) {
-            this.userId = userId;
+            rating.setUserId(userId);
             return this;
         }
 
         public GameRatingBuilder setGameId(long gameId) {
-            this.gameId = gameId;
+            rating.setGameId(gameId);
             return this;
         }
 
         public GameRatingBuilder setGameplayRating(int gameplayRating) {
-            this.gameplayRating = gameplayRating;
+            rating.setGameplayRating(gameplayRating);
             return this;
         }
 
         public GameRatingBuilder setGraphicsRating(int graphicsRating) {
-            this.graphicsRating = graphicsRating;
+            rating.setGraphicsRating(graphicsRating);
             return this;
         }
 
         public GameRatingBuilder setSoundRating(int soundRating) {
-            this.soundRating = soundRating;
+            rating.setSoundRating(soundRating);
             return this;
         }
 
         public GameRatingBuilder setPlotRating(int plotRating) {
-            this.plotRating = plotRating;
+            rating.setPlotRating(plotRating);
             return this;
         }
 
         public GameRatingBuilder setReview(String review) {
-            this.review = review;
+            rating.setReview(review);
             return this;
         }
 
         public GameRatingBuilder setPublicationDate(LocalDateTime publicationDate) {
-            this.publicationDate = publicationDate;
+            rating.setPublicationDate(publicationDate);
             return this;
         }
 
         public GameRating createGameRating() {
-            return new GameRating(gameRatingId, userId, gameId, gameplayRating, graphicsRating, soundRating,
-                    plotRating, review, publicationDate);
+            return rating;
         }
     }
 }

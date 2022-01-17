@@ -3,29 +3,26 @@ package com.fairycompany.reviewer.model.service.impl;
 import com.fairycompany.reviewer.controller.command.*;
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.exception.ServiceException;
+import com.fairycompany.reviewer.model.dao.TokenDao;
 import com.fairycompany.reviewer.model.dao.TransactionManager;
+import com.fairycompany.reviewer.model.dao.UserDao;
 import com.fairycompany.reviewer.model.dao.impl.TokenDaoImpl;
 import com.fairycompany.reviewer.model.dao.impl.UserDaoImpl;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.entity.UserToken;
 import com.fairycompany.reviewer.model.service.UserService;
-import com.fairycompany.reviewer.model.service.util.ServiceUtil;
+import com.fairycompany.reviewer.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.UserValidator;
 import com.fairycompany.reviewer.util.EmailSender;
 import com.fairycompany.reviewer.util.HashGenerator;
-import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
 
@@ -33,11 +30,9 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger();
     private static final String HYPHEN = "-";
     private static final String EMPTY_LINE = "";
-    private static final String RELATIVE_IMAGE_PATH = "media" + File.separator + "people" + File.separator;
-    private static final String DEFAULT_FILE = "pic\\default_user.jpg";
     private static final String REGISTRATION_SUBJECT_EMAIL = "Registration";
     private static final String LETTER = """
-                Greeting %s. Thanks for registering with GameReview!            
+                Greeting %s. Thanks for registering with GameReview!
                     Click here to complete registration %s.
                     Cheers,
                         your pals at GR!
@@ -47,8 +42,8 @@ public class UserServiceImpl implements UserService {
     private static UserServiceImpl instance = new UserServiceImpl();
     private UserValidator validator = UserValidator.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
-    private UserDaoImpl userDao = UserDaoImpl.getInstance();
-    private TokenDaoImpl tokenDao = TokenDaoImpl.getInstance();
+    private UserDao userDao = UserDaoImpl.getInstance();
+    private TokenDao tokenDao = TokenDaoImpl.getInstance();
 
     private UserServiceImpl() {
     }
@@ -156,9 +151,9 @@ public class UserServiceImpl implements UserService {
                 long userId = userDao.add(user, hashPassword);
                 user.setUserId(userId);
 
-//                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
-//                long tokenId = tokenDao.addRegistrationToken(userId, token);  // todo uncomment to send email
-//                sendRegisterEmail(content, tokenId, token);                   // todo uncomment to send email
+                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
+                long tokenId = tokenDao.addRegistrationToken(userId, token);  // todo uncomment to send email
+                sendRegisterEmail(content, tokenId, token);                   // todo uncomment to send email
 
                 transactionManager.commit();
 
@@ -197,15 +192,18 @@ public class UserServiceImpl implements UserService {
             try {
                 transactionManager.initTransaction();
 
-                user.setFirstName(name);
-                user.setSecondName(surname);
-                user.setBirthday(birthday);
-                user.setPhone(getPhoneFromString(phone));               //todo спросить про Cloneable и что делать с его исключением
+                User updatedUser = user.clone();
 
-                userDao.update(user);
+                updatedUser.setFirstName(name);
+                updatedUser.setSecondName(surname);
+                updatedUser.setBirthday(birthday);
+                updatedUser.setPhone(getPhoneFromString(phone));
+
+                userDao.update(updatedUser);
 
                 transactionManager.commit();
 
+                content.addSessionAttribute(SessionAttribute.USER, updatedUser);
                 content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.UPDATE_USER_SUCCESS);
                 isUserUpdated = true;
             } catch (DaoException e) {
@@ -272,24 +270,19 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    //    @Override         //todo update не доходит до сервиса (пока)
-    //    public boolean updatePhoto(SessionRequestContent content) throws ServiceException {
-    //        return false;
-    //    }
-
     public boolean finishRegistration(SessionRequestContent content) throws ServiceException {
         boolean isRegistered = false;
 
         String registerCode = content.getRequestParameter(REGISTER_CODE);
         long tokenId = Long.parseLong(content.getRequestParameter(TOKEN_ID));
-        //todo validation
 
         try {
             transactionManager.initTransaction();
             Optional<UserToken> userToken = tokenDao.findTokenById(tokenId);
             if (userToken.isPresent()) {
                 if (userToken.get().getToken().equals(registerCode)) {
-                    userDao.updateStatus(userToken.get().getUserId(), User.Status.ROOKIE);
+                    userDao.updateStatus(userToken.get().getUserId(), User.Status.ACTIVE);
+                    tokenDao.deleteToken(tokenId);
                     transactionManager.commit();
                     isRegistered = true;
                 }
@@ -333,7 +326,7 @@ public class UserServiceImpl implements UserService {
     private boolean sendRegisterEmail(SessionRequestContent content, long tokenId, String token) {
         String sendTo = content.getRequestParameter(RequestParameter.LOGIN);
         String registerLink = String.format(REGISTER_LINK, content.getRequestAttribute(RequestAttribute.SOURCE_LINK),
-                tokenId, token);                              // todo токен нужно добавить в базу
+                tokenId, token);
         String letter = String.format(LETTER, content.getRequestParameter(RequestParameter.USER_NAME), registerLink);
 
         EmailSender emailSender = new EmailSender(sendTo, REGISTRATION_SUBJECT_EMAIL, letter);

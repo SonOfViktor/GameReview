@@ -23,8 +23,6 @@ public class ConnectionPool {
     private BlockingQueue<ProxyConnection> busyConnection;
     private boolean destroyingPool;
 
-    // todo add TimerTask
-
     private ConnectionPool() {
         freeConnections = new LinkedBlockingQueue<>(CONNECTION_POOL_SIZE);
         busyConnection = new LinkedBlockingQueue<>(CONNECTION_POOL_SIZE);
@@ -104,7 +102,7 @@ public class ConnectionPool {
 
     public void destroyPool() {
         destroyingPool = true;
-        closeConnection(freeConnections);      // todo what todo if connections aren't closed?
+        closeConnection(freeConnections);
         closeConnection(busyConnection);
         deregisterDriver();
     }

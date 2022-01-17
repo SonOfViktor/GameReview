@@ -94,7 +94,7 @@ public class PaymentDaoImpl implements PaymentDao {
     @Override
     public void addOrders(long paymentId, Map<Order, Game> orders) throws DaoException {
         List<Object[]> batchArguments = new ArrayList<>();
-        orders.entrySet().stream().forEach(entry -> {
+        orders.entrySet().forEach(entry -> {
             Object[] arguments = new Object[] {
                     entry.getValue().getGameId(),
                     paymentId,
@@ -113,18 +113,6 @@ public class PaymentDaoImpl implements PaymentDao {
         boolean isUpdated = paymentJdbcTemplate.executeUpdateDeleteFields(UPDATE_TOTAL_BALANCE_SQL, totalPrice);
 
         return isUpdated;
-    }
-
-    public Optional<Payment> findEntityById(long id) throws DaoException {
-        return Optional.empty();
-    }
-
-    public boolean delete(long id) throws DaoException {
-        return false;
-    }
-
-    public boolean update(Payment payment) throws DaoException {
-        return false;
     }
 
     private List<Order> findOrdersWithPaymentId (long paymentId) throws DaoException {

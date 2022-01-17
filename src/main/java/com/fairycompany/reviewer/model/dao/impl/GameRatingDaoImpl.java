@@ -1,7 +1,6 @@
 package com.fairycompany.reviewer.model.dao.impl;
 
 import com.fairycompany.reviewer.exception.DaoException;
-import com.fairycompany.reviewer.model.dao.ColumnName;
 import com.fairycompany.reviewer.model.dao.GameRatingDao;
 import com.fairycompany.reviewer.model.dao.JdbcTemplate;
 import com.fairycompany.reviewer.model.dao.mapper.impl.GameRatingResultSetHandler;
@@ -21,19 +20,13 @@ public class GameRatingDaoImpl implements GameRatingDao {
     private static final Logger logger = LogManager.getLogger();
     private static GameRatingDaoImpl instance = new GameRatingDaoImpl();
 
-    private static final String FIND_ALL_SQL = """  
-            SELECT game_rating_id, user_id, game_id, gameplay_rating, graphics_rating, sound_rating, plot_rating, review, publication_date
-            FROM game_rating
-            ORDER BY game_rating_id
-            """;
-
-    private static final String FIND_BY_GAME_ID = """
+    private static final String FIND_BY_GAME_AND_USER_ID_SQL = """
             SELECT game_rating_id, user_id, game_id, gameplay_rating, graphics_rating, sound_rating, plot_rating, review, publication_date
             FROM game_rating
             WHERE user_id = ? AND game_id = ?
             """;
 
-    private static final String FIND_USER_AMOUNT = """
+    private static final String FIND_USER_AMOUNT_SQL = """
             SELECT COUNT(user_id) AS user_amount
             FROM game_rating
             GROUP BY game_id
@@ -45,7 +38,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
             WHERE game_id = ?
             """;
 
-    private static final String FIND_ALL_REVIEW_FOR_GAME = """
+    private static final String FIND_ALL_REVIEW_FOR_GAME_SQL = """
             SELECT game_rating_id, review, CONCAT(first_name, ' ', second_name) AS full_name, publication_date
             FROM game_rating.game_rating
             JOIN users ON users.user_id = game_rating.user_id
@@ -53,7 +46,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
             LIMIT ?, ?
             """;
 
-    private static final String FIND_TOTAL_GAME_RATING_REVIEW_AMOUNT_SQL = """
+    private static final String FIND_TOTAL_REVIEW_AMOUNT_SQL = """
             SELECT COUNT(*) AS total_value FROM game_rating
             WHERE game_id = ? AND user_id <> ? AND review <> ''
             """;
@@ -97,7 +90,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
     private JdbcTemplate<GameRating> jdbcTemplate;
 
     private GameRatingDaoImpl() {
-        jdbcTemplate = new JdbcTemplate<GameRating>(new GameRatingResultSetHandler());
+        jdbcTemplate = new JdbcTemplate<>(new GameRatingResultSetHandler());
     }
 
     public static GameRatingDaoImpl getInstance() {
@@ -105,26 +98,25 @@ public class GameRatingDaoImpl implements GameRatingDao {
     }
 
     @Override
-    public List<GameRating> findAll() throws DaoException {
-        List<GameRating> ratings = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL);
-        return ratings;
+    public List<GameRating> findAll(long skippedUsers, int rowAmount) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Optional<GameRating> findEntityById(long id) throws DaoException {           // todo
-        return Optional.empty();
+    public Optional<GameRating> findEntityById(long gameRatingId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Optional<GameRating> findGameRatingByGameId(long userId, long gameId) throws DaoException {
-        Optional<GameRating> rating = jdbcTemplate.executeSelectQueryForObject(FIND_BY_GAME_ID, userId, gameId);
+    public Optional<GameRating> findGameRatingById(long userId, long gameId) throws DaoException {
+        Optional<GameRating> rating = jdbcTemplate.executeSelectQueryForObject(FIND_BY_GAME_AND_USER_ID_SQL, userId, gameId);
 
         return rating;
     }
 
     @Override
     public long findUserAmount(long gameId) throws DaoException {
-        Number userAmount = jdbcTemplate.executeSelectCalculation(FIND_USER_AMOUNT, USER_AMOUNT, gameId);
+        Number userAmount = jdbcTemplate.executeSelectCalculation(FIND_USER_AMOUNT_SQL, USER_AMOUNT, gameId);
 
         return (userAmount != null) ? userAmount.longValue() : 0;
     }
@@ -133,14 +125,14 @@ public class GameRatingDaoImpl implements GameRatingDao {
     public List<Map<String, Object>> findReviewsForGame(long gameId, long userId, long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(GAME_RATING_ID, FULL_NAME, REVIEW, PUBLICATION_DATE);
         List<Map<String, Object>> reviewsForGame = jdbcTemplate
-                .executeSelectSomeFields(FIND_ALL_REVIEW_FOR_GAME, columnNames, gameId, userId, skippedRows, rowAmount);
+                .executeSelectSomeFields(FIND_ALL_REVIEW_FOR_GAME_SQL, columnNames, gameId, userId, skippedRows, rowAmount);
 
         return reviewsForGame;
     }
 
     @Override
     public long findTotalGameRatingReview(long gameId, long userId) throws DaoException {
-        Number totalGameRatingReviewAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_RATING_REVIEW_AMOUNT_SQL, TOTAL_VALUE, gameId, userId);
+        Number totalGameRatingReviewAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_REVIEW_AMOUNT_SQL, TOTAL_VALUE, gameId, userId);
         logger.log(Level.DEBUG, "Total game amount is {}", totalGameRatingReviewAmount);
 
         return (totalGameRatingReviewAmount != null) ? totalGameRatingReviewAmount.longValue() : 0;
@@ -202,8 +194,10 @@ public class GameRatingDaoImpl implements GameRatingDao {
     }
 
     @Override
-    public boolean delete(long id) throws DaoException {        //todo
-        return false;
+    public boolean delete(long gameRatingId) throws DaoException {
+        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_REVIEW_SQL, gameRatingId);
+
+        return isDeleted;
     }
 
     @Override
@@ -212,12 +206,4 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
         return isDeleted;
     }
-
-    @Override
-    public boolean deleteUserReview(long gameRatingId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_REVIEW_SQL, gameRatingId);
-
-        return isDeleted;
-    }
-
 }

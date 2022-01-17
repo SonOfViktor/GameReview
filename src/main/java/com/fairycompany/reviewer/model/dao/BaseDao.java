@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface BaseDao <T extends Entity> {
 
-    List<T> findAll() throws DaoException;
+    List<T> findAll(long skippedUsers, int rowAmount) throws DaoException;
 
     Optional<T> findEntityById(long id) throws DaoException;
 

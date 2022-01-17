@@ -6,7 +6,6 @@ import com.fairycompany.reviewer.model.entity.UserToken;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Optional;
 
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 

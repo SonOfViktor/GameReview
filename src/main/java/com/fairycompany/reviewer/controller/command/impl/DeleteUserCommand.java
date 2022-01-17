@@ -22,7 +22,7 @@ public class DeleteUserCommand extends AbstractCommand {
 
         try {
             userService.deleteUser(content);
-            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.USER_DELETED);
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.USER_DELETED);       //todo delete imageFile
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Some error when deleting user. {}", e.getMessage());
             throw new CommandException("Some error when deleting user", e);

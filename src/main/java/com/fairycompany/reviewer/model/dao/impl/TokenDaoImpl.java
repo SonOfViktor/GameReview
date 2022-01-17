@@ -2,17 +2,15 @@ package com.fairycompany.reviewer.model.dao.impl;
 
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.model.dao.JdbcTemplate;
+import com.fairycompany.reviewer.model.dao.TokenDao;
 import com.fairycompany.reviewer.model.dao.mapper.impl.TokenResultSetHandler;
 import com.fairycompany.reviewer.model.entity.UserToken;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class TokenDaoImpl {
-    private static final Logger logger = LogManager.getLogger();
+public class TokenDaoImpl implements TokenDao {
     private static TokenDaoImpl instance = new TokenDaoImpl();
 
     private static final String ADD_USER_TOKEN_SQL = """
@@ -24,28 +22,40 @@ public class TokenDaoImpl {
             FROM tokens
             WHERE token_id = ?
             """;
+    private static final String DELETE_BY_ID_SQL = """
+            DELETE FROM tokens WHERE token_id = ?
+            """;
 
     private JdbcTemplate<UserToken> jdbcTemplate;
 
     private TokenDaoImpl() {
-        jdbcTemplate = new JdbcTemplate<UserToken>(new TokenResultSetHandler());
+        jdbcTemplate = new JdbcTemplate<>(new TokenResultSetHandler());
     }
 
     public static TokenDaoImpl getInstance() {
         return instance;
     }
 
+    @Override
     public Optional<UserToken> findTokenById(long tokenId) throws DaoException {
         Optional<UserToken> userToken = jdbcTemplate.executeSelectQueryForObject(FIND_USER_TOKEN_SQL, tokenId);
 
         return userToken;
     }
 
+    @Override
     public long addRegistrationToken(long userId, String token) throws DaoException {
         long tokenId = jdbcTemplate.executeInsertQuery(ADD_USER_TOKEN_SQL, userId,
                 token, Timestamp.valueOf(LocalDateTime.now()));
 
         return tokenId;
+    }
+
+    @Override
+    public boolean deleteToken(long tokenId) throws DaoException {
+        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_BY_ID_SQL, tokenId);
+
+        return isDeleted;
     }
 
 }

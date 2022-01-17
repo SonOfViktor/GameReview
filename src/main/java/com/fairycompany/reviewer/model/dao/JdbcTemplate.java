@@ -12,7 +12,6 @@ import java.util.*;
 
 public class JdbcTemplate<T extends Entity> {
     private static Logger logger = LogManager.getLogger();
-    private static final String COUNT_LINES_PARAMETER = "line";
     private static final String GENERATED_KEY = "GENERATED_KEY";
     private ResultSetHandler<T> resultSetHandler;
     private TransactionManager transactionManager;
@@ -55,34 +54,7 @@ public class JdbcTemplate<T extends Entity> {
         return result;
     }
 
-//    public Map<String, List<Object>> executeSelectQueryFromTables(String sqlQuery, Set<String> columnNames,
-//                                                                  Object... parameters) throws DaoException {
-//        Map<String, List<Object>> map = new HashMap<>();              todo delete :(
-//
-//        Connection connection = transactionManager.getConnection();
-//        try (PreparedStatement statement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE,
-//                ResultSet.CONCUR_READ_ONLY)) {
-//            setParametersInPreparedStatement(statement, parameters);
-//
-//            ResultSet resultSet = statement.executeQuery();
-//
-//            for (String column: columnNames) {
-//                map.put(column, new ArrayList<>());
-//                while (resultSet.next()) {
-//                    map.get(column).add(resultSet.getObject(column));
-//                }
-//                resultSet.beforeFirst();
-//            }
-//
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "Database error. Elements wasn't extracted. {}", e.getMessage());
-//            throw new DaoException("Database error. Elements wasn't extracted.", e);
-//        }
-//
-//        return map;
-//    }
-
-    public List<Map<String, Object>> executeSelectForList(String sql, Set<String> columnNames, Object... parameters)
+    public List<Map<String, Object>> executeSelectEntityWithExtraFields(String sql, Set<String> columnNames, Object... parameters) //todo naming
             throws DaoException {
         Connection connection = transactionManager.getConnection();
         List<Map<String, Object>> extractedValues = new ArrayList<>();
@@ -177,7 +149,7 @@ public class JdbcTemplate<T extends Entity> {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                totalValue = (Number) resultSet.getObject(columnName);          // todo новый instance of
+                totalValue = (Number) resultSet.getObject(columnName);
             }
         } catch (SQLException e) {
             logger.log(Level.ERROR, "Error when finding value. {}", e.getMessage());

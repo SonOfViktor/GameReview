@@ -27,6 +27,4 @@ public interface GameService {
     boolean updateGenres(SessionRequestContent content) throws ServiceException;
 
     boolean deleteGame(SessionRequestContent content) throws  ServiceException;
-
-//    List<String> makeGenreNames();
 }

@@ -20,28 +20,15 @@ import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
     private static UserDaoImpl instance = new UserDaoImpl();
-    private static final String FIND_ALL_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
-            FROM users
-            JOIN roles ON users.role_id = roles.role_id
-            JOIN statuses ON users.status_id = statuses.status_id
-            ORDER BY user_id
-            """;
 
-    private static final String FIND_ALL_WITH_PAGINATION_SQL = """
+    private static final String FIND_ALL_SQL = """
             SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
             ORDER BY user_id LIMIT ?, ?
             """;
-    private static final String FIND_BY_ID_SQL = """
-            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
-            FROM users
-            JOIN roles ON users.role_id = roles.role_id
-            JOIN statuses ON users.status_id = statuses.status_id
-            WHERE user_id = ?
-            """;
+
     private static final String FIND_TOTAL_USER_AMOUNT = """
             SELECT COUNT(*) AS total_value FROM users
             """;
@@ -87,7 +74,6 @@ public class UserDaoImpl implements UserDao {
             WHERE user_id = ?
             """;
 
-
     private JdbcTemplate<User> jdbcTemplate;
 
     private UserDaoImpl() {
@@ -98,20 +84,13 @@ public class UserDaoImpl implements UserDao {
         return instance;
     }
 
-    @Override
-    public List<User> findAll() throws DaoException {
-        List<User> users = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL);
-
-        return users;
-    }
-
     public List<User> findAll(long skippedUsers, int rowAmount) throws DaoException {
-        List<User> users = jdbcTemplate.executeSelectQuery(FIND_ALL_WITH_PAGINATION_SQL, skippedUsers, rowAmount);
+        List<User> users = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL, skippedUsers, rowAmount);
 
         return users;
     }
 
-//    @Override
+    @Override
     public long findTotalUserAmount() throws DaoException {
         Number totalUserAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_USER_AMOUNT, TOTAL_VALUE);
         logger.log(Level.DEBUG, "Total user amount is {}", totalUserAmount);
@@ -120,10 +99,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findEntityById(long id) throws DaoException {
-        Optional<User> user = jdbcTemplate.executeSelectQueryForObject(FIND_BY_ID_SQL, id);
-
-        return user;
+    public Optional<User> findEntityById(long id){
+        throw new UnsupportedOperationException();
     }
 
     public Optional<User> findByLoginAndPassword(String login, String password) throws DaoException {
@@ -160,6 +137,17 @@ public class UserDaoImpl implements UserDao {
         return userId;
     }
 
+    @Override
+    public boolean update(User user) throws DaoException {
+        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_SQL,
+                user.getFirstName(),
+                user.getSecondName(),
+                user.getBirthday(),
+                user.getPhone(),
+                user.getUserId());
+        return isUpdated;
+    }
+
     public boolean updatePassword(long userId, String password) throws DaoException {
         boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_PASSWORD_SQL, password, userId);
 
@@ -185,21 +173,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean update(User user) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_SQL,
-                user.getFirstName(),
-                user.getSecondName(),
-                user.getBirthday(),
-                user.getPhone(),
-                user.getUserId());
-        return isUpdated;
-    }
-
-    @Override
     public boolean delete(long id) throws DaoException {
         boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_BY_ID_SQL, id);
 
         return isDeleted;
     }
-
 }

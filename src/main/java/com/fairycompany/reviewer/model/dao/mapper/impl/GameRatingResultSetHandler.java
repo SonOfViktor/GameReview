@@ -1,6 +1,5 @@
 package com.fairycompany.reviewer.model.dao.mapper.impl;
 
-import com.fairycompany.reviewer.model.dao.ColumnName;
 import com.fairycompany.reviewer.model.dao.mapper.ResultSetHandler;
 import com.fairycompany.reviewer.model.entity.GameRating;
 

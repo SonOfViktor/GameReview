@@ -18,14 +18,6 @@ import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 public class GameDaoImpl implements GameDao {
     private static final Logger logger = LogManager.getLogger();
     private static GameDaoImpl instance = new GameDaoImpl();
-//    private static final String COMMA_REGEX = ",";
-
-    private static final String FIND_ALL_GAMES_MAIN_PAGE_SQL = """  
-            SELECT name, publisher, release_date, description, image, price, platform, total_rating
-            FROM games
-            LEFT JOIN total_game_rating ON games.game_id = total_game_rating.game_id
-            ORDER BY name
-            """;
 
     private static final String FIND_ALL_GAMES_WITH_RATING_SQL = """
             SELECT games.*, GROUP_CONCAT(genre SEPARATOR ',') AS genre, total_rating FROM games
@@ -55,31 +47,12 @@ public class GameDaoImpl implements GameDao {
             WHERE name LIKE ?
             """;
 
-    private static final String FIND_ALL_SQL = """  
-            SELECT game_id, name, publisher, developer, release_date, description, image, trailer_url, price, platform,
-            FROM games
-            ORDER BY name
-            """;
-
-    private static final String FIND_ALL_GENRE_SQL = """
-            SELECT genre
-            FROM games_genres
-            JOIN genres ON games_genres.genre_id = genres.genre_id
-            WHERE game_id = ?
-            """;
-
     private static final String FIND_BY_ID_SQL = """
             SELECT games.*, GROUP_CONCAT(genre SEPARATOR ',') AS genre FROM games
             JOIN games_genres ON games_genres.game_id = games.game_id
             JOIN genres ON games_genres.genre_id = genres.genre_id
             GROUP BY games_genres.game_id
             HAVING game_id = ?
-            """;
-
-    private static final String FIND_BY_NAME_SQL = """
-            SELECT game_id, name, publisher, developer, release_date, description, image, trailer_url, price, platform
-            FROM games
-            WHERE name = ?
             """;
 
     private static final String DELETE_GAME_SQL = """          
@@ -116,24 +89,21 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public List<Game> findAll() throws DaoException {
+    public List<Game> findAll(long skippedUsers, int rowAmount) {
         throw new UnsupportedOperationException();
-//        List<Game> games = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL);
-//
-//        return games;
     }
 
     @Override
     public List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_ALL_GAMES_WITH_RATING_SQL, columnNames, skippedRows, rowAmount);
+        List<Map<String, Object>> games = jdbcTemplate.executeSelectEntityWithExtraFields(FIND_ALL_GAMES_WITH_RATING_SQL, columnNames, skippedRows, rowAmount);
         return games;
     }
 
     @Override
     public List<Map<String, Object>> findSearchGamesWithRating(String searchGame, long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectForList(FIND_SEARCH_GAMES_WITH_RATING_SQL, columnNames, searchGame, skippedRows, rowAmount);
+        List<Map<String, Object>> games = jdbcTemplate.executeSelectEntityWithExtraFields(FIND_SEARCH_GAMES_WITH_RATING_SQL, columnNames, searchGame, skippedRows, rowAmount);
         return games;
     }
 

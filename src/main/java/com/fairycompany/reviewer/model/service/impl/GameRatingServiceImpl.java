@@ -27,8 +27,6 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_
 
 public class GameRatingServiceImpl implements GameRatingService {
     private static final Logger logger = LogManager.getLogger();
-//    private static final int ZERO = 0;
-//    private static final String EMPTY_LINE = "";
     private static final String CREATE = "create";
     private static final String UPDATE = "update";
     private GameRatingDao gameRatingDao = GameRatingDaoImpl.getInstance();
@@ -54,7 +52,7 @@ public class GameRatingServiceImpl implements GameRatingService {
             if (user != null) {
                 userId = user.getUserId();
 
-                Optional<GameRating> optionalRating = gameRatingDao.findGameRatingByGameId(userId, gameId);
+                Optional<GameRating> optionalRating = gameRatingDao.findGameRatingById(userId, gameId);
 
                 if (optionalRating.isPresent()) {
                     rating = optionalRating.get();
@@ -150,10 +148,10 @@ public class GameRatingServiceImpl implements GameRatingService {
                 switch(content.getRequestParameter(RequestParameter.SWITCH)) {
                     case CREATE -> gameRatingDao.add(rating);
                     case UPDATE -> gameRatingDao.update(rating);
-                    default -> throw new ServiceException("Parameter switch is wrong");
+                    default -> throw new ServiceException("Switch parameter is wrong");
                 }
 
-                logger.log(Level.DEBUG, "GameRating with was added or updated");
+                logger.log(Level.DEBUG, "GameRating was added or updated");
 
                 isGameReviewAdded = true;
             }
@@ -198,7 +196,7 @@ public class GameRatingServiceImpl implements GameRatingService {
         try {
             transactionManager.initTransaction();
 
-            gameRatingDao.deleteUserReview(gameRatingId);
+            gameRatingDao.delete(gameRatingId);
 
             transactionManager.commit();
         } catch (DaoException e) {
@@ -211,20 +209,6 @@ public class GameRatingServiceImpl implements GameRatingService {
 
         return true;
     }
-
-//    private GameRating makeDefaultGameRating(long userId, long gameId) {
-//        GameRating defaultRating = new GameRating.GameRatingBuilder()
-//                .setUserId(userId)
-//                .setGameId(gameId)
-//                .setGameplayRating(ZERO)
-//                .setGraphicsRating(ZERO)
-//                .setSoundRating(ZERO)
-//                .setPlotRating(ZERO)
-//                .setReview(EMPTY_LINE)
-//                .setPublicationDate(null)
-//                .createGameRating();
-//        return defaultRating;
-//    }
 
     private int calculateUserRating(GameRating rating) {
         IntStream streamUserRating = IntStream.of(rating.getGameplayRating(), rating.getGraphicsRating(),

@@ -100,17 +100,17 @@ public abstract class AbstractCommand implements Command {
         return isFileUpdated;
     }
 
-    private boolean isPartImage(Part part) {
-        String mimeType = part.getHeader(CONTENT_TYPE);
-
-        return mimeType.startsWith(IMAGE_TYPE) || part.getSize() == 0;
-    }
-
     protected void deleteFile(String path) {
         File file = new File(path);
         if (file.exists()) {
             file.delete();
             logger.log(Level.DEBUG, "File {} deleted", path);
         }
+    }
+
+    private boolean isPartImage(Part part) {
+        String mimeType = part.getHeader(CONTENT_TYPE);
+
+        return mimeType.startsWith(IMAGE_TYPE) || part.getSize() == 0;
     }
 }

@@ -1,11 +1,8 @@
 package com.fairycompany.reviewer.model.entity;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
 import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
 
 public class Game extends Entity {
     private long gameId;
@@ -17,30 +14,12 @@ public class Game extends Entity {
     private EnumSet<Genre> genres;
     private String description;
     private String image;
-    private List<String> screenshots;
     private String trailerUrl;
     private BigDecimal price;
 
     public enum Genre {
         ACTION, SHOOTER, STRATEGY, PLATFORMER, FIGHTING, RACING, RPG, HORROR, SLASHER, MMO, ADVENTURE, QUEST,
         STEALTH, TOP_DOWN, THIRD_PERSON, FIRST_PERSON, TWO_DIMENSIONAL, METROIDVANIA, SOULS_LIKE, OPEN_WORLD
-    }
-
-    private Game(long gameId, String name, String publisher, String developer, LocalDate releaseDate, EnumSet<Platform> platforms,
-                EnumSet<Genre> genres, String description, String image, List<String> screenshots,
-                String trailerUrl, BigDecimal price) {
-        this.gameId = gameId;
-        this.name = name;
-        this.publisher = publisher;
-        this.developer = developer;
-        this.releaseDate = releaseDate;
-        this.platforms = platforms;
-        this.genres = genres;
-        this.description = description;
-        this.image = image;
-        this.screenshots = screenshots;
-        this.trailerUrl = trailerUrl;
-        this.price = price;
     }
 
     public long getGameId() {
@@ -87,7 +66,7 @@ public class Game extends Entity {
         return platforms;
     }
 
-    public void setPlatform(EnumSet<Platform> platform) {
+    public void setPlatforms(EnumSet<Platform> platform) {
         this.platforms= platform;
     }
 
@@ -113,14 +92,6 @@ public class Game extends Entity {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public List<String> getScreenshots() {
-        return screenshots;
-    }
-
-    public void setScreenshots(List<String> screenshots) {
-        this.screenshots = screenshots;
     }
 
     public String getTrailerUrl() {
@@ -155,7 +126,6 @@ public class Game extends Entity {
         if (genres != null ? !genres.equals(game.genres) : game.genres != null) return false;
         if (description != null ? !description.equals(game.description) : game.description != null) return false;
         if (image != null ? !image.equals(game.image) : game.image != null) return false;
-        if (screenshots != null ? !screenshots.equals(game.screenshots) : game.screenshots != null) return false;
         if (trailerUrl != null ? !trailerUrl.equals(game.trailerUrl) : game.trailerUrl != null) return false;
         return price != null ? price.equals(game.price) : game.price == null;
     }
@@ -171,7 +141,6 @@ public class Game extends Entity {
         result = 31 * result + (genres != null ? genres.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (image != null ? image.hashCode() : 0);
-        result = 31 * result + (screenshots != null ? screenshots.hashCode() : 0);
         result = 31 * result + (trailerUrl != null ? trailerUrl.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
@@ -196,83 +165,69 @@ public class Game extends Entity {
     }
 
     public static class GameBuilder {
+        private Game game;
 
-        private long gameId;
-        private String name;
-        private String publisher;
-        private String developer;
-        private LocalDate releaseDate;
-        private EnumSet<Platform> platforms;
-        private EnumSet<Genre> genres;
-        private String description;
-        private String image;
-        private List<String> screenshots;
-        private String trailerUrl;
-        private BigDecimal price;
+        public GameBuilder() {
+            game = new Game();
+        }
 
         public GameBuilder setGameId(long gameId) {
-            this.gameId = gameId;
+            game.setGameId(gameId);
             return this;
         }
 
         public GameBuilder setName(String name) {
-            this.name = name;
+            game.setName(name);
             return this;
         }
 
         public GameBuilder setPublisher(String publisher) {
-            this.publisher = publisher;
+            game.setPublisher(publisher);
             return this;
         }
 
         public GameBuilder setDeveloper(String developer) {
-            this.developer = developer;
+            game.setDeveloper(developer);
             return this;
         }
 
         public GameBuilder setReleaseDate(LocalDate releaseDate) {
-            this.releaseDate = releaseDate;
+            game.setReleaseDate(releaseDate);
             return this;
         }
 
         public GameBuilder setPlatforms(EnumSet<Platform> platforms) {
-            this.platforms = platforms;
+            game.setPlatforms(platforms);
             return this;
         }
 
         public GameBuilder setGenres(EnumSet<Genre> genres) {
-            this.genres = genres;
+            game.setGenres(genres);
             return this;
         }
 
         public GameBuilder setDescription(String description) {
-            this.description = description;
+            game.setDescription(description);
             return this;
         }
 
         public GameBuilder setImage(String image) {
-            this.image = image;
-            return this;
-        }
-
-        public GameBuilder setScreenshots(List<String> screenshots) {
-            this.screenshots = screenshots;
+            game.setImage(image);
             return this;
         }
 
         public GameBuilder setTrailerUrl(String trailerUrl) {
-            this.trailerUrl = trailerUrl;
+            game.setTrailerUrl(trailerUrl);
             return this;
         }
 
         public GameBuilder setPrice(BigDecimal price) {
-            this.price = price;
+            game.setPrice(price);
             return this;
         }
 
         public Game createGame() {
-            return new Game(gameId, name, publisher, developer, releaseDate, platforms, genres, description, image,
-                    screenshots, trailerUrl, price);
+            return game;
         }
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface GameRatingDao extends BaseDao<GameRating> {
-    Optional<GameRating> findGameRatingByGameId(long userId, long gameId) throws DaoException;
+    Optional<GameRating> findGameRatingById(long userId, long gameId) throws DaoException;
 
     long findUserAmount(long gameId) throws DaoException;
 
@@ -23,6 +23,4 @@ public interface GameRatingDao extends BaseDao<GameRating> {
     long findTotalGameRatingReview(long gameId, long userId) throws DaoException;
 
     boolean deleteUserRating(long userId, long gameId) throws DaoException;
-
-    boolean deleteUserReview(long gameRatingId) throws DaoException;
 }

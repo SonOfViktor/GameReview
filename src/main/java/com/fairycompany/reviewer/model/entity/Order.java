@@ -10,15 +10,6 @@ public class Order extends Entity {
     private BigDecimal price;
     private String gameKey;
 
-    private Order(long orderId, String gameName, long paymentId, Platform platform, BigDecimal price, String gameKey) {
-        this.orderId = orderId;
-        this.paymentId = paymentId;
-        this.gameName = gameName;
-        this.platform = platform;
-        this.price = price;
-        this.gameKey = gameKey;
-    }
-
     public long getOrderId() {
         return orderId;
     }
@@ -110,45 +101,44 @@ public class Order extends Entity {
 
     public static class OrderBuilder {
 
-        private long orderId;
-        private long paymentId;
-        private String gameName;
-        private Platform platform;
-        private BigDecimal price;
-        private String gameKey;
+        private Order order;
+
+        public OrderBuilder() {
+            order = new Order();
+        }
 
         public OrderBuilder setOrderId(long orderId) {
-            this.orderId = orderId;
+            order.setOrderId(orderId);
             return this;
         }
 
         public OrderBuilder setGameName(String gameName) {
-            this.gameName = gameName;
+            order.setGameName(gameName);
             return this;
         }
 
         public OrderBuilder setPaymentId(long paymentId) {
-            this.paymentId = paymentId;
+            order.setPaymentId(paymentId);
             return this;
         }
 
         public OrderBuilder setPlatform(Platform platform) {
-            this.platform = platform;
+            order.setPlatform(platform);
             return this;
         }
 
         public OrderBuilder setPrice(BigDecimal price) {
-            this.price = price;
+            order.setPrice(price);
             return this;
         }
 
         public OrderBuilder setGameKey(String gameKey) {
-            this.gameKey = gameKey;
+            order.setGameKey(gameKey);
             return this;
         }
 
         public Order createOrder() {
-            return new Order(orderId, gameName, paymentId, platform, price, gameKey);
+            return order;
         }
     }
 }
