@@ -18,8 +18,10 @@
 </head>
 
 <body>
-<%@include file= "../WEB-INF/jspf/navbar.jspf" %>
-<%@include file= "../WEB-INF/jspf/message.jspf" %>
+<header>
+    <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+    <%@include file= "../WEB-INF/jspf/message.jspf" %>
+</header>
 
 <section class="mb-3">
     <div class="container">
@@ -135,7 +137,7 @@
                 <input type="hidden" name="command" value="update_photo">
                 <div class="row mb-3">
                     <div class="col-3">
-<%--                        <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
+<%--   todo                     <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
                         <img src="<%--http://localhost:8080/gamereview/--%>${user.photo} <%--?date=${calendar.timeInMillis}--%>" class="shadow bg-white rounded">
                     </div>
                     <div class="col-8 align-self-center">
@@ -164,11 +166,6 @@
                     <input type="hidden" name="command" value="delete_user">
                     <div class="col-12 d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary"><fmt:message key="delete_button"/></button>
-<%--                        <a class="btn btn-primary"--%>
-<%--    &lt;%&ndash;                       todo delete actual_page&ndash;%&gt;--%>
-<%--                           href="${pageContext.request.contextPath}/controller?command=delete_user&user_id=${game.userId}&actual_page=1" role="button">--%>
-<%--                            <fmt:message key="delete_button"/>--%>
-<%--                        </a>--%>
                     </div>
                 </form>
             </div>

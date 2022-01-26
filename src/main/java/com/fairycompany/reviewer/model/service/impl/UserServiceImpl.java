@@ -11,14 +11,16 @@ import com.fairycompany.reviewer.model.dao.impl.UserDaoImpl;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.entity.UserToken;
 import com.fairycompany.reviewer.model.service.UserService;
-import com.fairycompany.reviewer.util.ServiceUtil;
+import com.fairycompany.reviewer.model.validator.CommonValidator;
+import com.fairycompany.reviewer.model.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.UserValidator;
-import com.fairycompany.reviewer.util.EmailSender;
-import com.fairycompany.reviewer.util.HashGenerator;
+import com.fairycompany.reviewer.model.util.EmailSender;
+import com.fairycompany.reviewer.model.util.HashGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.*;
 
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger();
+    private static final String RELATIVE_PHOTO_DIR = "media\\people\\";
+    private static final String DEFAULT_FILE = "pic\\default_user.jpg";
     private static final String HYPHEN = "-";
     private static final String EMPTY_LINE = "";
     private static final String REGISTRATION_SUBJECT_EMAIL = "Registration";
@@ -53,7 +57,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<User> findAllUsers(SessionRequestContent content) throws ServiceException {
-        int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
+
+        long actualPage = serviceUtil.takeActualPage(content);
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
 
         List<User> users;
@@ -61,7 +67,7 @@ public class UserServiceImpl implements UserService {
         try {
             transactionManager.initTransaction();
 
-            long skippedUsers = (long) actualPage * rowAmount - rowAmount;
+            long skippedUsers = actualPage * rowAmount - rowAmount;
             users = userDao.findAll(skippedUsers, rowAmount);
 
             long totalUserAmount = userDao.findTotalUserAmount();
@@ -108,60 +114,43 @@ public class UserServiceImpl implements UserService {
 
     public boolean addUser(SessionRequestContent content) throws ServiceException {
         ServiceUtil serviceUtil = ServiceUtil.getInstance();
+        User.UserBuilder userBuilder = new User.UserBuilder();
         boolean isUserAdded = false;
 
-        String login = content.getRequestParameter(RequestParameter.LOGIN);
-        String name = content.getRequestParameter(RequestParameter.USER_NAME);
-        String surname = content.getRequestParameter(RequestParameter.SURNAME);
-        String password = content.getRequestParameter(RequestParameter.PASSWORD);
-        String passwordChecker = content.getRequestParameter(RequestParameter.PASSWORD_CHECK);
-        LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
-        String phone = content.getRequestParameter(RequestParameter.PHONE);
-        String photoFile = (String) content.getRequestAttribute(RequestAttribute.USER_PHOTO);
+        String hashPassword = makeUserWithHashPassword(content, userBuilder);
+        if (!hashPassword.isEmpty()) {
+            User user = userBuilder.createUser();
 
-        UserValidator validator = UserValidator.getInstance();
+            String uploadDirectory = (String) content.getRequestAttribute(RequestAttribute.UPLOAD_DIRECTORY);
+            String fileExtension = (String) content.getRequestAttribute(RequestAttribute.FILE_EXTENSION);
+            Optional<InputStream> imageStream = (Optional<InputStream>) content.getRequestAttribute(RequestAttribute.IMAGE_INPUT_STREAM);
 
-        if (!(validator.isLoginValid(login) &&
-                validator.isPasswordValid(password) &&
-                validator.isNameValid(name) &&
-                validator.isNameValid(surname) &&
-                validator.isPhoneValid(phone))) {
-            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
-        } else if (!validator.isDateValid(birthday)) {
-            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
-        } else if (!validator.passwordCheck(password, passwordChecker)) {
-            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);
-        } else {
-            User user = new User.UserBuilder()
-                    .setLogin(login)
-                    .setFirstName(name)
-                    .setSecondName(surname)
-                    .setBirthday(birthday)
-                    .setPhone(getPhoneFromString(phone))
-                    .setPhoto(photoFile)
-                    .setUserRole(User.Role.USER)
-                    .setUserStatus(User.Status.NOT_CONFIRMED)
-                    .createUser();
-
-            String hashPassword = HashGenerator.hashPassword(password);
+            String photoPath = RELATIVE_PHOTO_DIR + user.getLogin();
+            serviceUtil.makeDir(uploadDirectory + RELATIVE_PHOTO_DIR);
 
             try {
+                photoPath = (imageStream.isPresent()) ?
+                        serviceUtil.saveImage(uploadDirectory, photoPath, fileExtension, imageStream.get()) :
+                        serviceUtil.saveDefaultImage(uploadDirectory, photoPath, DEFAULT_FILE);
+                user.setPhoto(photoPath);
+
                 transactionManager.initTransaction();
 
                 long userId = userDao.add(user, hashPassword);
                 user.setUserId(userId);
 
-                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
-                long tokenId = tokenDao.addRegistrationToken(userId, token);  // todo uncomment to send email
-                sendRegisterEmail(content, tokenId, token);                   // todo uncomment to send email
+//                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
+//                long tokenId = tokenDao.addRegistrationToken(userId, token);  // todo uncomment to send email
+//                sendRegisterEmail(content, tokenId, token);                   // todo uncomment to send email
 
                 transactionManager.commit();
 
                 isUserAdded = true;
             } catch (DaoException e) {
                 transactionManager.rollback();
-                logger.log(Level.ERROR, "Error when adding user with name {} and password {}, {}", login, password, e.getMessage());
-                throw new ServiceException("Error when adding user with login " + login + " and password " + password, e);
+                serviceUtil.deleteFile(uploadDirectory + photoPath);
+                logger.log(Level.ERROR, "Error when adding user with name {}, {}", user.getLogin(), e.getMessage());
+                throw new ServiceException("Error when adding user with login " + user.getLogin(), e);
             } finally {
                 transactionManager.endTransaction();
             }
@@ -180,7 +169,7 @@ public class UserServiceImpl implements UserService {
         String name = content.getRequestParameter(RequestParameter.USER_NAME);
         String surname = content.getRequestParameter(RequestParameter.SURNAME);
         LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
-        String phone = content.getRequestParameter(RequestParameter.PHONE);
+        String phone = content.getRequestParameter(RequestParameter.PHONE).replace(HYPHEN, EMPTY_LINE);
 
         UserValidator validator = UserValidator.getInstance();
 
@@ -197,7 +186,7 @@ public class UserServiceImpl implements UserService {
                 updatedUser.setFirstName(name);
                 updatedUser.setSecondName(surname);
                 updatedUser.setBirthday(birthday);
-                updatedUser.setPhone(getPhoneFromString(phone));
+                updatedUser.setPhone(Integer.parseInt(phone));
 
                 userDao.update(updatedUser);
 
@@ -250,48 +239,72 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUserByAdmin(SessionRequestContent content) throws ServiceException {
-        long userId = Long.parseLong(content.getRequestParameter(USER_ID));
-        int role = User.Role.valueOf(content.getRequestParameter(USER_ROLE).toUpperCase()).ordinal();
-        int status = User.Status.valueOf(content.getRequestParameter(USER_STATUS).toUpperCase()).ordinal();
+        boolean isUpdated = false;
+        String userIdString = content.getRequestParameter(USER_ID);
+        String roleString = content.getRequestParameter(USER_ROLE).toUpperCase();
+        String statusString = content.getRequestParameter(USER_STATUS).toUpperCase();
 
-        try {
+        CommonValidator commonValidator = CommonValidator.getInstance();
+        UserValidator userValidator = UserValidator.getInstance();
+
+        if (commonValidator.isStringLong(userIdString) &&
+                userValidator.isRoleValid(roleString) &&
+                userValidator.isStatusValid(statusString)) {
+            long userId = Long.parseLong(userIdString);
+            int role = User.Role.valueOf(roleString).ordinal();
+            int status = User.Status.valueOf(statusString).ordinal();
+
+            try {
                 transactionManager.initTransaction();
 
                 userDao.updateRoleAndStatus(userId, role, status);
 
                 transactionManager.commit();
-        } catch (DaoException e) {
-            transactionManager.rollback();
-            logger.log(Level.ERROR, "Error when updating status and role, {}", e.getMessage());
-            throw new ServiceException("Error when updating status and role", e);
-        } finally {
-            transactionManager.endTransaction();
+
+                isUpdated = true;
+            } catch (DaoException e) {
+                transactionManager.rollback();
+                logger.log(Level.ERROR, "Error when updating status and role, {}", e.getMessage());
+                throw new ServiceException("Error when updating status and role", e);
+            } finally {
+                transactionManager.endTransaction();
+            }
         }
-        return true;
+
+        return isUpdated;
     }
 
     public boolean finishRegistration(SessionRequestContent content) throws ServiceException {
         boolean isRegistered = false;
 
         String registerCode = content.getRequestParameter(REGISTER_CODE);
-        long tokenId = Long.parseLong(content.getRequestParameter(TOKEN_ID));
+        String tokenIdString = content.getRequestParameter(TOKEN_ID);
 
-        try {
-            transactionManager.initTransaction();
-            Optional<UserToken> userToken = tokenDao.findTokenById(tokenId);
-            if (userToken.isPresent()) {
-                if (userToken.get().getToken().equals(registerCode)) {
+        CommonValidator commonValidator = CommonValidator.getInstance();
+        UserValidator userValidator = UserValidator.getInstance();
+
+        if (userValidator.isTokenValid(registerCode) && commonValidator.isStringLong(tokenIdString)) {
+            long tokenId = Long.parseLong(tokenIdString);
+
+            try {
+                transactionManager.initTransaction();
+
+                Optional<UserToken> userToken = tokenDao.findTokenById(tokenId);
+
+                if (userToken.isPresent() && userToken.get().getToken().equals(registerCode)) {
                     userDao.updateStatus(userToken.get().getUserId(), User.Status.ACTIVE);
                     tokenDao.deleteToken(tokenId);
+
                     transactionManager.commit();
+
                     isRegistered = true;
                 }
+            } catch (DaoException e) {
+                logger.log(Level.ERROR, "Error when finishing registration {}. ", e.getMessage());
+                throw new ServiceException("Error when finishing registration", e);
+            } finally {
+                transactionManager.endTransaction();
             }
-        } catch (DaoException e) {
-            logger.log(Level.ERROR, "Error when finishing registration {}. ", e.getMessage());
-            throw new ServiceException("Error when finishing registration", e);
-        } finally {
-            transactionManager.endTransaction();
         }
 
         return isRegistered;
@@ -299,13 +312,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(SessionRequestContent content) throws ServiceException {
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        String uploadDirectory = (String) content.getRequestAttribute(RequestAttribute.UPLOAD_DIRECTORY);
+
         long userId = user.getUserId();
 
         try {
             transactionManager.initTransaction();
 
             userDao.delete(userId);
+            serviceUtil.deleteFile(uploadDirectory + user.getPhoto());
 
             transactionManager.commit();
         } catch (DaoException e) {
@@ -319,10 +336,6 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    private int getPhoneFromString(String phone) {
-        return Integer.parseInt(phone.replace(HYPHEN, EMPTY_LINE));
-    }
-
     private boolean sendRegisterEmail(SessionRequestContent content, long tokenId, String token) {
         String sendTo = content.getRequestParameter(RequestParameter.LOGIN);
         String registerLink = String.format(REGISTER_LINK, content.getRequestAttribute(RequestAttribute.SOURCE_LINK),
@@ -332,5 +345,61 @@ public class UserServiceImpl implements UserService {
         EmailSender emailSender = new EmailSender(sendTo, REGISTRATION_SUBJECT_EMAIL, letter);
 
         return emailSender.sendEmail();
+    }
+
+    private String makeUserWithHashPassword(SessionRequestContent content, User.UserBuilder userBuilder) throws ServiceException {
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
+        String hashPassword = "";
+
+        String login = content.getRequestParameter(RequestParameter.LOGIN);
+        String name = content.getRequestParameter(RequestParameter.USER_NAME);
+        String surname = content.getRequestParameter(RequestParameter.SURNAME);
+        String password = content.getRequestParameter(RequestParameter.PASSWORD);
+        String passwordChecker = content.getRequestParameter(RequestParameter.PASSWORD_CHECK);
+        LocalDate birthday = serviceUtil.getDateFromString(content.getRequestParameter(RequestParameter.BIRTHDAY));
+        String phone = content.getRequestParameter(RequestParameter.PHONE).replace(HYPHEN, EMPTY_LINE);
+
+        UserValidator validator = UserValidator.getInstance();
+
+        if (!(validator.isLoginValid(login) &&
+                validator.isPasswordValid(password) &&
+                validator.isNameValid(name) &&
+                validator.isNameValid(surname) &&
+                validator.isPhoneValid(phone))) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
+        } else if (!validator.isDateValid(birthday)) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
+        } else if (!validator.passwordCheck(password, passwordChecker)) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);
+        } else if(isUserExist(login)) {
+            content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_ALREADY_EXIST);
+        } else {
+            userBuilder.setLogin(login)
+                    .setFirstName(name)
+                    .setSecondName(surname)
+                    .setBirthday(birthday)
+                    .setPhone(Integer.parseInt(phone))
+                    .setUserRole(User.Role.USER)
+                    .setUserStatus(User.Status.NOT_CONFIRMED);
+
+            hashPassword = HashGenerator.hashPassword(password);
+        }
+
+        return hashPassword;
+    }
+
+    private boolean isUserExist(String name) throws ServiceException {
+        Optional<User> user;
+
+        try {
+            transactionManager.initTransaction();
+
+            user = userDao.findUserByLogin(name);
+        } catch (DaoException e) {
+            logger.log(Level.ERROR, "Error when finding user, {}", e.getMessage());
+            throw new ServiceException("Error when finding user", e);
+        }
+
+        return user.isPresent();
     }
 }

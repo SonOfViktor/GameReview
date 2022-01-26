@@ -28,6 +28,7 @@ public class ControllerServlet extends HttpServlet {
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stringCommand = request.getParameter(RequestParameter.COMMAND);
         Command command = CommandProvider.defineCommand(stringCommand).get();
+//        Command command = (Command) request.getAttribute(RequestAttribute.COMMAND_TYPE);
 
         try {
             Router router = command.execute(request);
@@ -41,8 +42,8 @@ public class ControllerServlet extends HttpServlet {
                 }
             }
         } catch (CommandException e) {
-            logger.log(Level.ERROR, "Error when executing command {} ", stringCommand);
-            request.getSession().setAttribute("exception", e);
+            logger.log(Level.ERROR, "Error when executing command {} ", command.getClass().getName());
+            request.getSession().setAttribute(SessionAttribute.EXCEPTION, e);
             response.sendRedirect(request.getContextPath() + PagePath.EXCEPTION_ERROR_REDIRECT);
         }
     }

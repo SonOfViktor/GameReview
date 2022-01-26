@@ -55,6 +55,11 @@ public class GameDaoImpl implements GameDao {
             HAVING game_id = ?
             """;
 
+    private static final String HAS_GAME_NAME_SQL = """
+            SELECT name FROM games
+            WHERE name = ?;
+            """;
+
     private static final String DELETE_GAME_SQL = """          
             DELETE FROM games WHERE game_id = ?
             """;
@@ -112,6 +117,14 @@ public class GameDaoImpl implements GameDao {
         Optional<Game> game = jdbcTemplate.executeSelectQueryForObject(FIND_BY_ID_SQL, id);
 
         return game;
+    }
+
+    @Override
+    public List<Map<String, Object>> findGameName(String name) throws DaoException {
+        Set<String> columnNames = Set.of(NAME);
+        List<Map<String, Object>> gameName = jdbcTemplate.executeSelectSomeFields(HAS_GAME_NAME_SQL, columnNames, name);
+
+        return gameName;
     }
 
     @Override

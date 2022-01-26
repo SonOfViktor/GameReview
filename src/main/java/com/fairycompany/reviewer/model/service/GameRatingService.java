@@ -4,8 +4,10 @@ import com.fairycompany.reviewer.controller.command.SessionRequestContent;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.entity.GameRating;
 
+import java.util.Optional;
+
 public interface GameRatingService {
-    GameRating findGameRating(SessionRequestContent content) throws ServiceException;
+    Optional<GameRating> findGameRating(SessionRequestContent content) throws ServiceException;
 
     boolean addUpdateGameReview(SessionRequestContent content) throws ServiceException;
 

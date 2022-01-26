@@ -56,7 +56,7 @@ public enum CommandType {
         return command;
     }
 
-    public boolean isValidRole(User.Role role) {
+    public boolean hasUserRole(User.Role role) {
         return roles.stream().anyMatch(r -> r == role);
     }
 }

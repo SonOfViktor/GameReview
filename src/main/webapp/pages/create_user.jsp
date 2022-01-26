@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setLocale value="${locale}" scope="session" />
@@ -17,9 +16,10 @@
 </head>
 <body>
 
-<%@include file= "../WEB-INF/jspf/navbar_light.jspf" %>
-
-<%@include file= "../WEB-INF/jspf/message.jspf" %>
+<header>
+    <%@include file= "../WEB-INF/jspf/navbar_light.jspf" %>
+    <%@include file= "../WEB-INF/jspf/message.jspf" %>
+</header>
 
 <section>
 <div class="container mt-5">
@@ -81,7 +81,6 @@
             </div>
         </div>
 
-        <!--Найти способо поставить текущую дату минус 18 лет -->
         <div class="w-100"></div>
         <div class="col-3">
             <label for="inputBirthday" class="form-label"><fmt:message key="sing_up.birthday"/></label>

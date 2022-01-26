@@ -1,6 +1,8 @@
 package com.fairycompany.reviewer.controller.command.impl;
 
+import com.fairycompany.reviewer.controller.command.LocaleMessageKey;
 import com.fairycompany.reviewer.controller.command.Router;
+import com.fairycompany.reviewer.controller.command.SessionAttribute;
 import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.service.GameRatingService;
@@ -16,11 +18,14 @@ public class DeleteRatingCommand extends AbstractCommand {
 
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
         try {
-            gameRatingService.deleteUserRating(content);
+            if (!gameRatingService.deleteUserRating(content)) {
+                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
+            }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Deleting rating is failed. {}", e.getMessage());
             throw new CommandException("Deleting rating is failed", e);
         }
+        content.insertValues(request);
 
         return router;
     }

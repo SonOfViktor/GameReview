@@ -10,15 +10,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.Optional;
-import java.util.UUID;
 
 public abstract class AbstractCommand implements Command {
     protected static final Logger logger = LogManager.getLogger();
-    private static final String DEFAULT_FILE_EXTENSION = ".jpg";
     private static final String CONTENT_TYPE = "content-type";
     private static final String IMAGE_TYPE = "image/";
     protected SessionRequestContent content = new SessionRequestContent();
@@ -34,47 +30,32 @@ public abstract class AbstractCommand implements Command {
         router.setType(Router.RouterType.REDIRECT);
     }
 
-    protected Optional<String> saveImage(HttpServletRequest request, String uploadDirectory, String defaultFile) {
-        Optional<String> imageName = Optional.empty();
+    protected boolean extractImageInputStream(HttpServletRequest request) {
+        boolean isExtracted = true;
+        Optional<InputStream> image = Optional.empty();
 
         try {
             Part part = request.getPart(RequestParameter.IMAGE);
-            if (isPartImage(part)) {
-                String newFileName = UUID.randomUUID().toString();
-                String generatedFileName = newFileName + DEFAULT_FILE_EXTENSION;
-
-                File fileSaveDir = new File(uploadDirectory);
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdirs();
-                }
-
-                String partFileName = part.getSubmittedFileName();
-                if (!partFileName.isEmpty()) {
+            if (part.getSize() != 0) {
+                String mimeType = part.getHeader(CONTENT_TYPE);
+                if (mimeType.startsWith(IMAGE_TYPE)) {
+                    image = Optional.of(part.getInputStream());
+                    String partFileName = part.getSubmittedFileName();
                     String fileExtension = partFileName.substring(partFileName.lastIndexOf("."));
-                    generatedFileName = newFileName + fileExtension;
-                    String imagePath = uploadDirectory + File.separator + generatedFileName;
-                    part.write(imagePath);
-                    logger.log(Level.DEBUG, "Image path is {}", imagePath);
+                    content.addRequestAttribute(RequestAttribute.FILE_EXTENSION, fileExtension);
                 } else {
-                    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                    File file = new File(classLoader.getResource(defaultFile).getFile());
-                    Path sourceFile = file.toPath();
-                    String imagePath = uploadDirectory + File.separator + generatedFileName;
-                    Path destFile = Paths.get(imagePath);
-                    Files.copy(sourceFile, destFile);
+                    logger.log(Level.WARN, "The user tried to upload a file with a wrong type");
+                    content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.INVALID_FILE_TYPE);
+                    isExtracted = false;
                 }
-
-                imageName = Optional.of(generatedFileName);
-            } else {
-                logger.log(Level.WARN, "The user tried to upload a file with a wrong type");
-                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.INVALID_FILE_TYPE);
             }
+            content.addRequestAttribute(RequestAttribute.IMAGE_INPUT_STREAM, image);
         } catch (IOException | ServletException e) {
-            logger.log(Level.ERROR, "Failed to upload file.", e);
+            logger.log(Level.ERROR, "Failed to extract .", e);
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.UPLOAD_FILE_FAILED);
         }
 
-        return imageName;
+        return isExtracted;
     }
 
     protected boolean updateImage(HttpServletRequest request, String imagePath) {

@@ -21,6 +21,7 @@
 <div class="wrapper">
     <header>
         <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+        <%@include file= "../WEB-INF/jspf/message.jspf" %>
     </header>
 
     <main class="content">
@@ -28,7 +29,7 @@
             <div class="container">
                 <c:forEach var="payment" varStatus="status" items="${payment_list}">
                     <div class="row">
-                        <p>
+                        
                             <button class="btn btn-link text-decoration-none link-dark col-5" type="button" data-bs-toggle="collapse" data-bs-target="#payment${status.count}" aria-expanded="false" aria-controls="payment${status.count}">
                                 <div class="row">
                                     <div class="col-6 fw-bold text-start">
@@ -47,7 +48,7 @@
                                     </div>
                                 </div>
                             </button>
-                        </p>
+
                         <div class="collapse" id="payment${status.count}">
                             <div class="card card-body">
                                 <c:forEach var="order" items="${payment.orders}">

@@ -1,8 +1,6 @@
 package com.fairycompany.reviewer.controller.command;
 
 public class PagePath {
-    public static final String INDEX = "index.jsp";
-    public static final String LOGIN = "pages/login.jsp";                               // todo delete
     public static final String MAIN_PAGE = "pages/main.jsp";
     public static final String MAIN_PAGE_REDIRECT = "/controller?command=to_main_page&actual_page=1";
     public static final String SEARCH_REDIRECT = "/controller?command=search_game&actual_page=%s&search_field=%s";

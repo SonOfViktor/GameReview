@@ -19,7 +19,7 @@ import java.io.IOException;
 @WebServlet("/upload_image")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024,
         maxFileSize = 1024 * 1024 * 5,
-        maxRequestSize = 1024 * 1024 * 25)
+        maxRequestSize = 1024 * 1024 * 5)
 public class ImageServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
 

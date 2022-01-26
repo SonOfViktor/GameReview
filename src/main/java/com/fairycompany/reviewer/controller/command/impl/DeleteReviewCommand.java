@@ -1,6 +1,8 @@
 package com.fairycompany.reviewer.controller.command.impl;
 
+import com.fairycompany.reviewer.controller.command.LocaleMessageKey;
 import com.fairycompany.reviewer.controller.command.Router;
+import com.fairycompany.reviewer.controller.command.SessionAttribute;
 import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.service.GameRatingService;
@@ -15,12 +17,16 @@ public class DeleteReviewCommand extends AbstractCommand{
         initCommand(request);
 
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
+
         try {
-            gameRatingService.deleteUserReview(content);
+            if (!gameRatingService.deleteUserReview(content)) {
+                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
+            }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Deleting comment is failed. {}", e.getMessage());
             throw new CommandException("Deleting comment is failed", e);
         }
+        content.insertValues(request);
 
         return router;
     }

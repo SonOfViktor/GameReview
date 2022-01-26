@@ -22,6 +22,7 @@
 <div class="wrapper">
     <header>
         <%@include file="../WEB-INF/jspf/navbar.jspf" %>
+        <%@include file= "../WEB-INF/jspf/message.jspf" %>
     </header>
 
     <main class="content">
@@ -80,18 +81,21 @@
                         </div>
                     </div>
 
-                    <div class="col-2 align-self-center">
-                        <div class="vstack gap-5">
-                            <a class="btn btn-success lh-sm mx-3"
-                               href="${pageContext.request.contextPath}/controller?command=to_game_manager_page&actual_page=1" role="button">
-                                <fmt:message key="admin_game_manager"/>
-                            </a>
-                            <a class="btn btn-success lh-sm mx-3"
-                               href="${pageContext.request.contextPath}/controller?command=to_user_manager_page&actual_page=1" role="button">
-                                <fmt:message key="admin_user_manager"/>
-                            </a>
+                    <c:if test="${user.userRole eq 'ADMIN'}">
+                        <div class="col-2 align-self-center">
+                            <div class="vstack gap-5">
+                                <a class="btn btn-success lh-sm mx-3"
+                                   href="${pageContext.request.contextPath}/controller?command=to_game_manager_page&actual_page=1" role="button">
+                                    <fmt:message key="admin_game_manager"/>
+                                </a>
+                                <a class="btn btn-success lh-sm mx-3"
+                                   href="${pageContext.request.contextPath}/controller?command=to_user_manager_page&actual_page=1" role="button">
+                                    <fmt:message key="admin_user_manager"/>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    </c:if>
+
                 </div>
             </div>
         </section>

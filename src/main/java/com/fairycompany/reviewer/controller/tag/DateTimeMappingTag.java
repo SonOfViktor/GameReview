@@ -1,7 +1,7 @@
 package com.fairycompany.reviewer.controller.tag;
 
-import com.fairycompany.reviewer.controller.command.RequestAttribute;
-import com.fairycompany.reviewer.model.entity.GameRating;
+import com.fairycompany.reviewer.controller.command.SessionAttribute;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.JspWriter;
 import jakarta.servlet.jsp.tagext.TagSupport;
@@ -12,10 +12,11 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DateTimeMappingTag extends TagSupport {
     private static final Logger logger = LogManager.getLogger();
-    private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
+    private static final String DATE_TIME_PATTERN = "dd MMM yyyy HH:mm:ss";
     private static final String EMPTY_LINE = "";
     private LocalDateTime dateTime;
 
@@ -25,10 +26,8 @@ public class DateTimeMappingTag extends TagSupport {
 
     @Override
     public int doStartTag() throws JspException {
-//        GameRating rating = (GameRating) pageContext.getRequest().getAttribute(RequestAttribute.USER_RATING);
-//        LocalDateTime date = rating.getPublicationDate();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+        Locale locale = takeLocale();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, locale);
         String formattedDate = (dateTime != null) ? formatter.format(dateTime) : EMPTY_LINE;
 
         try {
@@ -43,8 +42,15 @@ public class DateTimeMappingTag extends TagSupport {
     }
 
     @Override
-    public int doEndTag() throws JspException {
+    public int doEndTag() {
         return EVAL_PAGE;
+    }
+
+    private Locale takeLocale() {
+        HttpSession session = pageContext.getSession();
+        String str = (String) session.getAttribute(SessionAttribute.SESSION_LOCALE);
+        String[] localeRaw = str.split("_");
+        return new Locale(localeRaw[0], localeRaw[1]);
     }
 }
 

@@ -24,9 +24,10 @@
 <body>
     <header>
         <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+        <%@include file= "../WEB-INF/jspf/message.jspf" %>
     </header>
 
-    <%@include file= "../WEB-INF/jspf/message.jspf" %>
+
 
     <section class="games">
     <div class="container">
@@ -241,7 +242,7 @@
                                             ${map.full_name}
                                     </div>
                                     <div class="col-6 text-end">
-                                        <fmt:formatDate value="${map.publication_date}" type="both" pattern="dd-MM-yyyy HH:mm:ss"></fmt:formatDate>
+                                        <ctg:show-date dateTime="${map.publication_date}"/>
                                     </div>
                                 </div>
                                 <textarea class="form-control overflow-auto" id="inputReview" rows="4"

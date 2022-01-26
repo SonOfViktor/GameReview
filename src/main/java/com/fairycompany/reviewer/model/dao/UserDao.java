@@ -7,7 +7,10 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface UserDao extends BaseDao<User> {
+
     Optional<User> findByLoginAndPassword(String login, String password) throws DaoException;
+
+    Optional<User> findUserByLogin(String login) throws DaoException;
 
     long findTotalUserAmount() throws DaoException;
 

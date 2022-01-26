@@ -34,7 +34,7 @@ public class GameResultSetHandler implements ResultSetHandler<Game> {
         return game;
     }
 
-    private static <T extends Enum<T>> EnumSet<T> makeEnumSet(String[] array, Class<T> enumClass) {
+    private <T extends Enum<T>> EnumSet<T> makeEnumSet(String[] array, Class<T> enumClass) {
         Set<T> set = Arrays.stream(array).map(s -> Enum.valueOf(enumClass, s.toUpperCase())).collect(Collectors.toSet());
         return EnumSet.copyOf(set);
     }

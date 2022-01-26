@@ -36,6 +36,7 @@ public class PaymentDaoImpl implements PaymentDao {
 
     private static final String FIND_TOTAL_PAYMENT_AMOUNT = """
             SELECT COUNT(*) AS total_value FROM payments
+            WHERE user_id = ?
             """;
 
     private static final String ADD_NEW_PAYMENT_SQL = """
@@ -76,8 +77,8 @@ public class PaymentDaoImpl implements PaymentDao {
         return payments;
     }
 
-    public long findTotalPaymentAmount() throws DaoException {
-        Number totalPaymentAmount = paymentJdbcTemplate.executeSelectCalculation(FIND_TOTAL_PAYMENT_AMOUNT, TOTAL_VALUE);
+    public long findTotalPaymentAmount(long userId) throws DaoException {
+        Number totalPaymentAmount = paymentJdbcTemplate.executeSelectCalculation(FIND_TOTAL_PAYMENT_AMOUNT, TOTAL_VALUE, userId);
         logger.log(Level.DEBUG, "Total payment amount is {}", totalPaymentAmount);
 
         return (totalPaymentAmount != null) ? totalPaymentAmount.longValue() : 0;

@@ -63,7 +63,7 @@ public class Game extends Entity {
     }
 
     public EnumSet<Platform> getPlatform() {
-        return platforms;
+        return EnumSet.copyOf(platforms);
     }
 
     public void setPlatforms(EnumSet<Platform> platform) {
@@ -71,7 +71,7 @@ public class Game extends Entity {
     }
 
     public EnumSet<Genre> getGenres() {
-        return genres;
+        return EnumSet.copyOf(genres);
     }
 
     public void setGenres(EnumSet<Genre> genres) {

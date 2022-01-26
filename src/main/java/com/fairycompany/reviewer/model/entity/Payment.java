@@ -41,7 +41,7 @@ public class Payment extends Entity {
     }
 
     public List<Order> getOrders() {
-        return orders;
+        return List.copyOf(orders);
     }
 
     public void setOrders(List<Order> orders) {

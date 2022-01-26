@@ -20,9 +20,10 @@
 <div class="wrapper">
 <header>
     <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+    <%@include file= "../WEB-INF/jspf/message.jspf" %>
 </header>
 
-<%@include file= "../WEB-INF/jspf/message.jspf" %>
+
 
 <main class="content">
     <section class="shopping-cart">

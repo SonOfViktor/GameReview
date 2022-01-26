@@ -1,4 +1,4 @@
-package com.fairycompany.reviewer.util;
+package com.fairycompany.reviewer.model.util;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

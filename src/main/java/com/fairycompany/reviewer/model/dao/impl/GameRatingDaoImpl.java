@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -126,6 +127,11 @@ public class GameRatingDaoImpl implements GameRatingDao {
         Set<String> columnNames = Set.of(GAME_RATING_ID, FULL_NAME, REVIEW, PUBLICATION_DATE);
         List<Map<String, Object>> reviewsForGame = jdbcTemplate
                 .executeSelectSomeFields(FIND_ALL_REVIEW_FOR_GAME_SQL, columnNames, gameId, userId, skippedRows, rowAmount);
+
+        reviewsForGame.stream()
+                .flatMap(map -> map.entrySet().stream())
+                .filter(entry -> entry.getKey().equals(PUBLICATION_DATE))
+                .forEach(e -> e.setValue(((Timestamp) e.getValue()).toLocalDateTime()));
 
         return reviewsForGame;
     }

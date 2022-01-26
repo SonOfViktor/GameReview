@@ -111,6 +111,6 @@ footer {
     padding: 20px 0;
 }
 
-.bi:hover {
+.bi-trash:hover {
     color: red;
 }

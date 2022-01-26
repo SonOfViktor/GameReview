@@ -21,6 +21,8 @@ public class FinishRegistrationCommand extends AbstractCommand {
         try {
             if (userService.finishRegistration(content)) {
                 request.getSession().setAttribute(SessionAttribute.SESSION_MESSAGE, LocaleMessageKey.REGISTRATION_SUCCESSFUL);
+            } else {
+                request.getSession().setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
             }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Finishing registration failed. {}", e.getMessage());

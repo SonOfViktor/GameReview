@@ -3,7 +3,6 @@ package com.fairycompany.reviewer.controller.command;
 public final class RequestParameter {
     public static final String COMMAND = "command";
 
-
     public static final String USER_ID = "user_id";
     public static final String LOGIN = "login";
     public static final String PASSWORD = "password";
@@ -29,6 +28,7 @@ public final class RequestParameter {
     public static final String GENRE = "genre";
     public static final String YOUTUBE_URL = "trailer";
     public static final String GAME_DESCRIPTION = "game_description";
+    public static final String GAME_IMAGE = "game_image";
 
     public static final String GAME_RATING_ID = "game_rating_id";
     public static final String GRAPHICS_RATING = "graphics";
@@ -41,8 +41,6 @@ public final class RequestParameter {
     public static final String ROW_AMOUNT = "row_amount";
     public static final String ACTUAL_PAGE = "actual_page";
     public static final String SEARCH_FIELD = "search_field";
-
-
 
     private RequestParameter() {
     }

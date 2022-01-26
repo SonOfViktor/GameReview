@@ -25,7 +25,7 @@ public class GoToPaymentPage extends AbstractCommand {
         PaymentService paymentService = PaymentServiceImpl.getInstance();
 
         try {
-            List<Payment> payments = paymentService.findAllPayments(content);
+            List<Payment> payments = paymentService.findAllUserPayments(content);
             content.addRequestAttribute(RequestAttribute.PAYMENT_LIST, payments);
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Finding payments failed. {}", e.getMessage());

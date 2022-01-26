@@ -15,6 +15,7 @@ import com.fairycompany.reviewer.model.entity.Order;
 import com.fairycompany.reviewer.model.entity.Payment;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.PaymentService;
+import com.fairycompany.reviewer.model.util.ServiceUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.fairycompany.reviewer.controller.command.RequestParameter.ACTUAL_PAGE;
 import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_AMOUNT;
 
 public class PaymentServiceImpl implements PaymentService {
@@ -40,9 +40,11 @@ public class PaymentServiceImpl implements PaymentService {
         return instance;
     }
 
-    public List<Payment> findAllPayments(SessionRequestContent content) throws ServiceException {
+    public List<Payment> findAllUserPayments(SessionRequestContent content) throws ServiceException {
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
+
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
-        int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+        long actualPage = serviceUtil.takeActualPage(content);
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
 
         List<Payment> payments;
@@ -50,13 +52,13 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             transactionManager.initTransaction();
 
-            long skippedPayments = (long) actualPage * rowAmount - rowAmount;
+            long skippedPayments = actualPage * rowAmount - rowAmount;
             payments = paymentDao.findAllUserPayments(user.getUserId(), skippedPayments, rowAmount);
 
             List<BigDecimal> totalPrices = calculateTotalPrices(payments);
 
-            long totalPaymentAmount = paymentDao.findTotalPaymentAmount();
-            int pageAmount = (int) Math.ceil((double) totalPaymentAmount / rowAmount);
+            long totalPaymentAmount = paymentDao.findTotalPaymentAmount(user.getUserId());
+            long pageAmount = (long) Math.ceil((double) totalPaymentAmount / rowAmount);
 
             content.addRequestAttribute(RequestAttribute.TOTAL_PRICE_LIST, totalPrices);
             content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);

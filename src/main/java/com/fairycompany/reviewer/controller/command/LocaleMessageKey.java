@@ -14,11 +14,12 @@ public class LocaleMessageKey {
     public static final String USER_DATA_ERROR = "sing_up.data.invalid.message";
     public static final String PASSWORD_DOUBLE_CHECK_ERROR = "sing_up.password.invalid_double_check_message";
     public static final String BIRTHDAY_ERROR = "sing_up.birthday.invalid_message";
-    public static final String USER_DELETED = "user_deleted_successful";
+    public static final String USER_ALREADY_EXIST = "user_already_exist";
     public static final String ADD_GAME_SUCCESSFUL = "add_game_successful";
     public static final String ADD_GAME_FAILED = "add_game_failed";
     public static final String UPDATE_GAME_SUCCESS = "update_game_successful";
     public static final String UPDATE_GAME_FAILED = "update_game_failed";
+    public static final String GAME_ALREADY_EXIST = "game_already_exist";
     public static final String UPDATE_GENRE_SUCCESS = "update_genre_successful";
     public static final String UPDATE_GENRE_FAILED = "update_genre_failed";
     public static final String DELETE_GAME_SUCCESS = "delete_game_successful";
@@ -26,7 +27,8 @@ public class LocaleMessageKey {
     public static final String PURCHASE_GAME_SUCCESS = "purchase_game_successful";
     public static final String PURCHASE_GAME_FAILED = "purchase_game_failed";
     public static final String SEARCH_ERROR = "add_game_name_invalid_message";
-
+    public static final String ILLEGAL_USE_ADDRESS_BAR = "illegal_use_address_bar_message";
+    public static final String ILLEGAL_USER_ROLE = "illegal_user_role";
 
     private LocaleMessageKey() {
     }

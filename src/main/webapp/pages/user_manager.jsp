@@ -65,14 +65,14 @@
                                             </c:choose>
                                         </select>
                                     </td>
-                                    <td><select class="form-select form-select-sm" name="status">
+                                    <td><select class="form-select form-select-sm text-capitalize" name="status">
                                             <c:choose>
                                                 <c:when test="${user.userStatus eq 'ACTIVE'}">
-                                                    <option value="rookie" selected>Active</option>
+                                                    <option value="active" selected>Active</option>
                                                     <option value="banned">Banned</option>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <option value="rookie">Active</option>
+                                                    <option value="active">Active</option>
                                                     <option value="banned" selected>Banned</option>
                                                 </c:otherwise>
                                             </c:choose>
@@ -88,7 +88,7 @@
                     <table class="table table-borderless">
                         <thead class="invisible">
                         <tr>
-                            <th scope="col"><button type="button" class="btn btn-primary btn-sm">Update</button></th>
+                            <th scope="col"><button type="button" class="btn btn-primary btn-sm"><fmt:message key="update_button"/></button></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -106,7 +106,7 @@
         </div>
     </section>
 
-    <c:set var="command" value="to_user_manager"/>
+    <c:set var="command" value="to_user_manager_page"/>
     <%@include file= "../WEB-INF/jspf/pagination.jspf" %>
 </main>
 

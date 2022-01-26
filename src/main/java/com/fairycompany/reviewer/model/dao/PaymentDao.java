@@ -12,7 +12,7 @@ import java.util.Map;
 public interface PaymentDao {
     List<Payment> findAllUserPayments(long userId, long skippedUsers, int rowAmount) throws DaoException;
 
-    long findTotalPaymentAmount() throws DaoException;
+    long findTotalPaymentAmount(long userId) throws DaoException;
 
     long addPayment(long userId) throws DaoException;
 

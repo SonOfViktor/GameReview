@@ -26,6 +26,7 @@ public class UserDaoImpl implements UserDao {
             FROM users
             JOIN roles ON users.role_id = roles.role_id
             JOIN statuses ON users.status_id = statuses.status_id
+            WHERE users.status_id > 0
             ORDER BY user_id LIMIT ?, ?
             """;
 
@@ -45,30 +46,45 @@ public class UserDaoImpl implements UserDao {
             JOIN statuses ON users.status_id = statuses.status_id
             WHERE login = ? AND password = ?
             """;
+
+    private static final String FIND_BY_LOGIN_SQL = """
+            SELECT user_id, login, first_name, second_name, birthday_date, phone, photo, role, status
+            FROM users
+            JOIN roles ON users.role_id = roles.role_id
+            JOIN statuses ON users.status_id = statuses.status_id
+            WHERE login = ?
+            """;
+
     private static final String DELETE_BY_ID_SQL = """
             DELETE FROM users WHERE user_id = ?
             """;
+
     private static final String ADD_NEW_USER_SQL = """
             INSERT INTO users (login, password, first_name, second_name, birthday_date, phone, photo, role_id, status_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
+
     private static final String UPDATE_PASSWORD_SQL = """
             UPDATE users SET password = ?
             WHERE user_id = ?
             """;
+
     private static final String UPDATE_STATUS_SQL = """
             UPDATE users SET status_id = ?
             WHERE user_id = ?
             """;
+
     private static final String UPDATE_ROLE_AND_STATUS_SQL = """
             UPDATE users SET role_id = ?, status_id = ?
             WHERE user_id = ?
             """;
+
     private static final String UPDATE_USER_SQL = """
             UPDATE users
             SET first_name = ?, second_name = ?, birthday_date = ?, phone = ?
             WHERE user_id = ?
             """;
+
     private static final String UPDATE_USER_BALANCE_SQL = """
             UPDATE users SET balance = ?
             WHERE user_id = ?
@@ -102,6 +118,15 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> findEntityById(long id){
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Optional<User> findUserByLogin(String login) throws DaoException {
+        Optional<User> user = jdbcTemplate.executeSelectQueryForObject(FIND_BY_LOGIN_SQL, login);
+        return user;
+    }
+
+    @Override
+
 
     public Optional<User> findByLoginAndPassword(String login, String password) throws DaoException {
         Optional<User> user = jdbcTemplate.executeSelectQueryForObject(FIND_BY_LOGIN_AND_PASSWORD_SQL, login, password);

@@ -2,7 +2,10 @@ package com.fairycompany.reviewer.controller.command;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +16,7 @@ public class SessionRequestContent {
     private HashMap<String, Object> sessionAttributes;
 
     public void extractValues(HttpServletRequest request) {
-        requestParameters = request.getParameterMap();          // todo
+        requestParameters = request.getParameterMap();
         requestAttributes = extractRequestAttribute(request);
         sessionAttributes = extractSessionAttribute(request);
     }
@@ -38,7 +41,7 @@ public class SessionRequestContent {
 
     public String getRequestParameter(String name) {
         String[] values = requestParameters.get(name);
-        return values[0];
+        return (values != null) ? values[0] : "";
     }
 
     public void addSessionAttribute(String name, Object attribute) {
@@ -47,10 +50,6 @@ public class SessionRequestContent {
 
     public Object getSessionAttribute(String name) {
         return sessionAttributes.get(name);
-    }
-
-    public void removeSessionAttribute(String name) {
-        sessionAttributes.put(name, null);
     }
 
     private HashMap<String, Object> extractRequestAttribute(HttpServletRequest request) {

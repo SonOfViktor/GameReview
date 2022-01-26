@@ -1,6 +1,8 @@
 package com.fairycompany.reviewer.controller.command.impl;
 
+import com.fairycompany.reviewer.controller.command.LocaleMessageKey;
 import com.fairycompany.reviewer.controller.command.Router;
+import com.fairycompany.reviewer.controller.command.SessionAttribute;
 import com.fairycompany.reviewer.exception.CommandException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.service.UserService;
@@ -17,7 +19,9 @@ public class UpdateUserByAdminCommand extends AbstractCommand {
         UserService userService = UserServiceImpl.getInstance();
 
         try {
-            userService.updateUserByAdmin(content);
+            if (!userService.updateUserByAdmin(content)) {
+                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
+            }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Some error when updating user data {}", e.getMessage());
             throw new CommandException("Some error when updating user data", e);

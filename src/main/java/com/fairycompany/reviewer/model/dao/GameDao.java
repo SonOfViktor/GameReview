@@ -17,6 +17,8 @@ public interface GameDao extends BaseDao<Game> {
 
     long findSearchGameAmount(String searchGame) throws DaoException;
 
+    List<Map<String, Object>> findGameName(String name) throws DaoException;
+
     boolean addGenres(long gameId, EnumSet<Game.Genre> set) throws DaoException;
 
     boolean deleteGenres(long gameId) throws DaoException;

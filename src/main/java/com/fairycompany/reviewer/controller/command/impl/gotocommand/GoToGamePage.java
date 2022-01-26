@@ -13,27 +13,34 @@ import com.fairycompany.reviewer.model.service.impl.GameServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 
+import java.util.Optional;
+
 public class GoToGamePage extends AbstractCommand {
 
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
-        String gamePage = String.format(PagePath.GAME_PAGE_REDIRECT, request.getParameter(RequestParameter.GAME_ID),
-                request.getParameter(RequestParameter.ACTUAL_PAGE));
-
-        content.extractValues(request);
-        content.addSessionAttribute(SessionAttribute.CURRENT_PAGE, gamePage);
-        Router router = new Router(PagePath.GAME_PAGE);
-
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+        initCommand(request);
 
         GameService gameService = GameServiceImpl.getInstance();
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
 
         try {
-            Game game = gameService.findGame(gameId).get();
-            request.setAttribute(RequestAttribute.GAME, game);
-            GameRating rating = gameRatingService.findGameRating(content);
-            request.setAttribute(RequestAttribute.USER_RATING, rating);
+            Optional<Game> optionalGame = gameService.findGame(content);
+            Optional<GameRating> optionalRating = gameRatingService.findGameRating(content);
+            if (optionalGame.isPresent() && optionalRating.isPresent()) {
+                Game game = optionalGame.get();
+                request.setAttribute(RequestAttribute.GAME, game);
+                GameRating rating = optionalRating.get();
+                request.setAttribute(RequestAttribute.USER_RATING, rating);
+
+                String gamePage = String.format(PagePath.GAME_PAGE_REDIRECT, request.getParameter(RequestParameter.GAME_ID),
+                        request.getParameter(RequestParameter.ACTUAL_PAGE));
+
+                content.addSessionAttribute(SessionAttribute.CURRENT_PAGE, gamePage);
+                router = new Router(PagePath.GAME_PAGE);
+            } else {
+                content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
+            }
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Game page is not available. {}", e.getMessage());
             throw new CommandException("Game page is not available.", e);

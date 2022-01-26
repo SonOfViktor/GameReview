@@ -1,9 +1,7 @@
 package com.fairycompany.reviewer.controller.filter;
 
-import com.fairycompany.reviewer.controller.command.CommandType;
-import com.fairycompany.reviewer.controller.command.PagePath;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
-import com.fairycompany.reviewer.controller.command.SessionAttribute;
+import com.fairycompany.reviewer.controller.command.*;
+import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.User;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
@@ -12,33 +10,42 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @WebFilter(filterName = "ServletSecurityFilter",
             urlPatterns = "/controller",
             initParams = { @WebInitParam(name = "index_path", value = "index.jsp") })
 public class ServletSecurityFilter implements Filter {
 
-    public void init(FilterConfig config) throws ServletException {
-    }
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+//        HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession();
 
-        String command = request.getParameter(RequestParameter.COMMAND);
-        CommandType type = CommandType.valueOf(command.toUpperCase());
         User user = (User) session.getAttribute(SessionAttribute.USER);
         User.Role role = (user != null) ? user.getUserRole() : User.Role.GUEST;
+        String command = request.getParameter(RequestParameter.COMMAND);
+        CommandType commandType;
 
-        if (!type.isValidRole(role)) {
-            httpResponse.sendError(PagePath.ACCESS_ERROR_PAGE_403);
+        if (isCommandValid(command)) {
+            commandType = CommandType.valueOf(command.toUpperCase());
+            if (!commandType.hasUserRole(role)) {
+                commandType = CommandType.TO_MAIN_PAGE;
+                session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USER_ROLE);
+            }
+        } else {
+            commandType = CommandType.TO_MAIN_PAGE;
+            session.setAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
         }
+
+        request.setAttribute(RequestAttribute.COMMAND_TYPE, commandType.getCommand());      //todo change name
 
         chain.doFilter(request, response);
     }
 
-    public void destroy() {
+    private boolean isCommandValid(String command) {
+        return command != null && Arrays.stream(CommandType.values())
+                                        .anyMatch((commandType) -> commandType.name().equalsIgnoreCase(command));
     }
 }

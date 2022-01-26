@@ -18,8 +18,10 @@
 </head>
 
 <body>
-<%@include file= "../WEB-INF/jspf/navbar.jspf" %>
-<%@include file= "../WEB-INF/jspf/message.jspf" %>
+<header>
+    <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
+    <%@include file= "../WEB-INF/jspf/message.jspf" %>
+</header>
 
 <section class="mb-3">
     <div class="container">
@@ -28,7 +30,8 @@
                 <h3><fmt:message key="edit_data"/></h3>
             </div>
 
-            <form class="needs-validation" novalidate method="post" action="controller">
+<%--            todo needs-validation--%>
+            <form class="" novalidate method="post" action="controller">
                 <input type="hidden" name="command" value="update_game">
                 <input type="hidden" name="game_id" value="${game.gameId}">
                 <div class="row mb-3">
@@ -182,7 +185,7 @@
 
             <form class="needs-validation" novalidate method="post" action="upload_image" enctype="multipart/form-data">
                 <input type="hidden" name="command" value="update_game_image">
-                <input type="hidden" name="game_id" value="${game.gameId}">
+                <input type="hidden" name="game_image" value="${game.image}">
                 <div class="row mb-3">
                     <div class="col-3">
                         <%--   todo           <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
@@ -212,7 +215,7 @@
             <div class="row">
                 <div class="col-12 d-flex justify-content-center">
                     <a class="btn btn-primary"
-                       href="${pageContext.request.contextPath}/controller?command=delete_game&game_id=${game.gameId}&actual_page=1" role="button">
+                       href="${pageContext.request.contextPath}/controller?command=delete_game&game_id=${game.gameId}&image=${game.image}&actual_page=1" role="button">
                         <fmt:message key="delete_game"/>
                     </a>
                 </div>

@@ -12,6 +12,8 @@ import com.fairycompany.reviewer.model.dao.impl.GameRatingDaoImpl;
 import com.fairycompany.reviewer.model.entity.GameRating;
 import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.GameRatingService;
+import com.fairycompany.reviewer.model.util.ServiceUtil;
+import com.fairycompany.reviewer.model.validator.CommonValidator;
 import com.fairycompany.reviewer.model.validator.GameReviewValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +31,7 @@ public class GameRatingServiceImpl implements GameRatingService {
     private static final Logger logger = LogManager.getLogger();
     private static final String CREATE = "create";
     private static final String UPDATE = "update";
+    private static final long NON_EXIST_ID = 0;
     private GameRatingDao gameRatingDao = GameRatingDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
     private static GameRatingServiceImpl instance = new GameRatingServiceImpl();
@@ -40,26 +43,30 @@ public class GameRatingServiceImpl implements GameRatingService {
         return instance;
     }
 
-    public GameRating findGameRating(SessionRequestContent content) throws ServiceException {
-        GameRating rating = new GameRating();
-        long userId = 0;
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+    public Optional<GameRating> findGameRating(SessionRequestContent content) throws ServiceException {
+        Optional<GameRating> optionalRating = Optional.empty();
+        CommonValidator commonValidator = CommonValidator.getInstance();
+        String gameIdString = content.getRequestParameter(RequestParameter.GAME_ID);
+
+        if(!commonValidator.isStringLong(gameIdString)){
+            return optionalRating;
+        }
+
+        long gameId = Long.parseLong(gameIdString);
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
+        long userId = (user != null) ? user.getUserId() : NON_EXIST_ID;
 
         try {
             transactionManager.initTransaction();
 
-            if (user != null) {
-                userId = user.getUserId();
+            optionalRating = gameRatingDao.findGameRatingById(userId, gameId);
 
-                Optional<GameRating> optionalRating = gameRatingDao.findGameRatingById(userId, gameId);
-
-                if (optionalRating.isPresent()) {
-                    rating = optionalRating.get();
-
-                    int userRating = calculateUserRating(rating);
-                    content.addRequestAttribute(RequestAttribute.USER_TOTAL_RATING, userRating);
-                }
+            if (optionalRating.isPresent()) {
+                GameRating rating = optionalRating.get();
+                int userRating = calculateUserRating(rating);
+                content.addRequestAttribute(RequestAttribute.USER_TOTAL_RATING, userRating);
+            } else {
+                optionalRating = Optional.of(new GameRating());
             }
 
             Number totalGameRating = gameRatingDao.findTotalGameRating(gameId);
@@ -68,13 +75,15 @@ public class GameRatingServiceImpl implements GameRatingService {
             long userAmount = gameRatingDao.findUserAmount(gameId);
             content.addRequestAttribute(RequestAttribute.USER_AMOUNT, userAmount);
 
-            int actualPage = Integer.parseInt(content.getRequestParameter(ACTUAL_PAGE));
+            ServiceUtil serviceUtil = ServiceUtil.getInstance();
+
+            long actualPage = serviceUtil.takeActualPage(content);
             int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
-            long skippedGames = (long) actualPage * rowAmount - rowAmount;
+            long skippedGames = actualPage * rowAmount - rowAmount;
             List<Map<String, Object>> reviewsForGame = gameRatingDao.findReviewsForGame(gameId, userId, skippedGames, rowAmount);
 
             long totalGameRatingReview = gameRatingDao.findTotalGameRatingReview(gameId, userId);
-            int pageAmount = (int) Math.ceil((double) totalGameRatingReview / rowAmount);
+            long pageAmount = (long) Math.ceil((double) totalGameRatingReview / rowAmount);
 
             content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
             content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
@@ -87,7 +96,7 @@ public class GameRatingServiceImpl implements GameRatingService {
             transactionManager.endTransaction();
         }
 
-        return rating;
+        return optionalRating;
     }
 
     public boolean findUserRatingAmount(SessionRequestContent content) throws ServiceException {
@@ -168,46 +177,64 @@ public class GameRatingServiceImpl implements GameRatingService {
 
     @Override
     public boolean deleteUserRating(SessionRequestContent content) throws ServiceException {
+        boolean isDeleted = false;
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
         long userId = user.getUserId();
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+        String gameIdString = content.getRequestParameter(RequestParameter.GAME_ID);
 
-        try {
-            transactionManager.initTransaction();
+        CommonValidator commonValidator = CommonValidator.getInstance();
 
-            gameRatingDao.deleteUserRating(userId, gameId);
+        if (commonValidator.isStringLong(gameIdString)) {
+            long gameId = Long.parseLong(gameIdString);
 
-            transactionManager.commit();
-        } catch (DaoException e) {
-            transactionManager.rollback();
-            logger.log(Level.ERROR, "Error when deleting user's rating. {}", e.getMessage());
-            throw new ServiceException("Error when deleting user's rating", e);
-        } finally {
-            transactionManager.endTransaction();
+            try {
+                transactionManager.initTransaction();
+
+                gameRatingDao.deleteUserRating(userId, gameId);
+
+                transactionManager.commit();
+
+                isDeleted = true;
+            } catch (DaoException e) {
+                transactionManager.rollback();
+                logger.log(Level.ERROR, "Error when deleting user's rating. {}", e.getMessage());
+                throw new ServiceException("Error when deleting user's rating", e);
+            } finally {
+                transactionManager.endTransaction();
+            }
         }
 
-        return true;
+        return isDeleted;
     }
 
     @Override
     public boolean deleteUserReview(SessionRequestContent content) throws ServiceException {
-        long gameRatingId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_RATING_ID));
+        boolean isDeleted = false;
+        String gameRatingIdString =content.getRequestParameter(RequestParameter.GAME_RATING_ID);
 
-        try {
-            transactionManager.initTransaction();
+        CommonValidator commonValidator = CommonValidator.getInstance();
 
-            gameRatingDao.delete(gameRatingId);
+        if(commonValidator.isStringLong(gameRatingIdString)) {
+            long gameRatingId = Long.parseLong(gameRatingIdString);
 
-            transactionManager.commit();
-        } catch (DaoException e) {
-            transactionManager.rollback();
-            logger.log(Level.ERROR, "Error when deleting user's comment. {}", e.getMessage());
-            throw new ServiceException("Error when deleting user's comment", e);
-        } finally {
-            transactionManager.endTransaction();
+            try {
+                transactionManager.initTransaction();
+
+                gameRatingDao.delete(gameRatingId);
+
+                transactionManager.commit();
+
+                isDeleted = true;
+            } catch (DaoException e) {
+                transactionManager.rollback();
+                logger.log(Level.ERROR, "Error when deleting user's comment. {}", e.getMessage());
+                throw new ServiceException("Error when deleting user's comment", e);
+            } finally {
+                transactionManager.endTransaction();
+            }
         }
 
-        return true;
+        return isDeleted;
     }
 
     private int calculateUserRating(GameRating rating) {
