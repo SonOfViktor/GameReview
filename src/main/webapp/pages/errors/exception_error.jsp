@@ -12,41 +12,41 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <title><fmt:message key="error.title"/></title>
+    <title><fmt:message key="error_title"/></title>
 </head>
 
 <body>
 
 <div class="container" >
-    <h1><fmt:message key="error.oops"/></h1>
+    <h1><fmt:message key="error_oops"/></h1>
 
     <table class="table table-bordered">
         <tbody>
         <tr>
-            <th><fmt:message key="error.request"/></th>
-            <td>${pageContext.errorData.requestURI}</td>
+            <th><span><fmt:message key="error_request"/></span></th>
+            <td><span>${pageContext.errorData.requestURI}</span></td>
         </tr>
         <tr>
-            <th><fmt:message key="error.servlet"/></th>
-            <td>${pageContext.errorData.servletName}</td>
+            <th><span><fmt:message key="error_servlet"/></span></th>
+            <td><span>${pageContext.errorData.servletName}</span></td>
         </tr>
         <tr>
-            <th><fmt:message key="error.exception"/></th>
-            <td>${pageContext.errorData.throwable}</td>
+            <th><span><fmt:message key="error_exception"/></span></th>
+            <td><span>${pageContext.errorData.throwable}</span></td>
         </tr>
         <tr>
-            <th><fmt:message key="error.message"/></th>
-            <td>${pageContext.exception.message}</td>
+            <th><span><fmt:message key="error_message"/></span></th>
+            <td><span>${pageContext.exception.message}</span></td>
         </tr>
         <tr>
-            <th><fmt:message key="error.status_code"/></th>
-            <td>${pageContext.errorData.statusCode}</td>
+            <th><span><fmt:message key="error_status_code"/></span></th>
+            <td><span>${pageContext.errorData.statusCode}</span></td>
         </tr>
         <tr>
-            <th><fmt:message key="error.stack_trace"/></th>
+            <th><span><fmt:message key="error_stack_trace"/></span></th>
             <td>
                 <c:forEach items="${pageContext.exception.stackTrace}" var="element">
-                    element =   ${element}
+                    <span>element = ${element}</span>
                     <br/>
                 </c:forEach>
             </td>
@@ -56,7 +56,7 @@
 
     <h4>
         <a href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1" class="link-primary">
-            <fmt:message key="error.back"/>
+            <fmt:message key="error_back"/>
         </a>
     </h4>
 </div>

@@ -101,14 +101,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     public List<User> findAll(long skippedUsers, int rowAmount) throws DaoException {
-        List<User> users = jdbcTemplate.executeSelectQuery(FIND_ALL_SQL, skippedUsers, rowAmount);
+        List<User> users = jdbcTemplate.selectEntities(FIND_ALL_SQL, skippedUsers, rowAmount);
 
         return users;
     }
 
     @Override
     public long findTotalUserAmount() throws DaoException {
-        Number totalUserAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_USER_AMOUNT, TOTAL_VALUE);
+        Number totalUserAmount = jdbcTemplate.selectFieldsCalculation(FIND_TOTAL_USER_AMOUNT, TOTAL_VALUE);
         logger.log(Level.DEBUG, "Total user amount is {}", totalUserAmount);
 
         return (totalUserAmount != null) ? totalUserAmount.longValue() : 0;
@@ -121,7 +121,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findUserByLogin(String login) throws DaoException {
-        Optional<User> user = jdbcTemplate.executeSelectQueryForObject(FIND_BY_LOGIN_SQL, login);
+        Optional<User> user = jdbcTemplate.selectEntity(FIND_BY_LOGIN_SQL, login);
         return user;
     }
 
@@ -129,13 +129,13 @@ public class UserDaoImpl implements UserDao {
 
 
     public Optional<User> findByLoginAndPassword(String login, String password) throws DaoException {
-        Optional<User> user = jdbcTemplate.executeSelectQueryForObject(FIND_BY_LOGIN_AND_PASSWORD_SQL, login, password);
+        Optional<User> user = jdbcTemplate.selectEntity(FIND_BY_LOGIN_AND_PASSWORD_SQL, login, password);
 
         return user;
     }
 
     public BigDecimal findUserBalance(long userId) throws DaoException {
-        Number totalGameRating = jdbcTemplate.executeSelectCalculation(FIND_USER_BALANCE_SQL, BALANCE, userId);
+        Number totalGameRating = jdbcTemplate.selectFieldsCalculation(FIND_USER_BALANCE_SQL, BALANCE, userId);
 
         return (BigDecimal) totalGameRating;
     }
@@ -147,7 +147,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public long add(User user, String password) throws DaoException {
-        long userId = jdbcTemplate.executeInsertQuery(ADD_NEW_USER_SQL,
+        long userId = jdbcTemplate.insertDataInTable(ADD_NEW_USER_SQL,
                 user.getLogin(),
                 password,
                 user.getFirstName(),
@@ -164,7 +164,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean update(User user) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_SQL,
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_USER_SQL,
                 user.getFirstName(),
                 user.getSecondName(),
                 user.getBirthday(),
@@ -174,32 +174,32 @@ public class UserDaoImpl implements UserDao {
     }
 
     public boolean updatePassword(long userId, String password) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_PASSWORD_SQL, password, userId);
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_PASSWORD_SQL, password, userId);
 
         return isUpdated;
     }
 
     public boolean updateStatus(long userId, User.Status status) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_STATUS_SQL, status.ordinal(), userId);
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_STATUS_SQL, status.ordinal(), userId);
 
         return isUpdated;
     }
 
     public boolean updateRoleAndStatus(long userId, int userRole, int userStatus) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_ROLE_AND_STATUS_SQL, userRole, userStatus, userId);
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_ROLE_AND_STATUS_SQL, userRole, userStatus, userId);
 
         return isUpdated;
     }
 
     public boolean updateUserBalance(long userId, BigDecimal newUserBalance) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_USER_BALANCE_SQL, newUserBalance, userId);
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_USER_BALANCE_SQL, newUserBalance, userId);
 
         return isUpdated;
     }
 
     @Override
     public boolean delete(long id) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_BY_ID_SQL, id);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_BY_ID_SQL, id);
 
         return isDeleted;
     }

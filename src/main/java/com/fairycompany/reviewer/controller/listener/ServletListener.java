@@ -4,6 +4,7 @@ import com.fairycompany.reviewer.model.pool.ConnectionPool;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
 
+
 @WebListener
 public class ServletListener implements ServletContextListener {
 

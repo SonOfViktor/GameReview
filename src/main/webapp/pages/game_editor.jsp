@@ -30,8 +30,7 @@
                 <h3><fmt:message key="edit_data"/></h3>
             </div>
 
-<%--            todo needs-validation--%>
-            <form class="" novalidate method="post" action="controller">
+            <form class="needs-validation" novalidate method="post" action="controller">
                 <input type="hidden" name="command" value="update_game">
                 <input type="hidden" name="game_id" value="${game.gameId}">
                 <div class="row mb-3">
@@ -40,7 +39,7 @@
                         <input type="text" class="form-control" id="inputName" name="game_name" value="${game.name}"
                                pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="add_game_name_invalid_message"/>
+                            <span><fmt:message key="add_game_name_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -50,7 +49,7 @@
                         <input type="text" class="form-control" id="inputPublisher" name="publisher" value="${game.publisher}"
                                pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="add_game_publisher_invalid_message"/>
+                            <span><fmt:message key="add_game_publisher_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -60,7 +59,7 @@
                         <input type="text" class="form-control" id="inputDeveloper" name="developer" value="${game.developer}"
                                pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="add_game_developer_invalid_message"/>
+                            <span><fmt:message key="add_game_developer_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -70,8 +69,7 @@
                         <input type="date" class="form-control" id="inputReleaseDate"
                                name="release_date" value="${game.releaseDate}" required>
                         <div class="invalid-feedback">
-<%--                            todo norm message for game--%>
-                            <fmt:message key="sing_up.birthday.invalid_message"/>
+                            <span><fmt:message key="release_date_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -97,7 +95,7 @@
                         <input type="number" class="form-control" id="inputPrice"
                                name="price" value="${game.price}" min="0.01" max="200" step="0.01" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="add_game_price_invalid_message"/>
+                            <span><fmt:message key="add_game_price_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -107,7 +105,7 @@
                         <input type="url" class="form-control" id="inputTrailer" name="trailer" value="${game.trailerUrl}"
                                pattern="https://www\.youtube\.com/watch\?v=[\w_-]{5,20}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="add_game_trailer_invalid_message"/>
+                            <span><fmt:message key="add_game_trailer_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -188,8 +186,7 @@
                 <input type="hidden" name="game_image" value="${game.image}">
                 <div class="row mb-3">
                     <div class="col-3">
-                        <%--   todo           <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
-                        <img src="<%--http://localhost:8080/gamereview/--%>${game.image} <%--?date=${calendar.timeInMillis}--%>" class="shadow bg-white rounded">
+                        <img src="${game.image}" class="shadow bg-white rounded">
                     </div>
                     <div class="col-9 align-self-center">
                         <label for="inputImage" class="form-label"><fmt:message key="choose_photo"/></label>

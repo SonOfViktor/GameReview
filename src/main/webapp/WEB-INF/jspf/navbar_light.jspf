@@ -9,7 +9,7 @@
         <div class="col-9 ps-4">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1">
                 <i class="bi bi-joystick"></i>
-                <fmt:message key="main.title"/>
+                <fmt:message key="main_title"/>
                 <i class="bi bi-controller"></i>
             </a>
         </div>
@@ -18,13 +18,13 @@
                 <c:when test="${locale eq 'en_EN'}">
                     <a class="btn btn-info btn-sm"
                        href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
-                        <fmt:message key="main.ru"/>
+                        <fmt:message key="ru_button"/>
                     </a>
                 </c:when>
                 <c:otherwise>
                     <a class="btn btn-info btn-sm"
                        href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
-                        <fmt:message key="main.eng"/>
+                        <fmt:message key="eng_button"/>
                     </a>
                 </c:otherwise>
             </c:choose>

@@ -10,18 +10,36 @@ import com.fairycompany.reviewer.exception.DaoException;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Class provides basic operations with SQL query
+ *
+ * @param <T> entity type
+ */
 public class JdbcTemplate<T extends Entity> {
     private static Logger logger = LogManager.getLogger();
     private static final String GENERATED_KEY = "GENERATED_KEY";
     private ResultSetHandler<T> resultSetHandler;
     private TransactionManager transactionManager;
 
+    /**
+     * Instantiates a new Jdbc template.
+     *
+     * @param resultSetHandler object that process data of result set
+     */
     public JdbcTemplate(ResultSetHandler<T> resultSetHandler) {
         this.resultSetHandler = resultSetHandler;
         this.transactionManager = TransactionManager.getInstance();
     }
 
-    public List<T> executeSelectQuery(String sqlQuery, Object... parameters) throws DaoException {
+    /**
+     * Select list of entities from database.
+     *
+     * @param sqlQuery   sql query
+     * @param parameters parameters
+     * @return list of entities
+     * @throws DaoException if SQL exception occurred
+     */
+    public List<T> selectEntities(String sqlQuery, Object... parameters) throws DaoException {
         List<T> list = new ArrayList<>();
         Connection connection = transactionManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
@@ -41,9 +59,17 @@ public class JdbcTemplate<T extends Entity> {
         return list;
     }
 
-    public Optional<T> executeSelectQueryForObject(String sqlQuery, Object... parameters) throws DaoException {
+    /**
+     * Select entity from database.
+     *
+     * @param sqlQuery   the sql query
+     * @param parameters the parameters
+     * @return optional with entity from database or empty optional if specified entity wasn't found
+     * @throws DaoException if SQL exception occurred
+     */
+    public Optional<T> selectEntity(String sqlQuery, Object... parameters) throws DaoException {
         Optional<T> result = Optional.empty();
-        List<T> list = executeSelectQuery(sqlQuery, parameters);
+        List<T> list = selectEntities(sqlQuery, parameters);
 
         if (!list.isEmpty()) {
             result = Optional.of(list.get(0));
@@ -54,11 +80,20 @@ public class JdbcTemplate<T extends Entity> {
         return result;
     }
 
-    public List<Map<String, Object>> executeSelectEntityWithExtraFields(String sql, Set<String> columnNames, Object... parameters) //todo naming
+    /**
+     * Select entities with extra fields from database.
+     *
+     * @param sqlQuery         the sql
+     * @param columnNames the column names
+     * @param parameters  the parameters
+     * @return list entities with extra data specified with column names
+     * @throws DaoException if SQL exception occurred
+     */
+    public List<Map<String, Object>> selectEntitiesWithExtraFields(String sqlQuery, Set<String> columnNames, Object... parameters)
             throws DaoException {
         Connection connection = transactionManager.getConnection();
         List<Map<String, Object>> extractedValues = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             setParametersInPreparedStatement(statement, parameters);
             ResultSet resultSet = statement.executeQuery();
 
@@ -80,12 +115,21 @@ public class JdbcTemplate<T extends Entity> {
         return extractedValues;
     }
 
-    public List<Map<String, Object>> executeSelectSomeFields(String sql, Set<String> columnNames, Object... parameters)
+    /**
+     * Select some fields from database.
+     *
+     * @param sqlQuery    the sql query
+     * @param columnNames the column names
+     * @param parameters  the parameters
+     * @return list with data specified with column names
+     * @throws DaoException if SQL exception occurred
+     */
+    public List<Map<String, Object>> selectSomeFields(String sqlQuery, Set<String> columnNames, Object... parameters)
             throws DaoException {
         List<Map<String, Object>> extractedValues = new ArrayList<>();
 
         Connection connection = transactionManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             setParametersInPreparedStatement(statement, parameters);
 
             ResultSet resultSet = statement.executeQuery();
@@ -103,7 +147,15 @@ public class JdbcTemplate<T extends Entity> {
         return extractedValues;
     }
 
-        public boolean executeUpdateDeleteFields(String sqlQuery, Object... parameters) throws DaoException {
+    /**
+     * Update delete fields.
+     *
+     * @param sqlQuery   the sql query
+     * @param parameters the parameters
+     * @return true if data was updated or deleted
+     * @throws DaoException if SQL exception occurred
+     */
+    public boolean updateDeleteFields(String sqlQuery, Object... parameters) throws DaoException {
         Connection connection = transactionManager.getConnection();
 
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
@@ -117,7 +169,15 @@ public class JdbcTemplate<T extends Entity> {
         return true;
     }
 
-    public long executeInsertQuery(String sqlQuery, Object... parameters) throws DaoException {
+    /**
+     * Insert entity in database table.
+     *
+     * @param sqlQuery   the sql query
+     * @param parameters the parameters
+     * @return entity id generated by database
+     * @throws DaoException if SQL exception occurred
+     */
+    public long insertDataInTable(String sqlQuery, Object... parameters) throws DaoException {
         long generatedId = 0;
         Connection connection = transactionManager.getConnection();
 
@@ -139,7 +199,16 @@ public class JdbcTemplate<T extends Entity> {
         return generatedId;
     }
 
-    public Number executeSelectCalculation(String sqlQuery, String columnName, Object... parameters) throws DaoException {
+    /**
+     * Select calculation of some fields of database.
+     *
+     * @param sqlQuery   the sql query
+     * @param columnName the column name
+     * @param parameters the parameters
+     * @return calculation of fields specified with column names
+     * @throws DaoException if SQL exception occurred
+     */
+    public Number selectFieldsCalculation(String sqlQuery, String columnName, Object... parameters) throws DaoException {
         Number totalValue = null;
 
         Connection connection = transactionManager.getConnection();
@@ -159,6 +228,13 @@ public class JdbcTemplate<T extends Entity> {
         return totalValue;
     }
 
+    /**
+     * Execute batch command.
+     *
+     * @param sql            the sql
+     * @param batchArguments the batch arguments
+     * @throws DaoException if SQL exception occurred
+     */
     public void executeBatch(String sql, List<Object[]> batchArguments) throws DaoException {
         Connection connection = transactionManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

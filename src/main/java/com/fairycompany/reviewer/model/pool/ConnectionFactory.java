@@ -13,6 +13,9 @@ import static com.fairycompany.reviewer.model.pool.DatabasePropertyReader.DATABA
 import static com.fairycompany.reviewer.model.pool.DatabasePropertyReader.DATABASE_USERNAME;
 import static com.fairycompany.reviewer.model.pool.DatabasePropertyReader.DATABASE_PASSWORD;
 
+/**
+ * Factory that creates connections
+ */
 class ConnectionFactory {
     private static final Logger logger = LogManager.getLogger();
 
@@ -27,6 +30,12 @@ class ConnectionFactory {
 
     private ConnectionFactory() {}
 
+    /**
+     * Creates a new Connection object.
+     *
+     * @return new connection
+     * @throws SQLException if a database access error occurs
+     */
     static Connection createConnection() throws SQLException {
         return DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
     }

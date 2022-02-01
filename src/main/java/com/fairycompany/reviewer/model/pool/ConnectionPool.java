@@ -14,6 +14,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.fairycompany.reviewer.model.pool.DatabasePropertyReader.CONNECTION_POOL_SIZE;
 
+/**
+ * Class keeps and controls connections.
+ */
 public class ConnectionPool {
     private static final Logger logger = LogManager.getLogger();
     private static final AtomicBoolean isCreated = new AtomicBoolean(false);
@@ -57,6 +60,11 @@ public class ConnectionPool {
         logger.log(Level.INFO, "Connection is successfully created");
     }
 
+    /**
+     * Creates and gets instance of connection pool.
+     *
+     * @return filled connection pool
+     */
     public static ConnectionPool getInstance() {
         if (!isCreated.get()) {
             locker.lock();
@@ -72,6 +80,11 @@ public class ConnectionPool {
         return instance;
     }
 
+    /**
+     * Gets connection.
+     *
+     * @return the connection
+     */
     public Connection getConnection() {
         ProxyConnection connection = null;
         try {
@@ -84,6 +97,12 @@ public class ConnectionPool {
         return connection;
     }
 
+    /**
+     * Release connection.
+     *
+     * @param connection busy connection
+     * @return true if connection released
+     */
     public boolean releaseConnection(Connection connection) {
         boolean result = false;
         if (connection instanceof ProxyConnection && !destroyingPool && busyConnection.remove(connection)) {
@@ -100,6 +119,9 @@ public class ConnectionPool {
         return result;
     }
 
+    /**
+     * Destroy connection pool (close all connections and deregister driver).
+     */
     public void destroyPool() {
         destroyingPool = true;
         closeConnection(freeConnections);

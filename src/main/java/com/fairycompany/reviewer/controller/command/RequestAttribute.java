@@ -24,7 +24,8 @@ public final class RequestAttribute {
     public static final String UPLOAD_DIRECTORY = "upload_directory";
     public static final String FILE_EXTENSION = "file_extension";
     public static final String IMAGE_INPUT_STREAM = "image_input_stream";
-    public static final String COMMAND_TYPE = "command_type";
+    public static final String COMMAND = "command_type";
+    public static final String SWITCH = "switch";
 
     private RequestAttribute() {
     }

@@ -12,7 +12,7 @@
     <link href="css/bootstrap-icons.css" rel="stylesheet">
     <link href="css/vk.css" rel="stylesheet">
 
-    <title><fmt:message key="sing_up.title"/></title>
+    <title><fmt:message key="sing_up_title"/></title>
 </head>
 <body>
 
@@ -28,26 +28,26 @@
             <input type="hidden" name="command" value="create_user">
         </div>
         <div class="col-md-5">
-            <label for="inputEmail" class="form-label"><fmt:message key="login.login"/></label>
+            <label for="inputEmail" class="form-label"><fmt:message key="e_mail"/></label>
             <input type="email" class="form-control" id="inputEmail" name="login" value=""
                    pattern="[\d\w-]{3,25}@\w{2,10}\.\w{2,5}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.login.invalid_message"/>
+                <span><fmt:message key="sing_up_login_invalid_message"/></span>
             </div>
         </div>
 
         <div class="w-100"></div>
         <div class="col-5">
-            <label for="inputPassword" class="form-label"><fmt:message key="login.password"/></label>
+            <label for="inputPassword" class="form-label"><fmt:message key="password"/></label>
             <input type="password" class="form-control" id="inputPassword" name="password" value=""
                    pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.password.invalid_message"/>
+                <span><fmt:message key="sing_up_password_invalid_message"/></span>
             </div>
         </div>
         <div class="col-5 mt-4">
             <span id="passwordHelpInline" class="form-text">
-              <fmt:message key="sing_up.password_message"/>
+              <fmt:message key="sing_up_password_message"/>
             </span>
         </div>
 
@@ -57,48 +57,48 @@
             <input type="password" class="form-control" id="repeatPassword" name="password_check"
                    pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.password.invalid_message"/>
+                <span><fmt:message key="sing_up_password_invalid_message"/></span>
             </div>
         </div>
 
         <div class="w-100"></div>
         <div class="col-5">
-            <label for="inputName" class="form-label"><fmt:message key="sing_up.name"/></label>
-            <input type="text" class="form-control" id="inputName" placeholder="<fmt:message key="sing_up.name"/>"
+            <label for="inputName" class="form-label"><fmt:message key="user_name"/></label>
+            <input type="text" class="form-control" id="inputName" placeholder="<fmt:message key="user_name"/>"
                    name="name" value="" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.name.invalid_message"/>
+                <span><fmt:message key="sing_up_name_invalid_message"/></span>
             </div>
         </div>
 
         <div class="w-100"></div>
         <div class="col-5">
-            <label for="inputSurname" class="form-label"><fmt:message key="sing_up.surname"/></label>
-            <input type="text" class="form-control" id="inputSurname" placeholder="<fmt:message key="sing_up.surname"/>"
+            <label for="inputSurname" class="form-label"><fmt:message key="user_surname"/></label>
+            <input type="text" class="form-control" id="inputSurname" placeholder="<fmt:message key="user_surname"/>"
                    name="surname" value="" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.surname.invalid_message"/>
+                <span><fmt:message key="sing_up_surname_invalid_message"/></span>
             </div>
         </div>
 
         <div class="w-100"></div>
         <div class="col-3">
-            <label for="inputBirthday" class="form-label"><fmt:message key="sing_up.birthday"/></label>
+            <label for="inputBirthday" class="form-label"><fmt:message key="user_birthday"/></label>
             <input type="date" class="form-control" id="inputBirthday"
                    name="birthday" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.birthday.invalid_message"/>
+                <span><fmt:message key="sing_up_birthday_invalid_message"/></span>
             </div>
         </div>
 
         <div class="w-100"></div>
         <div class="input-group w-25">
-            <label for="inputTelephone" class="form-label col-12"><fmt:message key="sing_up.phone"/></label>
+            <label for="inputTelephone" class="form-label col-12"><fmt:message key="user_phone"/></label>
             <span class="input-group-text" id="telephone">+375</span>
             <input type="tel" class="form-control" id="inputTelephone" placeholder="XX-XXX-XX-XX" name="phone" value=""
                    aria-describedby="telephone" pattern="\d{2}-?\d{3}-?\d{2}-?\d{2}" required>
             <div class="invalid-feedback">
-                <fmt:message key="sing_up.phone.invalid_message"/>
+                <span><fmt:message key="sing_up_phone_invalid_message"/></span>
             </div>
         </div>
 
@@ -113,7 +113,7 @@
 
         <div class="w-100"></div>
         <div class="col-12 text-center">
-            <button type="submit" class="btn btn-primary"><fmt:message key="login.sing_up"/></button>
+            <button type="submit" class="btn btn-primary"><fmt:message key="sing_up"/></button>
         </div>
     </form>
 </div>

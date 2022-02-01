@@ -14,16 +14,30 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * Class for mapping provided LocalDateTime object on the html page in accordance with localization.
+ */
 public class DateTimeMappingTag extends TagSupport {
     private static final Logger logger = LogManager.getLogger();
     private static final String DATE_TIME_PATTERN = "dd MMM yyyy HH:mm:ss";
     private static final String EMPTY_LINE = "";
     private LocalDateTime dateTime;
 
+    /**
+     * Sets date and time value from tag attribute.
+     *
+     * @param dateTime date and time from tag attribute
+     */
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
+    /**
+     * Process provided date time value from tag attribute and map it on the page
+     *
+     * @return skip body constant
+     * @throws JspException the jsp exception
+     */
     @Override
     public int doStartTag() throws JspException {
         Locale locale = takeLocale();

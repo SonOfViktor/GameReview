@@ -38,15 +38,14 @@
                             <h2 class="text-uppercase">${user.firstName} ${user.secondName}</h2>
                             <div class="row">
                                 <div class="hstack gap-5">
-                                    <h5><fmt:message
-                                            key="rating_amount"/>: ${user_rating_amount.amount_game_rating}</h5>
+                                    <h5><fmt:message key="rating_amount"/>: ${user_rating_amount.amount_game_rating}</h5>
                                     <h5><fmt:message key="review_amount"/>: ${user_rating_amount.amount_review}</h5>
                                 </div>
                             </div>
                             <c:if test="${not empty min_max_user_rating}">
                                 <div class="row">
                                     <div class="col-1 align-self-center">
-                                        <div class="score_user positive_bg">${min_max_user_rating.max_rating}</div>
+                                        <div class="score_user positive_bg"><span>${min_max_user_rating.max_rating}</span></div>
                                     </div>
                                     <div class="col-11 align-self-center lh-sm">
                                         <span class="fw-bold"><fmt:message key="high_rating"/>:</span></br>
@@ -55,7 +54,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-1 align-self-center">
-                                        <div class="score_user negative_bg">${min_max_user_rating.min_rating}</div>
+                                        <div class="score_user negative_bg"><span>${min_max_user_rating.min_rating}</span></div>
                                     </div>
                                     <div class="col-11 align-self-center lh-sm">
                                         <span class="fw-bold"><fmt:message key="low_rating"/>:</span></br>

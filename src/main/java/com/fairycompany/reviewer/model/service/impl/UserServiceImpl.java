@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private static final String HYPHEN = "-";
     private static final String EMPTY_LINE = "";
     private static final String REGISTRATION_SUBJECT_EMAIL = "Registration";
+    private static final String REGISTER_LINK = "%s/controller?command=finish_registration&token_id=%d&register_code=%s";
     private static final String LETTER = """
                 Greeting %s. Thanks for registering with GameReview!
                     Click here to complete registration %s.
@@ -42,12 +43,12 @@ public class UserServiceImpl implements UserService {
                         your pals at GR!
                 Please do not reply to this email. Your message will not be received.
                 """;
-    private static final String REGISTER_LINK = "%s/controller?command=finish_registration&token_id=%d&register_code=%s";
     private static UserServiceImpl instance = new UserServiceImpl();
     private UserValidator validator = UserValidator.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
     private UserDao userDao = UserDaoImpl.getInstance();
     private TokenDao tokenDao = TokenDaoImpl.getInstance();
+    private ServiceUtil serviceUtil = ServiceUtil.getInstance();
 
     private UserServiceImpl() {
     }
@@ -57,8 +58,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<User> findAllUsers(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
-
         long actualPage = serviceUtil.takeActualPage(content);
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
 
@@ -71,7 +70,7 @@ public class UserServiceImpl implements UserService {
             users = userDao.findAll(skippedUsers, rowAmount);
 
             long totalUserAmount = userDao.findTotalUserAmount();
-            int pageAmount = (int) Math.ceil((double) totalUserAmount / rowAmount);
+            long pageAmount = (long) Math.ceil((double) totalUserAmount / rowAmount);
 
             content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
             content.addRequestAttribute(RequestAttribute.ACTUAL_PAGE, actualPage);
@@ -86,7 +85,7 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
-    public Optional<User> authenticate (SessionRequestContent content) throws ServiceException {
+    public Optional<User> authenticateUser(SessionRequestContent content) throws ServiceException {
         Optional<User> user = Optional.empty();
 
         String login = content.getRequestParameter(LOGIN);
@@ -102,8 +101,8 @@ public class UserServiceImpl implements UserService {
 
                 transactionManager.commit();
             } catch (DaoException e) {
-                logger.log(Level.ERROR, "Error when authenticating user with login {} and password {}. {}", login, password, e.getMessage());
-                throw new ServiceException("Error when authenticating user with login " + login + " and password " + password, e);
+                logger.log(Level.ERROR, "Error when authenticating user with login {}. {}", login, e.getMessage());
+                throw new ServiceException("Error when authenticating user with login " + login, e);
             } finally {
                 transactionManager.endTransaction();
             }
@@ -113,9 +112,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean addUser(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
-        User.UserBuilder userBuilder = new User.UserBuilder();
         boolean isUserAdded = false;
+        User.UserBuilder userBuilder = new User.UserBuilder();
 
         String hashPassword = makeUserWithHashPassword(content, userBuilder);
         if (!hashPassword.isEmpty()) {
@@ -139,9 +137,9 @@ public class UserServiceImpl implements UserService {
                 long userId = userDao.add(user, hashPassword);
                 user.setUserId(userId);
 
-//                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
-//                long tokenId = tokenDao.addRegistrationToken(userId, token);  // todo uncomment to send email
-//                sendRegisterEmail(content, tokenId, token);                   // todo uncomment to send email
+                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
+                long tokenId = tokenDao.addRegistrationToken(userId, token);
+                sendRegisterEmail(content, tokenId, token);
 
                 transactionManager.commit();
 
@@ -160,7 +158,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         boolean isUserUpdated = false;
 
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
@@ -175,7 +172,7 @@ public class UserServiceImpl implements UserService {
 
         if (!(validator.isNameValid(name) && validator.isNameValid(surname) && validator.isPhoneValid(phone))) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
-        } else if (!validator.isDateValid(birthday)) {
+        } else if (!validator.isBirthdayValid(birthday)) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
         } else {
             try {
@@ -312,7 +309,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
         String uploadDirectory = (String) content.getRequestAttribute(RequestAttribute.UPLOAD_DIRECTORY);
 
@@ -348,7 +344,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private String makeUserWithHashPassword(SessionRequestContent content, User.UserBuilder userBuilder) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         String hashPassword = "";
 
         String login = content.getRequestParameter(RequestParameter.LOGIN);
@@ -367,7 +362,7 @@ public class UserServiceImpl implements UserService {
                 validator.isNameValid(surname) &&
                 validator.isPhoneValid(phone))) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_DATA_ERROR);
-        } else if (!validator.isDateValid(birthday)) {
+        } else if (!validator.isBirthdayValid(birthday)) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.BIRTHDAY_ERROR);
         } else if (!validator.passwordCheck(password, passwordChecker)) {
             content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.PASSWORD_DOUBLE_CHECK_ERROR);

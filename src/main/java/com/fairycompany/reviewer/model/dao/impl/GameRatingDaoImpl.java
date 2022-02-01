@@ -110,14 +110,14 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public Optional<GameRating> findGameRatingById(long userId, long gameId) throws DaoException {
-        Optional<GameRating> rating = jdbcTemplate.executeSelectQueryForObject(FIND_BY_GAME_AND_USER_ID_SQL, userId, gameId);
+        Optional<GameRating> rating = jdbcTemplate.selectEntity(FIND_BY_GAME_AND_USER_ID_SQL, userId, gameId);
 
         return rating;
     }
 
     @Override
     public long findUserAmount(long gameId) throws DaoException {
-        Number userAmount = jdbcTemplate.executeSelectCalculation(FIND_USER_AMOUNT_SQL, USER_AMOUNT, gameId);
+        Number userAmount = jdbcTemplate.selectFieldsCalculation(FIND_USER_AMOUNT_SQL, USER_AMOUNT, gameId);
 
         return (userAmount != null) ? userAmount.longValue() : 0;
     }
@@ -126,7 +126,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
     public List<Map<String, Object>> findReviewsForGame(long gameId, long userId, long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(GAME_RATING_ID, FULL_NAME, REVIEW, PUBLICATION_DATE);
         List<Map<String, Object>> reviewsForGame = jdbcTemplate
-                .executeSelectSomeFields(FIND_ALL_REVIEW_FOR_GAME_SQL, columnNames, gameId, userId, skippedRows, rowAmount);
+                .selectSomeFields(FIND_ALL_REVIEW_FOR_GAME_SQL, columnNames, gameId, userId, skippedRows, rowAmount);
 
         reviewsForGame.stream()
                 .flatMap(map -> map.entrySet().stream())
@@ -138,25 +138,25 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public long findTotalGameRatingReview(long gameId, long userId) throws DaoException {
-        Number totalGameRatingReviewAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_REVIEW_AMOUNT_SQL, TOTAL_VALUE, gameId, userId);
+        Number totalGameRatingReviewAmount = jdbcTemplate.selectFieldsCalculation(FIND_TOTAL_REVIEW_AMOUNT_SQL, TOTAL_VALUE, gameId, userId);
         logger.log(Level.DEBUG, "Total game amount is {}", totalGameRatingReviewAmount);
 
         return (totalGameRatingReviewAmount != null) ? totalGameRatingReviewAmount.longValue() : 0;
     }
 
     @Override
-    public List<Map<String, Object>> findRatingAmount(long userId) throws DaoException {
+    public Map<String, Object> findRatingAmount(long userId) throws DaoException {
         Set<String> columnNames = Set.of(AMOUNT_GAME_RATING, AMOUNT_REVIEW, POSITIVE_AMOUNT, MIXED_AMOUNT, NEGATIVE_AMOUNT);
-        List<Map<String, Object>> ratingAmount = jdbcTemplate.executeSelectSomeFields(COUNT_USER_GAME_RATING_AMOUNT_SQL,
+        List<Map<String, Object>> ratingAmount = jdbcTemplate.selectSomeFields(COUNT_USER_GAME_RATING_AMOUNT_SQL,
                 columnNames, userId);
 
-        return ratingAmount;
+        return ratingAmount.get(0);
     }
 
     @Override
     public List<Map<String, Object>> findMinMaxUserRating(long userId) throws DaoException {
         Set<String> columnNames = Set.of(MAX_GAME_NAME, MAX_RATING, MIN_GAME_NAME, MIN_RATING);
-        List<Map<String, Object>> minMaxRating = jdbcTemplate.executeSelectSomeFields(FIND_USER_MIN_MAX_GAME_RATING_SQL,
+        List<Map<String, Object>> minMaxRating = jdbcTemplate.selectSomeFields(FIND_USER_MIN_MAX_GAME_RATING_SQL,
                 columnNames, userId);
 
         return minMaxRating;
@@ -164,7 +164,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public Number findTotalGameRating(long gameId) throws DaoException {
-        Number totalGameRating = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_RATING_SQL, TOTAL_RATING, gameId);
+        Number totalGameRating = jdbcTemplate.selectFieldsCalculation(FIND_TOTAL_GAME_RATING_SQL, TOTAL_RATING, gameId);
 
         return totalGameRating;
     }
@@ -173,7 +173,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public long add(GameRating gameRating) throws DaoException {
-        long gameRatingId = jdbcTemplate.executeInsertQuery(ADD_NEW_GAME_RATING_SQL,
+        long gameRatingId = jdbcTemplate.insertDataInTable(ADD_NEW_GAME_RATING_SQL,
                 gameRating.getUserId(),
                 gameRating.getGameId(),
                 gameRating.getGameplayRating(),
@@ -187,7 +187,7 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public boolean update(GameRating gameRating) throws DaoException {
-        jdbcTemplate.executeUpdateDeleteFields(UPDATE_GAME_RATING_SQL,
+        jdbcTemplate.updateDeleteFields(UPDATE_GAME_RATING_SQL,
                 gameRating.getGameplayRating(),
                 gameRating.getGraphicsRating(),
                 gameRating.getSoundRating(),
@@ -201,14 +201,14 @@ public class GameRatingDaoImpl implements GameRatingDao {
 
     @Override
     public boolean delete(long gameRatingId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_REVIEW_SQL, gameRatingId);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_REVIEW_SQL, gameRatingId);
 
         return isDeleted;
     }
 
     @Override
     public boolean deleteUserRating(long userId, long gameId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_RATING_SQL, userId, gameId);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_RATING_SQL, userId, gameId);
 
         return isDeleted;
     }

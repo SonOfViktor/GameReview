@@ -10,44 +10,93 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class that contain request parameters and attributes and session attributes content.
+ */
 public class SessionRequestContent {
-    private Map<String, String[]> requestParameters;
-    private HashMap<String, Object> requestAttributes;
-    private HashMap<String, Object> sessionAttributes;
+    private Map<String, String[]> requestParameters = new HashMap<>();
+    private Map<String, Object> requestAttributes = new HashMap<>();
+    private Map<String, Object> sessionAttributes = new HashMap<>();
 
+    /**
+     * Extract parameters and attributes from request.
+     *
+     * @param request servlet request
+     */
     public void extractValues(HttpServletRequest request) {
         requestParameters = request.getParameterMap();
         requestAttributes = extractRequestAttribute(request);
         sessionAttributes = extractSessionAttribute(request);
     }
 
+    /**
+     * Insert parameters and attributes into request.
+     *
+     * @param request http request
+     */
     public void insertValues(HttpServletRequest request) {
         HttpSession session = request.getSession();
         requestAttributes.forEach(request::setAttribute);
         sessionAttributes.forEach(session::setAttribute);
     }
 
+    /**
+     * Add request attribute.
+     *
+     * @param name      attribute name
+     * @param attribute attribute value
+     */
     public void addRequestAttribute(String name, Object attribute) {
         requestAttributes.put(name, attribute);
     }
 
+    /**
+     * Get request attribute.
+     *
+     * @param name attribute name
+     * @return attribute by specified name
+     */
     public Object getRequestAttribute(String name) {
         return requestAttributes.get(name);
     }
 
+    /**
+     * Get array values of request parameter.
+     *
+     * @param name parameter name
+     * @return array values of specified parameter
+     */
     public String[] getRequestParameterValues(String name) {
         return requestParameters.get(name);
     }
 
+    /**
+     * Gets request parameter.
+     *
+     * @param name parameter name
+     * @return request parameter value or empty string if parameter null
+     */
     public String getRequestParameter(String name) {
         String[] values = requestParameters.get(name);
         return (values != null) ? values[0] : "";
     }
 
+    /**
+     * Add session attribute.
+     *
+     * @param name      attribute name
+     * @param attribute attribute value
+     */
     public void addSessionAttribute(String name, Object attribute) {
         sessionAttributes.put(name, attribute);
     }
 
+    /**
+     * Gets session attribute.
+     *
+     * @param name attribute name
+     * @return session attribute value
+     */
     public Object getSessionAttribute(String name) {
         return sessionAttributes.get(name);
     }

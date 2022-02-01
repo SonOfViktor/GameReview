@@ -11,6 +11,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+/**
+ * Servlet that processes http requests
+ */
 @WebServlet(name = "ControllerServlet", value = "/controller")
 public class ControllerServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
@@ -25,10 +28,16 @@ public class ControllerServlet extends HttpServlet {
         processRequest(request, response);
     }
 
+    /**
+     * Executes command from request parameter and forwards or redirect to received jsp page
+     *
+     * @param request the http request
+     * @param response the http response
+     * @throws IOException
+     * @throws ServletException
+     */
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String stringCommand = request.getParameter(RequestParameter.COMMAND);
-        Command command = CommandProvider.defineCommand(stringCommand).get();
-//        Command command = (Command) request.getAttribute(RequestAttribute.COMMAND_TYPE);
+        Command command = (Command) request.getAttribute(RequestAttribute.COMMAND);
 
         try {
             Router router = command.execute(request);

@@ -38,7 +38,7 @@
                         <input type="text" class="form-control" id="inputFirstName" name="name"
                             value="${user.firstName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="sing_up.name.invalid_message"/>
+                            <span><fmt:message key="sing_up_name_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                         <input type="text" class="form-control" id="inputSecondName" name="surname"
                             value="${user.secondName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="sing_up.surname.invalid_message"/>
+                            <span><fmt:message key="sing_up_surname_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <input type="date" class="form-control" id="inputBirthday"
                                name="birthday" value="${user.birthday}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="sing_up.birthday.invalid_message"/>
+                            <span><fmt:message key="sing_up_birthday_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                             <input type="tel" class="form-control" id="inputPhone" placeholder="XX-XXX-XX-XX" name="phone"
                                    value="${user.phone}" aria-describedby="telephone" pattern="\d{2}-?\d{3}-?\d{2}-?\d{2}" required>
                             <div class="invalid-feedback">
-                                <fmt:message key="sing_up.phone.invalid_message"/>
+                                <span><fmt:message key="sing_up_phone_invalid_message"/></span>
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                         <input type="password" class="form-control" id="newPassword" name="password"
                                pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="sing_up.password.invalid_message"/>
+                            <span><fmt:message key="sing_up_password_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         <input type="password" class="form-control" id="repeatPassword" name="password_check"
                                pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
                         <div class="invalid-feedback">
-                            <fmt:message key="sing_up.password.invalid_message"/>
+                            <span><fmt:message key="sing_up_password_invalid_message"/></span>
                         </div>
                     </div>
                 </div>
@@ -137,8 +137,7 @@
                 <input type="hidden" name="command" value="update_photo">
                 <div class="row mb-3">
                     <div class="col-3">
-<%--   todo                     <jsp:useBean id="calendar" scope="page" class="java.util.GregorianCalendar"/>--%>
-                        <img src="<%--http://localhost:8080/gamereview/--%>${user.photo} <%--?date=${calendar.timeInMillis}--%>" class="shadow bg-white rounded">
+                        <img src="${user.photo}" class="shadow bg-white rounded">
                     </div>
                     <div class="col-8 align-self-center">
                         <label for="inputImage" class="form-label"><fmt:message key="choose_photo"/></label>

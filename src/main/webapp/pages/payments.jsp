@@ -29,41 +29,43 @@
             <div class="container">
                 <c:forEach var="payment" varStatus="status" items="${payment_list}">
                     <div class="row">
-                        
-                            <button class="btn btn-link text-decoration-none link-dark col-5" type="button" data-bs-toggle="collapse" data-bs-target="#payment${status.count}" aria-expanded="false" aria-controls="payment${status.count}">
+                        <p>
+                            <button class="btn btn-link text-decoration-none link-dark col-5" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#payment${status.count}"
+                                    aria-expanded="false" aria-controls="payment${status.count}">
                                 <div class="row">
                                     <div class="col-6 fw-bold text-start">
-                                        <fmt:message key="order"/>${payment.paymentId}
+                                        <span><fmt:message key="order"/>${payment.paymentId}</span>
                                     </div>
                                     <div class="col-6 text-start">
-                                        <ctg:show-date dateTime="${payment.paymentDate}"/>
+                                        <span><ctg:show-date dateTime="${payment.paymentDate}"/></span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-6 fw-bold text-start">
-                                        <fmt:message key="total_price"/>
+                                        <span><fmt:message key="total_price"/></span>
                                     </div>
                                     <div class="col-6 text-start">
-                                        ${total_price_list[status.index]}
+                                        <span>${total_price_list[status.index]} $</span>
                                     </div>
                                 </div>
                             </button>
-
+                        </p>
                         <div class="collapse" id="payment${status.count}">
                             <div class="card card-body">
                                 <c:forEach var="order" items="${payment.orders}">
                                     <div class="row">
                                         <div class="col-3 fw-bold">
-                                            ${order.gameName}
+                                            <span>${order.gameName}</span>
                                         </div>
                                         <div class="col-2">
-                                            ${order.platform}
+                                            <span>${order.platform}</span>
                                         </div>
                                         <div class="col-5">
                                             <strong><fmt:message key="game_key"/>:</strong> ${order.gameKey}
                                         </div>
                                         <div class="col-2">
-                                            ${order.price} $
+                                            <span>${order.price} $</span>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -78,8 +80,8 @@
             <c:when test="${payment_list.isEmpty()}">
                 <div class="row justify-content-center">
                     <div class="col-6 text-center fs-5">
-                        <fmt:message key="empty_payment"/>
-                        <a class="fw-bold" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1"><fmt:message key="error.back"/></a>
+                        <span><fmt:message key="empty_payment"/></span>
+                        <a class="fw-bold" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1"><fmt:message key="error_back"/></a>
                     </div>
                 </div>
             </c:when>

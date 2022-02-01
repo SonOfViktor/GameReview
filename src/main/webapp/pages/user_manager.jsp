@@ -32,13 +32,13 @@
                     <table class="table table-striped table-bordered align-middle shadow-sm p-3 mb-5 bg-white rounded">
                         <thead class="table-dark">
                         <tr>
-                            <th scope="col"><fmt:message key="id"/></th>
-                            <th scope="col"><fmt:message key="user_login"/></th>
-                            <th scope="col"><fmt:message key="user_name"/></th>
-                            <th scope="col"><fmt:message key="user_birthday"/></th>
-                            <th scope="col"><fmt:message key="user_phone"/></th>
-                            <th scope="col"><fmt:message key="user_role"/></th>
-                            <th scope="col"><fmt:message key="user_status"/></th>
+                            <th scope="col"><span><fmt:message key="id"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_login"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_name"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_birthday"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_phone"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_role"/></span></th>
+                            <th scope="col"><span><fmt:message key="user_status"/></span></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -47,20 +47,20 @@
                                 <input type="hidden" name="command" value="update_user_by_admin">
                                 <input type="hidden" name="user_id" value="${user.userId}">
                                 <tr>
-                                    <th scope="row">${user.userId}</th>
-                                    <td>${user.login}</td>
-                                    <td>${user.firstName} ${user.secondName}</td>
-                                    <td>${user.birthday}</td>
-                                    <td>${user.phone}</td>
+                                    <th scope="row"><span>${user.userId}</span></th>
+                                    <td><span>${user.login}</span></td>
+                                    <td><span>${user.firstName} ${user.secondName}</span></td>
+                                    <td><span>${user.birthday}</span></td>
+                                    <td><span>${user.phone}</span></td>
                                     <td><select class="form-select form-select-sm" name="role">
                                             <c:choose>
                                                 <c:when test="${user.userRole eq 'USER'}">
-                                                    <option value="user" selected>User</option>
-                                                    <option value="admin">Admin</option>
+                                                    <option value="user" selected><span>User</span></option>
+                                                    <option value="admin"><span>Admin</span></option>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <option value="user">User</option>
-                                                    <option value="admin" selected>Admin</option>
+                                                    <option value="user"><span>User</span></option>
+                                                    <option value="admin" selected><span>Admin</span></option>
                                                 </c:otherwise>
                                             </c:choose>
                                         </select>
@@ -68,12 +68,12 @@
                                     <td><select class="form-select form-select-sm text-capitalize" name="status">
                                             <c:choose>
                                                 <c:when test="${user.userStatus eq 'ACTIVE'}">
-                                                    <option value="active" selected>Active</option>
-                                                    <option value="banned">Banned</option>
+                                                    <option value="active" selected><span>Active</span></option>
+                                                    <option value="banned"><span>Banned</span></option>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <option value="active">Active</option>
-                                                    <option value="banned" selected>Banned</option>
+                                                    <option value="active"><span>Active</span></option>
+                                                    <option value="banned" selected><span>Banned</span></option>
                                                 </c:otherwise>
                                             </c:choose>
                                         </select>

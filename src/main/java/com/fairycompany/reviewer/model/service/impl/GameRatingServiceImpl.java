@@ -1,9 +1,6 @@
 package com.fairycompany.reviewer.model.service.impl;
 
-import com.fairycompany.reviewer.controller.command.RequestAttribute;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
-import com.fairycompany.reviewer.controller.command.SessionAttribute;
-import com.fairycompany.reviewer.controller.command.SessionRequestContent;
+import com.fairycompany.reviewer.controller.command.*;
 import com.fairycompany.reviewer.exception.DaoException;
 import com.fairycompany.reviewer.exception.ServiceException;
 import com.fairycompany.reviewer.model.dao.GameRatingDao;
@@ -24,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static com.fairycompany.reviewer.controller.command.RequestParameter.ACTUAL_PAGE;
 import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_AMOUNT;
 
 public class GameRatingServiceImpl implements GameRatingService {
@@ -99,15 +95,15 @@ public class GameRatingServiceImpl implements GameRatingService {
         return optionalRating;
     }
 
-    public boolean findUserRatingAmount(SessionRequestContent content) throws ServiceException {
+    public Map<String, Object> findUserRatingAmount(SessionRequestContent content) throws ServiceException {
+        Map<String, Object> userRatingAmount;
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
         long userId = user.getUserId();
 
         try {
             transactionManager.initTransaction();
 
-            List<Map<String, Object>> userRatingAmount = gameRatingDao.findRatingAmount(userId);
-            content.addRequestAttribute(RequestAttribute.USER_RATING_AMOUNT, userRatingAmount.get(0));
+            userRatingAmount = gameRatingDao.findRatingAmount(userId);
 
             List<Map<String, Object>> minMaxUserRating = gameRatingDao.findMinMaxUserRating(userId);
             if (!minMaxUserRating.isEmpty()) {
@@ -120,33 +116,37 @@ public class GameRatingServiceImpl implements GameRatingService {
             transactionManager.endTransaction();
         }
 
-        return true;
+        return userRatingAmount;
     }
 
     public boolean addUpdateGameReview(SessionRequestContent content) throws ServiceException {
         boolean isGameReviewAdded = false;
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
-
         long userId = user.getUserId();
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+
+        String gameIdString = content.getRequestParameter(RequestParameter.GAME_ID);
         String gameplayRating = content.getRequestParameter(RequestParameter.GAMEPLAY_RATING);
         String graphicsRating = content.getRequestParameter(RequestParameter.GRAPHICS_RATING);
         String soundRating = content.getRequestParameter(RequestParameter.SOUND_RATING);
         String plotRating = content.getRequestParameter(RequestParameter.PLOT_RATING);
         String review = content.getRequestParameter(RequestParameter.REVIEW);
+        String switchValue = (String) content.getRequestAttribute(RequestAttribute.SWITCH);
 
         review = (review == null || review.isBlank()) ? "" : review;
         List<String> allRatings = List.of(plotRating, graphicsRating, soundRating, gameplayRating);
 
-        GameReviewValidator validator = GameReviewValidator.getInstance();
+        GameReviewValidator gameReviewValidator = GameReviewValidator.getInstance();
+        CommonValidator commonValidator = CommonValidator.getInstance();
 
         try {
             transactionManager.initTransaction();
 
-            if (validator.isGameRatingValid(allRatings) && validator.isReviewValid(review)) {
+            if (gameReviewValidator.isGameRatingValid(allRatings) &&
+                    gameReviewValidator.isReviewValid(review) &&
+                    commonValidator.isStringLong(gameIdString)) {
                 GameRating rating = new GameRating.GameRatingBuilder()
                         .setUserId(userId)
-                        .setGameId(gameId)
+                        .setGameId(Long.parseLong(gameIdString))
                         .setGameplayRating(Integer.parseInt(gameplayRating))
                         .setGraphicsRating(Integer.parseInt(graphicsRating))
                         .setSoundRating(Integer.parseInt(soundRating))
@@ -154,10 +154,13 @@ public class GameRatingServiceImpl implements GameRatingService {
                         .setReview(review)
                         .createGameRating();
 
-                switch(content.getRequestParameter(RequestParameter.SWITCH)) {
+                switch(switchValue) {
                     case CREATE -> gameRatingDao.add(rating);
                     case UPDATE -> gameRatingDao.update(rating);
-                    default -> throw new ServiceException("Switch parameter is wrong");
+                    default -> {
+                        content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.ILLEGAL_USE_ADDRESS_BAR);
+                        return false;
+                    }
                 }
 
                 logger.log(Level.DEBUG, "GameRating was added or updated");
@@ -166,8 +169,8 @@ public class GameRatingServiceImpl implements GameRatingService {
             }
         } catch (DaoException e) {
             transactionManager.rollback();
-            logger.log(Level.ERROR, "Error when adding rating of the game with id {}. {}", gameId, e.getMessage());
-            throw new ServiceException("Error when adding rating of the game with id " + gameId, e);
+            logger.log(Level.ERROR, "Error when adding rating of the game with id {}. {}", gameIdString, e.getMessage());
+            throw new ServiceException("Error when adding rating of the game with id " + gameIdString, e);
         } finally {
             transactionManager.endTransaction();
         }
@@ -210,7 +213,7 @@ public class GameRatingServiceImpl implements GameRatingService {
     @Override
     public boolean deleteUserReview(SessionRequestContent content) throws ServiceException {
         boolean isDeleted = false;
-        String gameRatingIdString =content.getRequestParameter(RequestParameter.GAME_RATING_ID);
+        String gameRatingIdString = content.getRequestParameter(RequestParameter.GAME_RATING_ID);
 
         CommonValidator commonValidator = CommonValidator.getInstance();
 

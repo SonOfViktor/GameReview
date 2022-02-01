@@ -9,7 +9,6 @@ import com.fairycompany.reviewer.model.dao.impl.GameDaoImpl;
 import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.Order;
 import com.fairycompany.reviewer.model.entity.Platform;
-import com.fairycompany.reviewer.model.entity.User;
 import com.fairycompany.reviewer.model.service.GameService;
 import com.fairycompany.reviewer.model.util.ServiceUtil;
 import com.fairycompany.reviewer.model.validator.CommonValidator;
@@ -34,11 +33,11 @@ public class GameServiceImpl implements GameService {
     private static final String WATCH_PART_REF = "watch?v=";
     private static final String EMBED_PART_REF = "embed/";
     private static final String AUTOPLAY_PART_REF = "?&autoplay=1";
-    private static final long FIRST_PAGE = 1;
     private static final BigDecimal INVALID_PRICE = new BigDecimal(-1);
+    private static GameServiceImpl instance = new GameServiceImpl();
     private GameDao gameDao = GameDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
-    private static GameServiceImpl instance = new GameServiceImpl();
+    ServiceUtil serviceUtil = ServiceUtil.getInstance();
 
     private GameServiceImpl() {
     }
@@ -48,12 +47,8 @@ public class GameServiceImpl implements GameService {
     }
 
     public List<Map<String, Object>> findAllGamesWithRating(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
-
         long actualPage = serviceUtil.takeActualPage(content);
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
-
-        logger.log(Level.DEBUG, "Actual game page is {}", actualPage);
 
         List<Map<String, Object>> games;
         try {
@@ -77,9 +72,10 @@ public class GameServiceImpl implements GameService {
         return games;
     }
 
-    public List<Map<String, Object>> findSearchGamesWithRating(SessionRequestContent content) throws ServiceException {
+    public List<Map<String, Object>> findSearchedGamesWithRating(SessionRequestContent content) throws ServiceException {
         List<Map<String, Object>> games;
         GameValidator validator = GameValidator.getInstance();
+        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         String searchField = content.getRequestParameter(SEARCH_FIELD);
 
         if(validator.isSearchFieldValid(searchField)) {
@@ -89,22 +85,16 @@ public class GameServiceImpl implements GameService {
             searchField = ANY_SYMBOLS_SQL_PATTERN;
         }
 
-        CommonValidator commonValidator = CommonValidator.getInstance();
-
-        String actualPageString = content.getRequestParameter(ACTUAL_PAGE);
-        long actualPage = commonValidator.isStringLong(actualPageString) ?
-                Long.parseLong(content.getRequestParameter(ACTUAL_PAGE)) : FIRST_PAGE;
+        long actualPage = serviceUtil.takeActualPage(content);
         int rowAmount = Integer.parseInt(content.getSessionAttribute(ROW_AMOUNT).toString());
-
-        logger.log(Level.DEBUG, "Actual game page is {}", actualPage);
 
         try {
             transactionManager.initTransaction();
 
             long skippedGames = actualPage * rowAmount - rowAmount;
-            games = gameDao.findSearchGamesWithRating(searchField, skippedGames, rowAmount);
+            games = gameDao.searchGamesWithRating(searchField, skippedGames, rowAmount);
 
-            long totalGameAmount = gameDao.findSearchGameAmount(searchField);
+            long totalGameAmount = gameDao.findSearchedGameAmount(searchField);
             long pageAmount = (long) Math.ceil((double) totalGameAmount / rowAmount);
 
             content.addRequestAttribute(RequestAttribute.PAGE_AMOUNT, pageAmount);
@@ -141,7 +131,6 @@ public class GameServiceImpl implements GameService {
     }
 
     public boolean addGame(SessionRequestContent content) throws ServiceException {
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         Game.GameBuilder gameBuilder = new Game.GameBuilder();
         boolean isGameAdded = false;
         String[] genres = content.getRequestParameterValues(GENRE);
@@ -216,7 +205,7 @@ public class GameServiceImpl implements GameService {
 
         GameValidator validator = GameValidator.getInstance();
 
-        if (validator.isPlatformValid(platformString) && validator.isStringFieldValid(gameName)) {
+        if (validator.isPlatformValid(platformString) && validator.isDataFieldValid(gameName)) {
             Platform platform = Platform.valueOf(platformString);
 
             Order order = new Order.OrderBuilder().setGameName(gameName).setPlatform(platform).createOrder();
@@ -260,12 +249,15 @@ public class GameServiceImpl implements GameService {
     public boolean updateGenres(SessionRequestContent content) throws ServiceException {
         boolean isGenresUpdated = false;
 
-        long gameId = Long.parseLong(content.getRequestParameter(RequestParameter.GAME_ID));
+        String gameIdString = content.getRequestParameter(RequestParameter.GAME_ID);
         String[] genres = content.getRequestParameterValues(GENRE);
 
-        GameValidator validator = GameValidator.getInstance();
+        CommonValidator commonValidator = CommonValidator.getInstance();
+        GameValidator gameValidator = GameValidator.getInstance();
 
-        if (validator.isGenresValid(genres)) {
+        if (gameValidator.isGenresValid(genres) && commonValidator.isStringLong(gameIdString)) {
+            long gameId = Long.parseLong(gameIdString);
+
             try {
                 transactionManager.initTransaction();
 
@@ -292,7 +284,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public boolean deleteGame(SessionRequestContent content) throws ServiceException {
         boolean isDeleted = false;
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
         GameValidator gameValidator = GameValidator.getInstance();
         CommonValidator commonValidator = CommonValidator.getInstance();
 
@@ -333,8 +324,6 @@ public class GameServiceImpl implements GameService {
 
     private boolean makeGameBuilder(SessionRequestContent content, Game.GameBuilder gameBuilder) {
         boolean isGameMade = false;
-        ServiceUtil serviceUtil = ServiceUtil.getInstance();
-
         String name = content.getRequestParameter(GAME_NAME);
         String publisher = content.getRequestParameter(PUBLISHER);
         String developer = content.getRequestParameter(DEVELOPER);
@@ -346,7 +335,7 @@ public class GameServiceImpl implements GameService {
 
         GameValidator validator = GameValidator.getInstance();
 
-        if (validator.isGameDataValid(name, publisher, developer, platforms,
+        if (validator.isAllGameDataValid(name, publisher, developer, platforms,
                 releaseDate, price, youtubeUrlRaw, description)) {
             String youtubeUrl = youtubeUrlRaw.replace(WATCH_PART_REF, EMBED_PART_REF).concat(AUTOPLAY_PART_REF);
 

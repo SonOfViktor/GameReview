@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Class for preparing and sending emails.
+ */
 public class EmailSender {
     private static final Logger logger = LogManager.getLogger();
     private static final String PROPERTY_FILE = "properties\\mail.properties";
@@ -27,12 +30,24 @@ public class EmailSender {
     private String mailSubject;
     private String mailText;
 
+    /**
+     * Create a new Email sender.
+     *
+     * @param sendToEmail email address who will be sent letter
+     * @param mailSubject the mail subject
+     * @param mailText    text of email
+     */
     public EmailSender(String sendToEmail, String mailSubject, String mailText) {
         this.sendToEmail = sendToEmail;
         this.mailSubject = mailSubject;
         this.mailText = mailText;
     }
 
+    /**
+     * Send email.
+     *
+     * @return true if email was created and sent
+     */
     public boolean sendEmail() {
         boolean result = false;
 

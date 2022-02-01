@@ -35,7 +35,7 @@
                 <input type="text" class="form-control" id="inputName" name="game_name" value=""
                        pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_name_invalid_message"/>
+                    <span><fmt:message key="add_game_name_invalid_message"/></span>
                 </div>
             </div>
 
@@ -45,7 +45,7 @@
                 <input type="text" class="form-control" id="inputPublisher" name="publisher" value=""
                        pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_publisher_invalid_message"/>
+                    <span><fmt:message key="add_game_publisher_invalid_message"/></span>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 <input type="text" class="form-control" id="inputDeveloper" name="developer" value=""
                        pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{1,29}" required>
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_developer_invalid_message"/>
+                    <span><fmt:message key="add_game_developer_invalid_message"/></span>
                 </div>
             </div>
 
@@ -88,7 +88,7 @@
                 <input type="number" class="form-control" id="inputPrice" placeholder="0"
                        name="price" value="" min="0.01" max="200" step="0.01" required>
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_price_invalid_message"/>
+                    <span><fmt:message key="add_game_price_invalid_message"/></span>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@
                 <input type="url" class="form-control" id="inputTrailer" name="trailer" value=""
                        pattern="https://www\.youtube\.com/watch\?v=[\w_-]{5,20}" required>
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_trailer_invalid_message"/>
+                    <span><fmt:message key="add_game_trailer_invalid_message"/></span>
                 </div>
             </div>
 

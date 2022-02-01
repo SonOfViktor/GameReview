@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="css/gr.style.css">
         <link href="css/bootstrap-icons.css" rel="stylesheet">
         <link href="css/vk.css" rel="stylesheet">
-        <title><fmt:message key="main.title"/></title>
+        <title><fmt:message key="main_title"/></title>
     </head>
 
     <body>
@@ -22,8 +22,6 @@
             <%@include file= "../WEB-INF/jspf/navbar.jspf" %>
             <%@include file= "../WEB-INF/jspf/message.jspf" %>
         </header>
-
-
 
         <main class="content">
         <section class="games">

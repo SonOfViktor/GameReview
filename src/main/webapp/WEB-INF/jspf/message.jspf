@@ -22,7 +22,7 @@
             <use xlink:href="#check-circle-fill"/>
         </svg>
         <div>
-            <fmt:message key="${session_message}"/>
+            <span><fmt:message key="${session_message}"/></span>
         </div>
     </div>
     <c:remove var="session_message"/>
@@ -34,7 +34,7 @@
             <use xlink:href="#exclamation-triangle-fill"/>
         </svg>
         <div>
-            <fmt:message key="${session_message_error}"/>
+            <span><fmt:message key="${session_message_error}"/></span>
         </div>
     </div>
     <c:remove var="session_message_error" scope="session"/>

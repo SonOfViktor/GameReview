@@ -7,22 +7,22 @@
 <c:choose>
     <c:when test="${empty total_game_rating}">
         <div class="positive_bg">
-            N/A
+            <span>N/A</span>
         </div>
     </c:when>
     <c:when test="${total_game_rating ge 75}">
         <div class="positive_bg">
-                ${total_game_rating}
+            <span>${total_game_rating}</span>
         </div>
     </c:when>
     <c:when test="${total_game_rating ge 30}">
         <div class="mixed_bg">
-                ${total_game_rating}
+            <span>${total_game_rating}</span>
         </div>
     </c:when>
     <c:otherwise>
         <div class="negative_bg">
-                ${total_game_rating}
+            <span>${total_game_rating}</span>
         </div>
     </c:otherwise>
 </c:choose>

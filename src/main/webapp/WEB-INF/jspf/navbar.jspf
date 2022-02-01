@@ -10,7 +10,7 @@
         <div class="col-2 ps-4">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1">
                 <i class="bi bi-joystick"></i>
-                <fmt:message key="main.title"/>
+                <span><fmt:message key="main_title"/></span>
                 <i class="bi bi-controller"></i>
             </a>
         </div>
@@ -19,12 +19,12 @@
             <form class="d-flex needs-validation" novalidate style="width: 600px;">
                 <input type="hidden" name="command" value="search_game">
                 <input type="hidden" name="actual_page" value="1">
-                <input class="form-control me-2" type="search" placeholder="<fmt:message key="main.search"/>"
+                <input class="form-control me-2" type="search" placeholder="<fmt:message key="search"/>"
                        aria-label="Search" name="search_field" value="${param.search_field}" pattern="[\p{Alpha}\d][\p{Alpha}\d\s']{0,29}">
                 <div class="invalid-feedback">
-                    <fmt:message key="add_game_name_invalid_message"/>
+                    <span><fmt:message key="add_game_name_invalid_message"/></span>
                 </div>
-                <button class="btn btn-outline-success" type="submit"><fmt:message key="main.search"/></button>
+                <button class="btn btn-outline-success" type="submit"><fmt:message key="search"/></button>
             </form>
         </div>
 
@@ -33,13 +33,13 @@
                 <c:when test="${locale eq 'en_EN'}">
                     <a class="btn btn-info btn-sm"
                        href="${pageContext.request.contextPath}/controller?command=locale&locale=ru_RU" role="button">
-                        <fmt:message key="main.ru"/>
+                        <fmt:message key="ru_button"/>
                     </a>
                 </c:when>
                 <c:otherwise>
                     <a class="btn btn-info btn-sm"
                        href="${pageContext.request.contextPath}/controller?command=locale&locale=en_EN" role="button">
-                        <fmt:message key="main.eng"/>
+                        <fmt:message key="eng_button"/>
                     </a>
                 </c:otherwise>
             </c:choose>
@@ -49,7 +49,7 @@
             <c:when test="${empty user or user.getUserRole().name().toLowerCase() eq 'guest'}">
                 <div class="col-3 d-flex justify-content-center">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <fmt:message key="main.sing_in"/>
+                        <fmt:message key="sing_in"/>
                     </button>
                 </div>
             </c:when>
@@ -74,7 +74,7 @@
                     <form method="get" action="controller">
                         <input type="hidden" name="command" value="logout"/>
                         <button type="submit" class="btn btn-primary">
-                            <fmt:message key="login.log_out"/>
+                            <fmt:message key="log_out"/>
                         </button>
                     </form>
                 </div>
@@ -85,7 +85,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"><fmt:message key="login.login"/></h5>
+                        <h5 class="modal-title" id="exampleModalLabel"><fmt:message key="login_title"/></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -93,29 +93,29 @@
                             <input type="hidden" name="command" value="login"/>
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">
-                                    <fmt:message key="login.login"/>
+                                    <fmt:message key="e_mail"/>
                                 </label>
                                 <input type="email" name="login" class="form-control" id="exampleInputEmail1"
                                        aria-describedby="emailHelp"
                                        pattern="[\d\w-]{3,25}@\w{2,10}\.\w{2,5}" required>
                                 <div class="invalid-feedback">
-                                    <fmt:message key="sing_up.login.invalid_message"/>
+                                    <char><fmt:message key="sing_up_login_invalid_message"/></char>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label
-                                        for="exampleInputPassword" class="form-label"><fmt:message key="login.password"/>
+                                        for="exampleInputPassword" class="form-label"><fmt:message key="password"/>
                                 </label>
                                 <input type="password" name="password" class="form-control" id="exampleInputPassword"
                                 pattern="(?=.*\d)(?=.*\p{Lower})(?=.*\p{Upper})[\d\p{Alpha}]{8,30}" required>
                                 <div class="invalid-feedback">
-                                    <fmt:message key="sing_up.password.invalid_message"/>
+                                    <char><fmt:message key="sing_up_password_invalid_message"/></char>
                                 </div>
                             </div>
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">
-                                    <fmt:message key="login.log_in"/>
+                                    <fmt:message key="sing_in"/>
                                 </button>
                             </div>
                         </form>
@@ -123,7 +123,7 @@
                             <form method="get" action="controller">
                                 <input type="hidden" name="command" value="to_sing_up_page"/>
                                 <button type="submit" class="btn btn-primary">
-                                    <fmt:message key="login.sing_up"/>
+                                    <fmt:message key="sing_up"/>
                                 </button>
                             </form>
                         </div>

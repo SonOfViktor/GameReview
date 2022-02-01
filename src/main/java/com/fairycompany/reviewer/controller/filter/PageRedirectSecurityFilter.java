@@ -7,6 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * Filter that prohibit access to jsp page directly
+ */
 @WebFilter(filterName = "PageRedirectSecurityFilter",
             urlPatterns = "/pages/*" )
 public class PageRedirectSecurityFilter implements Filter {

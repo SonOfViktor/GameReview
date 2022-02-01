@@ -11,7 +11,7 @@
     <h2>This page is not found</h2>
     <h4>
         <a href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1" class="link-primary">
-            <fmt:message key="error.back"/>
+            <fmt:message key="error_back"/>
         </a>
     </h4>
 </body>

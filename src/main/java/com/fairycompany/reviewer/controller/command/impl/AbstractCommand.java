@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+/**
+ * Class provided additional method for command implementation.
+ */
 public abstract class AbstractCommand implements Command {
     protected static final Logger logger = LogManager.getLogger();
     private static final String CONTENT_TYPE = "content-type";
@@ -20,6 +23,11 @@ public abstract class AbstractCommand implements Command {
     protected SessionRequestContent content = new SessionRequestContent();
     protected Router router;
 
+    /**
+     * Extract values from request to content and initialize router
+     *
+     * @param request http request
+     */
     protected void initCommand(HttpServletRequest request) {
         content.extractValues(request);
 
@@ -30,6 +38,12 @@ public abstract class AbstractCommand implements Command {
         router.setType(Router.RouterType.REDIRECT);
     }
 
+    /**
+     * Extract image input stream from part of request.
+     *
+     * @param request http request
+     * @return true if input stream was extracted
+     */
     protected boolean extractImageInputStream(HttpServletRequest request) {
         boolean isExtracted = true;
         Optional<InputStream> image = Optional.empty();
@@ -58,6 +72,13 @@ public abstract class AbstractCommand implements Command {
         return isExtracted;
     }
 
+    /**
+     * Update image.
+     *
+     * @param request   http request
+     * @param imagePath the image path
+     * @return true if image updated
+     */
     protected boolean updateImage(HttpServletRequest request, String imagePath) {
         boolean isFileUpdated = false;
 
@@ -79,19 +100,5 @@ public abstract class AbstractCommand implements Command {
         }
 
         return isFileUpdated;
-    }
-
-    protected void deleteFile(String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
-            logger.log(Level.DEBUG, "File {} deleted", path);
-        }
-    }
-
-    private boolean isPartImage(Part part) {
-        String mimeType = part.getHeader(CONTENT_TYPE);
-
-        return mimeType.startsWith(IMAGE_TYPE) || part.getSize() == 0;
     }
 }

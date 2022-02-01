@@ -5,8 +5,9 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 
-//todo check work of class
-
+/**
+ * Filter that manage encoding for request and response
+ */
 @WebFilter(filterName = "EncodingFilter",
             urlPatterns = "/*",
             initParams = {
@@ -15,7 +16,7 @@ import java.io.IOException;
 public class EncodingFilter implements Filter {
     private String code;
 
-    public void init(FilterConfig config) throws ServletException {
+    public void init(FilterConfig config) {
         code = config.getInitParameter("encoding");
     }
 

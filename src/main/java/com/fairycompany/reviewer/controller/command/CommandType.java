@@ -1,13 +1,22 @@
 package com.fairycompany.reviewer.controller.command;
 
-import com.fairycompany.reviewer.controller.command.impl.*;
+import com.fairycompany.reviewer.controller.command.impl.admin.*;
+import com.fairycompany.reviewer.controller.command.impl.common.LocalCommand;
+import com.fairycompany.reviewer.controller.command.impl.common.SearchGameCommand;
 import com.fairycompany.reviewer.controller.command.impl.gotocommand.*;
+import com.fairycompany.reviewer.controller.command.impl.guest.CreateUserCommand;
+import com.fairycompany.reviewer.controller.command.impl.guest.FinishRegistrationCommand;
+import com.fairycompany.reviewer.controller.command.impl.guest.LoginCommand;
+import com.fairycompany.reviewer.controller.command.impl.user.*;
 import com.fairycompany.reviewer.model.entity.User;
 
 import java.util.Set;
 
 import static com.fairycompany.reviewer.model.entity.User.Role.*;
 
+/**
+ * Enum that contain commands and user role who can execute them
+ */
 public enum CommandType {
     LOGIN(new LoginCommand(), GUEST),
     LOGOUT(new LogoutCommand(), USER, ADMIN),
@@ -21,7 +30,8 @@ public enum CommandType {
     TO_SING_UP_PAGE(new GoToCreateUserPage(), GUEST),
     TO_ADD_GAME_PAGE(new GoToCreateGamePage(), ADMIN),
     CREATE_GAME(new CreateGameCommand(), ADMIN),
-    CREATE_UPDATE_GAME_RATING(new CreateGameUpdateRatingCommand(), USER, ADMIN),
+    CREATE_GAME_RATING(new CreateRatingCommand(), USER, ADMIN),
+    UPDATE_GAME_RATING(new UpdateRatingCommand(), USER, ADMIN),
     DELETE_RATING(new DeleteRatingCommand(), USER, ADMIN),
     DELETE_REVIEW(new DeleteReviewCommand(), ADMIN),
     UPDATE_GAME(new UpdateGameCommand(), ADMIN),
@@ -52,10 +62,21 @@ public enum CommandType {
         this.roles = Set.of(roles);
     }
 
+    /**
+     * Gets {@link Command} object.
+     *
+     * @return specified command
+     */
     public Command getCommand() {
         return command;
     }
 
+    /**
+     * Check whether user can execute this command
+     *
+     * @param role user role
+     * @return true if user can
+     */
     public boolean hasUserRole(User.Role role) {
         return roles.stream().anyMatch(r -> r == role);
     }

@@ -74,17 +74,17 @@
                         <c:choose>
                             <c:when test="${user_total_rating ge 75}">
                                 <div class="score_user positive_bg">
-                                        ${user_total_rating}
+                                    <span>${user_total_rating}</span>
                                 </div>
                             </c:when>
                             <c:when test="${user_total_rating ge 30}">
                                 <div class="score_user mixed_bg">
-                                        ${user_total_rating}
+                                    <span>${user_total_rating}</span>
                                 </div>
                             </c:when>
                             <c:otherwise>
                                 <div class="score_user negative_bg">
-                                        ${user_total_rating}
+                                    <span>${user_total_rating}</span>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -96,13 +96,12 @@
                         <div>
                             <c:choose>
                                 <c:when test="${empty user_total_rating}">
-                                    <input type="hidden" name="switch" value="create">
+                                    <input type="hidden" name="command" value="create_game_rating">
                                 </c:when>
                                 <c:otherwise>
-                                    <input type="hidden" name="switch" value="update">
+                                    <input type="hidden" name="command" value="update_game_rating">
                                 </c:otherwise>
                             </c:choose>
-                            <input type="hidden" name="command" value="create_update_game_rating">
                             <input type="hidden" name="game_id" value="${param.game_id}">
                         </div>
                         <div class="row">
@@ -116,7 +115,7 @@
                                                name="graphics" value="${user_rating.graphicsRating}"
                                                min="0" max="100" step="1" required>
                                         <div class="invalid-feedback">
-                                            0 - 100 step 1
+                                            <span>0 - 100 <fmt:message key="step"/> 1</span>
                                         </div>
                                     </div>
                                 </div>
@@ -129,7 +128,7 @@
                                         <input type="number" id="inputPlot" class="form-control form-control-sm"
                                                name="plot" value="${user_rating.plotRating}" min="0" max="100" step="1" required>
                                         <div class="invalid-feedback">
-                                            0 - 100 step 1
+                                            <span>0 - 100 <fmt:message key="step"/> 1</span>
                                         </div>
                                     </div>
                                 </div>
@@ -142,7 +141,7 @@
                                         <input type="number" id="inputGameplay" class="form-control form-control-sm"
                                                name="gameplay" value="${user_rating.gameplayRating}" min="0" max="100" step="1" required>
                                         <div class="invalid-feedback">
-                                            0 - 100 step 1
+                                            <span>0 - 100 <fmt:message key="step"/> 1</span>
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +154,7 @@
                                         <input type="number" id="inputSound" class="form-control form-control-sm"
                                                name="sound" value="${user_rating.soundRating}" min="0" max="100" step="1" required>
                                         <div class="invalid-feedback">
-                                            0 - 100 step 1
+                                            <span>0 - 100 <fmt:message key="step"/> 1</span>
                                         </div>
                                     </div>
                                 </div>
@@ -208,10 +207,10 @@
                         <div class="col-6">
                             <div class="row justify-content-between mb-0 review_label">
                                 <div class="col-6">
-                                    ${user.firstName} ${user.secondName}
+                                    <span>${user.firstName} ${user.secondName}</span>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <ctg:show-date dateTime="${user_rating.publicationDate}"/>
+                                    <span><ctg:show-date dateTime="${user_rating.publicationDate}"/></span>
                                 </div>
                             </div>
                             <textarea form="form_review" class="form-control overflow-auto" id="inputTextReview" name="review" rows="4"
@@ -239,10 +238,10 @@
                             <div class="col-11">
                                 <div class="row justify-content-between mb-0 review_label">
                                     <div class="col-6">
-                                            ${map.full_name}
+                                        <span>${map.full_name}</span>
                                     </div>
                                     <div class="col-6 text-end">
-                                        <ctg:show-date dateTime="${map.publication_date}"/>
+                                        <span><ctg:show-date dateTime="${map.publication_date}"/></span>
                                     </div>
                                 </div>
                                 <textarea class="form-control overflow-auto" id="inputReview" rows="4"

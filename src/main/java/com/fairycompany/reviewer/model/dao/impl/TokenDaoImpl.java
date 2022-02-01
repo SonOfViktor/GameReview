@@ -38,14 +38,14 @@ public class TokenDaoImpl implements TokenDao {
 
     @Override
     public Optional<UserToken> findTokenById(long tokenId) throws DaoException {
-        Optional<UserToken> userToken = jdbcTemplate.executeSelectQueryForObject(FIND_USER_TOKEN_SQL, tokenId);
+        Optional<UserToken> userToken = jdbcTemplate.selectEntity(FIND_USER_TOKEN_SQL, tokenId);
 
         return userToken;
     }
 
     @Override
     public long addRegistrationToken(long userId, String token) throws DaoException {
-        long tokenId = jdbcTemplate.executeInsertQuery(ADD_USER_TOKEN_SQL, userId,
+        long tokenId = jdbcTemplate.insertDataInTable(ADD_USER_TOKEN_SQL, userId,
                 token, Timestamp.valueOf(LocalDateTime.now()));
 
         return tokenId;
@@ -53,7 +53,7 @@ public class TokenDaoImpl implements TokenDao {
 
     @Override
     public boolean deleteToken(long tokenId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_BY_ID_SQL, tokenId);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_BY_ID_SQL, tokenId);
 
         return isDeleted;
     }

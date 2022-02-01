@@ -39,13 +39,13 @@
                         <table class="table table-striped table-bordered align-middle shadow-sm p-3 mb-5 bg-white rounded">
                             <thead class="table-dark">
                             <tr>
-                                <th scope="col"><fmt:message key="id"/></th>
-                                <th scope="col"><fmt:message key="game_name"/></th>
-                                <th scope="col"><fmt:message key="game_publisher"/></th>
-                                <th scope="col"><fmt:message key="game_developer"/></th>
-                                <th scope="col"><fmt:message key="game_release_date"/></th>
-                                <th scope="col"><fmt:message key="game_price"/></th>
-                                <th scope="col"><fmt:message key="total_rating"/></th>
+                                <th scope="col"><span><fmt:message key="id"/></span></th>
+                                <th scope="col"><span><fmt:message key="game_name"/></span></th>
+                                <th scope="col"><span><fmt:message key="game_publisher"/></span></th>
+                                <th scope="col"><span><fmt:message key="game_developer"/></span></th>
+                                <th scope="col"><span><fmt:message key="game_release_date"/></span></th>
+                                <th scope="col"><span><fmt:message key="game_price"/></span></th>
+                                <th scope="col"><span><fmt:message key="total_rating"/></span></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -58,16 +58,16 @@
                                                 ${game.name}
                                             </a>
                                         </td>
-                                        <td>${game.publisher}</td>
-                                        <td>${game.developer}</td>
-                                        <td>${game.releaseDate}</td>
-                                        <td>${game.price}</td>
+                                        <td><span>${game.publisher}</span></td>
+                                        <td><span>${game.developer}</span></td>
+                                        <td><span>${game.releaseDate}</span></td>
+                                        <td><span>${game.price}</span></td>
                                         <td><c:choose>
                                                 <c:when test="${not empty game_map.total_rating}">
-                                                    ${game_map.total_rating}
+                                                    <span>${game_map.total_rating}</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    N/A
+                                                    <span>N/A</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
@@ -80,7 +80,7 @@
                         <table class="table table-borderless">
                             <thead class="invisible">
                             <tr>
-                                <th>Invisible</th>
+                                <th><span>Invisible</span></th>
                             </tr>
                             </thead>
                             <tbody>

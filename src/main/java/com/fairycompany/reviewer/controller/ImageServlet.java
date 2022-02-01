@@ -1,8 +1,6 @@
 package com.fairycompany.reviewer.controller;
 
-import com.fairycompany.reviewer.controller.command.LocaleMessageKey;
-import com.fairycompany.reviewer.controller.command.RequestParameter;
-import com.fairycompany.reviewer.controller.command.SessionAttribute;
+import com.fairycompany.reviewer.controller.command.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +14,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+/**
+ * Servlet that processes http requests with files.
+ */
 @WebServlet("/upload_image")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024,
         maxFileSize = 1024 * 1024 * 5,
@@ -23,6 +24,14 @@ import java.io.IOException;
 public class ImageServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
 
+    /**
+     * Checks size of file. If successful, forward the request to {@link ControllerServlet} for further processing
+     *
+     * @param request  the http request
+     * @param response the http response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

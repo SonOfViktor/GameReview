@@ -9,6 +9,8 @@ import com.fairycompany.reviewer.model.service.impl.GameRatingServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 
+import java.util.Map;
+
 public class GoToUserPage extends AbstractCommand {
 
     @Override
@@ -20,7 +22,8 @@ public class GoToUserPage extends AbstractCommand {
         GameRatingService gameRatingService = GameRatingServiceImpl.getInstance();
 
         try {
-            gameRatingService.findUserRatingAmount(content);
+            Map<String, Object> userRatingAmount = gameRatingService.findUserRatingAmount(content);
+            content.addRequestAttribute(RequestAttribute.USER_RATING_AMOUNT, userRatingAmount);
         } catch (ServiceException e) {
             logger.log(Level.ERROR, "Finding user's amount of ratings is failed. {}", e.getMessage());
             throw new CommandException("Finding user's amount of ratings is failed", e);

@@ -101,20 +101,20 @@ public class GameDaoImpl implements GameDao {
     @Override
     public List<Map<String, Object>> findAllGamesWithRating(long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectEntityWithExtraFields(FIND_ALL_GAMES_WITH_RATING_SQL, columnNames, skippedRows, rowAmount);
+        List<Map<String, Object>> games = jdbcTemplate.selectEntitiesWithExtraFields(FIND_ALL_GAMES_WITH_RATING_SQL, columnNames, skippedRows, rowAmount);
         return games;
     }
 
     @Override
-    public List<Map<String, Object>> findSearchGamesWithRating(String searchGame, long skippedRows, int rowAmount) throws DaoException {
+    public List<Map<String, Object>> searchGamesWithRating(String searchGame, long skippedRows, int rowAmount) throws DaoException {
         Set<String> columnNames = Set.of(TOTAL_RATING);
-        List<Map<String, Object>> games = jdbcTemplate.executeSelectEntityWithExtraFields(FIND_SEARCH_GAMES_WITH_RATING_SQL, columnNames, searchGame, skippedRows, rowAmount);
+        List<Map<String, Object>> games = jdbcTemplate.selectEntitiesWithExtraFields(FIND_SEARCH_GAMES_WITH_RATING_SQL, columnNames, searchGame, skippedRows, rowAmount);
         return games;
     }
 
     @Override
     public Optional<Game> findEntityById(long id) throws DaoException {
-        Optional<Game> game = jdbcTemplate.executeSelectQueryForObject(FIND_BY_ID_SQL, id);
+        Optional<Game> game = jdbcTemplate.selectEntity(FIND_BY_ID_SQL, id);
 
         return game;
     }
@@ -122,22 +122,22 @@ public class GameDaoImpl implements GameDao {
     @Override
     public List<Map<String, Object>> findGameName(String name) throws DaoException {
         Set<String> columnNames = Set.of(NAME);
-        List<Map<String, Object>> gameName = jdbcTemplate.executeSelectSomeFields(HAS_GAME_NAME_SQL, columnNames, name);
+        List<Map<String, Object>> gameName = jdbcTemplate.selectSomeFields(HAS_GAME_NAME_SQL, columnNames, name);
 
         return gameName;
     }
 
     @Override
     public long findTotalGameAmount() throws DaoException {
-        Number totalGameAmount = jdbcTemplate.executeSelectCalculation(FIND_TOTAL_GAME_AMOUNT_SQL, TOTAL_VALUE);
+        Number totalGameAmount = jdbcTemplate.selectFieldsCalculation(FIND_TOTAL_GAME_AMOUNT_SQL, TOTAL_VALUE);
         logger.log(Level.DEBUG, "Total game amount is {}", totalGameAmount);
 
         return (totalGameAmount != null) ? totalGameAmount.longValue() : 0;
     }
 
     @Override
-    public long findSearchGameAmount(String searchGame) throws DaoException {
-        Number totalGameAmount = jdbcTemplate.executeSelectCalculation(FIND_SEARCH_GAME_AMOUNT_SQL, TOTAL_VALUE, searchGame);
+    public long findSearchedGameAmount(String searchGame) throws DaoException {
+        Number totalGameAmount = jdbcTemplate.selectFieldsCalculation(FIND_SEARCH_GAME_AMOUNT_SQL, TOTAL_VALUE, searchGame);
         logger.log(Level.DEBUG, "Total game amount is {}", totalGameAmount);
 
         return (totalGameAmount != null) ? totalGameAmount.longValue() : 0;
@@ -145,14 +145,14 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public boolean delete(long gameId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_GAME_SQL, gameId);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_GAME_SQL, gameId);
 
         return isDeleted;
     }
 
     @Override
     public long add(Game game) throws DaoException {
-        long gameId = jdbcTemplate.executeInsertQuery(ADD_NEW_GAME_SQL,
+        long gameId = jdbcTemplate.insertDataInTable(ADD_NEW_GAME_SQL,
                 game.getName(),
                 game.getPublisher(),
                 game.getDeveloper(),
@@ -168,7 +168,7 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public boolean update(Game game) throws DaoException {
-        boolean isUpdated = jdbcTemplate.executeUpdateDeleteFields(UPDATE_GAME_SQL,
+        boolean isUpdated = jdbcTemplate.updateDeleteFields(UPDATE_GAME_SQL,
                 game.getName(),
                 game.getPublisher(),
                 game.getDeveloper(),
@@ -194,7 +194,7 @@ public class GameDaoImpl implements GameDao {
     }
 
     public boolean deleteGenres(long gameId) throws DaoException {
-        boolean isDeleted = jdbcTemplate.executeUpdateDeleteFields(DELETE_GAME_GENRE_SQL, gameId);
+        boolean isDeleted = jdbcTemplate.updateDeleteFields(DELETE_GAME_GENRE_SQL, gameId);
 
         return isDeleted;
     }

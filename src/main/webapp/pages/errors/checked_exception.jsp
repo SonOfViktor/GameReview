@@ -14,36 +14,34 @@
     <link href="css/bootstrap-icons.css" rel="stylesheet">
     <link href="css/vk.css" rel="stylesheet">
 
-    <title><fmt:message key="error.title"/></title>
+    <title><fmt:message key="error_title"/></title>
 </head>
 
 <body>
     <%@include file= "../../WEB-INF/jspf/navbar_light.jspf" %>
 
     <div class="container" >
-        <h1><fmt:message key="error.oops"/></h1>
+        <h1><fmt:message key="error_oops"/></h1>
 
         <table class="table table-bordered">
             <tbody>
             <tr>
-                <th><fmt:message key="error.exception"/></th>
-                <td>${exception}</td>
+                <th><span><fmt:message key="error_exception"/></span></th>
+                <td><span>${exception}</span></td>
             </tr>
             <tr>
-                <th><fmt:message key="error.message"/></th>
-                <td>${exception.message}</td>
+                <th><span><fmt:message key="error_message"/></span></th>
+                <td><span>${exception.message}</span></td>
             </tr>
             <tr>
-                <th><fmt:message key="error.status_code"/></th>
-                <td>
-                    <c:if test="${not empty exception}"> 500 </c:if>
-                    </td>
+                <th><span><fmt:message key="error_status_code"/></span></th>
+                <td><c:if test="${not empty exception}"><span>500</span></c:if></td>
             </tr>
             <tr>
-                <th><fmt:message key="error.stack_trace"/></th>
+                <th><span><fmt:message key="error_stack_trace"/></span></th>
                 <td>
                     <c:forEach items="${exception.stackTrace}" var="element">
-                        ${element}
+                        <span>${element}</span>
                         <br/>
                     </c:forEach>
                 </td>
@@ -53,7 +51,7 @@
 
         <h4>
             <a href="${pageContext.request.contextPath}/controller?command=to_main_page&actual_page=1" class="link-primary">
-                <fmt:message key="error.back"/>
+                <fmt:message key="error_back"/>
             </a>
         </h4>
     </div>

@@ -13,10 +13,4 @@ public class SessionListener implements HttpSessionListener {
         HttpSession session = se.getSession();
         session.setAttribute(SessionAttribute.ROW_AMOUNT, ROW_AMOUNT);
     }
-
-    @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
-        /* Session is destroyed. */
-    }
-
 }

@@ -67,8 +67,8 @@ public class PaymentDaoImpl implements PaymentDao {
         return instance;
     }
 
-    public List<Payment> findAllUserPayments(long userId, long skippedUsers, int rowAmount) throws DaoException {
-        List<Payment> payments = paymentJdbcTemplate.executeSelectQuery(FIND_ALL_USER_PAYMENTS_SQL, userId, skippedUsers, rowAmount);
+    public List<Payment> findAllUserPayments(long userId, long skippedPayments, int rowAmount) throws DaoException {
+        List<Payment> payments = paymentJdbcTemplate.selectEntities(FIND_ALL_USER_PAYMENTS_SQL, userId, skippedPayments, rowAmount);
 
         for(Payment payment : payments) {
             payment.setOrders(findOrdersWithPaymentId(payment.getPaymentId()));
@@ -78,7 +78,7 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     public long findTotalPaymentAmount(long userId) throws DaoException {
-        Number totalPaymentAmount = paymentJdbcTemplate.executeSelectCalculation(FIND_TOTAL_PAYMENT_AMOUNT, TOTAL_VALUE, userId);
+        Number totalPaymentAmount = paymentJdbcTemplate.selectFieldsCalculation(FIND_TOTAL_PAYMENT_AMOUNT, TOTAL_VALUE, userId);
         logger.log(Level.DEBUG, "Total payment amount is {}", totalPaymentAmount);
 
         return (totalPaymentAmount != null) ? totalPaymentAmount.longValue() : 0;
@@ -86,7 +86,7 @@ public class PaymentDaoImpl implements PaymentDao {
 
     @Override
     public long addPayment(long userId) throws DaoException {
-        long paymentId = paymentJdbcTemplate.executeInsertQuery(ADD_NEW_PAYMENT_SQL,
+        long paymentId = paymentJdbcTemplate.insertDataInTable(ADD_NEW_PAYMENT_SQL,
                 userId);
 
         return paymentId;
@@ -95,13 +95,13 @@ public class PaymentDaoImpl implements PaymentDao {
     @Override
     public void addOrders(long paymentId, Map<Order, Game> orders) throws DaoException {
         List<Object[]> batchArguments = new ArrayList<>();
-        orders.entrySet().forEach(entry -> {
-            Object[] arguments = new Object[] {
-                    entry.getValue().getGameId(),
+        orders.forEach((key, value) -> {
+            Object[] arguments = new Object[]{
+                    value.getGameId(),
                     paymentId,
-                    entry.getKey().getPlatform().toString().toLowerCase(),
-                    entry.getKey().getGameKey(),
-                    entry.getValue().getPrice()
+                    key.getPlatform().toString().toLowerCase(),
+                    key.getGameKey(),
+                    value.getPrice()
             };
             batchArguments.add(arguments);
         });
@@ -111,13 +111,13 @@ public class PaymentDaoImpl implements PaymentDao {
 
     @Override
     public boolean updateTotalBalance(BigDecimal totalPrice) throws DaoException {
-        boolean isUpdated = paymentJdbcTemplate.executeUpdateDeleteFields(UPDATE_TOTAL_BALANCE_SQL, totalPrice);
+        boolean isUpdated = paymentJdbcTemplate.updateDeleteFields(UPDATE_TOTAL_BALANCE_SQL, totalPrice);
 
         return isUpdated;
     }
 
     private List<Order> findOrdersWithPaymentId (long paymentId) throws DaoException {
-        List<Order> orders = orderJdbcTemplate.executeSelectQuery(FIND_ORDERS_WITH_PAYMENT_ID_SQL, paymentId);
+        List<Order> orders = orderJdbcTemplate.selectEntities(FIND_ORDERS_WITH_PAYMENT_ID_SQL, paymentId);
 
         return orders;
     }

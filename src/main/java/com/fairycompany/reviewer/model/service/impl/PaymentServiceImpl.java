@@ -30,6 +30,7 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger logger = LogManager.getLogger();
     private PaymentDao paymentDao = PaymentDaoImpl.getInstance();
+    private UserDao userDao = UserDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
     private static PaymentServiceImpl instance = new PaymentServiceImpl();
 
@@ -76,7 +77,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     public boolean addPayment(SessionRequestContent content) throws ServiceException {
         boolean isPaymentAdded = false;
-        UserDao userDao = UserDaoImpl.getInstance();
         User user = (User) content.getSessionAttribute(SessionAttribute.USER);
         Map<Order, Game> shoppingCart = (Map<Order, Game>) content.getSessionAttribute(SessionAttribute.SHOPPING_CART);
 
