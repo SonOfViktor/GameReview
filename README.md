@@ -34,3 +34,4 @@
 - Can delete game reviews from other users
 
 Database structure
+![Database diagram](https://user-images.githubusercontent.com/75062336/152034345-e235b7b4-d3b6-4e70-a54c-3f3ee8a7dc3e.png)
