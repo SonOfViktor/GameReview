@@ -33,5 +33,4 @@ public class LocaleMessageKey {
 
     private LocaleMessageKey() {
     }
-
 }

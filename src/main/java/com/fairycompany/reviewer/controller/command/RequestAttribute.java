@@ -29,5 +29,4 @@ public final class RequestAttribute {
 
     private RequestAttribute() {
     }
-
 }

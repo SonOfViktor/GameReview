@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class OrderResultSetHandler implements ResultSetHandler<Order> {
+
     @Override
     public Order resultSetToObject(ResultSet resultSet) throws SQLException {
         Order order = new Order.OrderBuilder()

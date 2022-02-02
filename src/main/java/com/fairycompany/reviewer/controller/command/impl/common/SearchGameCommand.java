@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SearchGameCommand extends AbstractCommand {
+
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
         String mainPageRedirect = String.format(PagePath.SEARCH_REDIRECT,

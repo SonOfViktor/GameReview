@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LocalCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
+
     @Override
     public Router execute(HttpServletRequest request) {
         HttpSession session = request.getSession();

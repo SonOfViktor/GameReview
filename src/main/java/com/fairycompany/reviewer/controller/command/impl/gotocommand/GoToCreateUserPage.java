@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 public class GoToCreateUserPage implements Command {
+
     @Override
     public Router execute(HttpServletRequest request) {
         HttpSession session = request.getSession();

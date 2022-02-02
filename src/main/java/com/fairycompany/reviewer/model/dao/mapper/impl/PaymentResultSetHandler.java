@@ -13,6 +13,7 @@ import java.util.List;
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class PaymentResultSetHandler implements ResultSetHandler<Payment> {
+
     @Override
     public Payment resultSetToObject(ResultSet resultSet) throws SQLException {
         long paymentId = resultSet.getLong(PAYMENT_ID);

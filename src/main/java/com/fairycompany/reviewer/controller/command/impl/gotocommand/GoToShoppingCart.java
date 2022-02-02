@@ -5,9 +5,7 @@ import com.fairycompany.reviewer.model.entity.Game;
 import com.fairycompany.reviewer.model.entity.Order;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 
 public class GoToShoppingCart implements Command {

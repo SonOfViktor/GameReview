@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 long userId = userDao.add(user, hashPassword);
                 user.setUserId(userId);
 
-                String token = UUID.randomUUID().toString();                  // todo uncomment to send email
+                String token = UUID.randomUUID().toString();
                 long tokenId = tokenDao.addRegistrationToken(userId, token);
                 sendRegisterEmail(content, tokenId, token);
 

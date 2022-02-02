@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class GameRatingResultSetHandler implements ResultSetHandler<GameRating> {
+
     @Override
     public GameRating resultSetToObject(ResultSet resultSet) throws SQLException {
         GameRating rating = new GameRating.GameRatingBuilder()

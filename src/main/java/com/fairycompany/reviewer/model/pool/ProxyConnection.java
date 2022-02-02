@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-
 /**
  * Proxy for {@link Connection}
  */

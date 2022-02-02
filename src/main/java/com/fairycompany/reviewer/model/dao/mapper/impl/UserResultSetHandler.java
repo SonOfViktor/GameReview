@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class UserResultSetHandler implements ResultSetHandler<User> {
+
     @Override
     public User resultSetToObject(ResultSet resultSet) throws SQLException {
         User user = new User.UserBuilder()

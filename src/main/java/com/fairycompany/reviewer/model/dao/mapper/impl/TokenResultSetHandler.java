@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import static com.fairycompany.reviewer.model.dao.ColumnName.*;
 
 public class TokenResultSetHandler implements ResultSetHandler<UserToken> {
+
     @Override
     public UserToken resultSetToObject(ResultSet resultSet) throws SQLException {
         long userId = resultSet.getLong(USER_ID);
