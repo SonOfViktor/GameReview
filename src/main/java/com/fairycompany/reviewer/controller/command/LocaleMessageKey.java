@@ -27,9 +27,11 @@ public class LocaleMessageKey {
     public static final String UPDATE_GAME_RATING_FAILED = "update_game_rating_failed";
     public static final String PURCHASE_GAME_SUCCESS = "purchase_game_successful";
     public static final String PURCHASE_GAME_FAILED = "purchase_game_failed";
-    public static final String SEARCH_ERROR = "add_game_name_invalid_message";
+    public static final String SEARCH_ERROR = "search_error_message";
     public static final String ILLEGAL_USE_ADDRESS_BAR = "illegal_use_address_bar_message";
     public static final String ILLEGAL_USER_ROLE = "illegal_user_role";
+    public static final String USER_NOT_CONFIRMED = "user_not_confirmed";
+    public static final String USER_BANNED = "user_banned";
 
     private LocaleMessageKey() {
     }

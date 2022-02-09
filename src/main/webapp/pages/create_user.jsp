@@ -65,7 +65,8 @@
         <div class="col-5">
             <label for="inputName" class="form-label"><fmt:message key="user_name"/></label>
             <input type="text" class="form-control" id="inputName" placeholder="<fmt:message key="user_name"/>"
-                   name="name" value="" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
+                   name="name" value="" pattern="\p{Upper}\p{Lower}{1,19}|[А-ЯЁ][а-яё]{1,19}" required>
+
             <div class="invalid-feedback">
                 <span><fmt:message key="sing_up_name_invalid_message"/></span>
             </div>
@@ -75,7 +76,7 @@
         <div class="col-5">
             <label for="inputSurname" class="form-label"><fmt:message key="user_surname"/></label>
             <input type="text" class="form-control" id="inputSurname" placeholder="<fmt:message key="user_surname"/>"
-                   name="surname" value="" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
+                   name="surname" value="" pattern="\p{Upper}\p{Lower}{1,19}|[А-ЯЁ][а-яё]{1,19}" required>
             <div class="invalid-feedback">
                 <span><fmt:message key="sing_up_surname_invalid_message"/></span>
             </div>

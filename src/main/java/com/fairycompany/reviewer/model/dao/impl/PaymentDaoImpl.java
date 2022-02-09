@@ -30,7 +30,7 @@ public class PaymentDaoImpl implements PaymentDao {
 
     private static final String FIND_ORDERS_WITH_PAYMENT_ID_SQL = """
             SELECT order_id, payment_id, name, orders.platform, game_key, order_price FROM game_rating.orders
-            JOIN games ON games.game_id = orders.game_id
+            LEFT JOIN games ON games.game_id = orders.game_id
             WHERE payment_id = ?
             """;
 

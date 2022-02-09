@@ -15,6 +15,7 @@ import java.util.Arrays;
  */
 @WebFilter(filterName = "ServletSecurityFilter",
             urlPatterns = {"/controller", "/upload_image"},
+            dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST},
             initParams = { @WebInitParam(name = "index_path", value = "index.jsp") })
 public class ServletSecurityFilter implements Filter {
 

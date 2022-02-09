@@ -29,6 +29,7 @@ import static com.fairycompany.reviewer.controller.command.RequestParameter.ROW_
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger logger = LogManager.getLogger();
+    private static final String GAME_DELETED = "GAME_DELETED";
     private PaymentDao paymentDao = PaymentDaoImpl.getInstance();
     private UserDao userDao = UserDaoImpl.getInstance();
     private TransactionManager transactionManager = TransactionManager.getInstance();
@@ -55,6 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             long skippedPayments = actualPage * rowAmount - rowAmount;
             payments = paymentDao.findAllUserPayments(user.getUserId(), skippedPayments, rowAmount);
+            nameDeletedGames(payments);
 
             List<BigDecimal> totalPrices = calculateTotalPrices(payments);
 
@@ -128,5 +130,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void generateGameKey(Map<Order, Game> shoppingCart) {
         shoppingCart.keySet().forEach(order -> order.setGameKey(UUID.randomUUID().toString()));
+    }
+
+    private void nameDeletedGames(List<Payment> payments) {
+        payments.stream()
+                .flatMap(payment -> payment.getOrders().stream())
+                .filter(order -> order.getGameName() == null)
+                .forEach(order -> order.setGameName(GAME_DELETED));
     }
 }

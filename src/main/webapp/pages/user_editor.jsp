@@ -36,7 +36,7 @@
                     <label for="inputFirstName" class="col-3 col-form-label"><fmt:message key="user_name"/></label>
                     <div class="col-8">
                         <input type="text" class="form-control" id="inputFirstName" name="name"
-                            value="${user.firstName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
+                            value="${user.firstName}" pattern="\p{Upper}\p{Lower}{1,19}|[А-ЯЁ][а-яё]{1,19}" required>
                         <div class="invalid-feedback">
                             <span><fmt:message key="sing_up_name_invalid_message"/></span>
                         </div>
@@ -46,7 +46,7 @@
                     <label for="inputSecondName" class="col-3 col-form-label"><fmt:message key="user_surname"/></label>
                     <div class="col-8">
                         <input type="text" class="form-control" id="inputSecondName" name="surname"
-                            value="${user.secondName}" pattern="[\p{Alpha}А-Яа-яЁё]{2,20}" required>
+                            value="${user.secondName}" pattern="\p{Upper}\p{Lower}{1,19}|[А-ЯЁ][а-яё]{1,19}" required>
                         <div class="invalid-feedback">
                             <span><fmt:message key="sing_up_surname_invalid_message"/></span>
                         </div>

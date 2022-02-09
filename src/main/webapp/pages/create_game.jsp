@@ -116,7 +116,7 @@
             <div class="col-5">
                 <label for="inputTrailer" class="form-label"><fmt:message key="add_game_trailer"/></label>
                 <input type="url" class="form-control" id="inputTrailer" name="trailer" value=""
-                       pattern="https://www\.youtube\.com/watch\?v=[\w_-]{5,20}" required>
+                       pattern="https://www\.youtube\.com/watch\?v=[\w_-]{11}" required>
                 <div class="invalid-feedback">
                     <span><fmt:message key="add_game_trailer_invalid_message"/></span>
                 </div>

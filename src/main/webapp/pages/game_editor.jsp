@@ -103,7 +103,7 @@
                     <label for="inputTrailer" class="col-3 col-form-label"><fmt:message key="game_trailer"/></label>
                     <div class="col-9">
                         <input type="url" class="form-control" id="inputTrailer" name="trailer" value="${game.trailerUrl}"
-                               pattern="https://www\.youtube\.com/watch\?v=[\w_-]{5,20}" required>
+                               pattern="https://www\.youtube\.com/watch\?v=[\w_-]{11}" required>
                         <div class="invalid-feedback">
                             <span><fmt:message key="add_game_trailer_invalid_message"/></span>
                         </div>
@@ -211,10 +211,15 @@
         <div class="col-7 mx-auto">
             <div class="row">
                 <div class="col-12 d-flex justify-content-center">
-                    <a class="btn btn-primary"
-                       href="${pageContext.request.contextPath}/controller?command=delete_game&game_id=${game.gameId}&image=${game.image}&actual_page=1" role="button">
-                        <fmt:message key="delete_game"/>
-                    </a>
+                    <form method="post" action="controller">
+                        <input type="hidden" name="command" value="delete_game">
+                        <input type="hidden" name="game_id" value="${game.gameId}">
+                        <input type="hidden" name="image" value="${game.image}">
+                        <input type="hidden" name="actual_page" value="1">
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-primary mb-3"><fmt:message key="delete_game"/></button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

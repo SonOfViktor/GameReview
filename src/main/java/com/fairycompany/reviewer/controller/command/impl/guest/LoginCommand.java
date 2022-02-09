@@ -25,11 +25,10 @@ public class LoginCommand extends AbstractCommand {
 
         UserService service = UserServiceImpl.getInstance();
         try {
-            Optional<User> user = service.authenticateUser(content);
-            if (user.isPresent()) {
-                content.addSessionAttribute(SessionAttribute.USER, user.get());
-                Map<Order, Game> shoppingCart = new LinkedHashMap<>();
-                content.addSessionAttribute(SessionAttribute.SHOPPING_CART, shoppingCart);
+            Optional<User> optionalUser = service.authenticateUser(content);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                checkUserStatus(user);
             } else {
                 content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.LOGIN_ERROR);
             }
@@ -40,5 +39,21 @@ public class LoginCommand extends AbstractCommand {
         content.insertValues(request);
 
         return router;
+    }
+
+    private void checkUserStatus(User user) throws CommandException {
+        switch(user.getUserStatus()) {
+            case ACTIVE -> {
+                content.addSessionAttribute(SessionAttribute.USER, user);
+                Map<Order, Game> shoppingCart = new LinkedHashMap<>();
+                content.addSessionAttribute(SessionAttribute.SHOPPING_CART, shoppingCart);
+            }
+            case NOT_CONFIRMED -> content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_NOT_CONFIRMED);
+            case BANNED -> content.addSessionAttribute(SessionAttribute.SESSION_MESSAGE_ERROR, LocaleMessageKey.USER_BANNED);
+            default -> {
+                logger.log(Level.ERROR, "Unknown user status {}", user.getUserStatus());
+                throw new CommandException("Unknown user status " + user.getUserStatus());
+            }
+        }
     }
 }
