@@ -12,6 +12,7 @@
 - Can change localization
 
 ![Main page](media/MainPage.jpg)
+
 ![Sign Up](media/SignUp.jpg)
 ## User role
 - Can view game catalog
@@ -28,6 +29,7 @@
 - Can log out
 
 ![Game page](media/GamePage.jpg)
+
 ![User page](media/UserPage.jpg)
 ## Administrator role
 - Can everything that user can
