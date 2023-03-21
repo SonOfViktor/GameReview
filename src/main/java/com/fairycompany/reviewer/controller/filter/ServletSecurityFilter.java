@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Filter command provided by request and check access for user
  */
 @WebFilter(filterName = "ServletSecurityFilter",
-            urlPatterns = {"/controller", "/upload_image"},
+            urlPatterns = {"/controller"},
             dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST},
             initParams = { @WebInitParam(name = "index_path", value = "index.jsp") })
 public class ServletSecurityFilter implements Filter {
@@ -47,6 +47,6 @@ public class ServletSecurityFilter implements Filter {
 
     private boolean isCommandValid(String command) {
         return command != null && Arrays.stream(CommandType.values())
-                                        .anyMatch((commandType) -> commandType.name().equalsIgnoreCase(command));
+                                        .anyMatch(commandType -> commandType.name().equalsIgnoreCase(command));
     }
 }

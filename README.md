@@ -10,6 +10,9 @@
 - Can confirm his registration
 - Can login
 - Can change localization
+
+![Main page](media/MainPage.jpg)
+![Sign Up](media/SignUp.jpg)
 ## User role
 - Can view game catalog
 - Can view game page
@@ -23,6 +26,9 @@
 - Can see all his purchases
 - Can change localization
 - Can log out
+
+![Game page](media/GamePage.jpg)
+![User page](media/UserPage.jpg)
 ## Administrator role
 - Can everything that user can
 - Can view all users
@@ -32,6 +38,8 @@
 - Can edit game (data, image)
 - Can delete game
 - Can delete game reviews from other users
+
+![Admin page](media/AdminPage.jpg)
 
 Database structure
 ![Database diagram](https://user-images.githubusercontent.com/75062336/152034345-e235b7b4-d3b6-4e70-a54c-3f3ee8a7dc3e.png)

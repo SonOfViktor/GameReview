@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The interface provide common methods for other dao interfaces.
+ * The interface provided common methods for other dao interfaces.
  *
  * @param <T> type of class extends entity
  */
@@ -27,7 +27,7 @@ public interface BaseDao <T extends Entity> {
      *
      * @param id id of entity
      * @return optional with entity or empty optional if entity with the id doesn't exist
-     * @throws DaoException if SQL exception occurred
+     * @throws {@link DaoException#DaoException()} if SQL exception occurred
      */
     Optional<T> findEntityById(long id) throws DaoException;
 
