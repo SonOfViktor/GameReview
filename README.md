@@ -1,6 +1,6 @@
 # Game Review
 
-#### GameReview is a web-service that allows users to search inforamtion about video games and see average rating from other users. Also user can public his own rating and a little review for a game. If they like any game user can buy it for famous game platfroms. There are 3 types of roles in the system: Guest, User, Administrator.
+#### GameReview is a web application that allows users to search inforamtion about video games and see average rating from other users. Also user can public his own rating and a little review for a game. If they like any game user can buy it for famous game platfroms. There are 3 types of roles in the system: Guest, User, Administrator.
 
 ## Guest role
 - Can view game catalog
